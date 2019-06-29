@@ -12,7 +12,7 @@
 <select class="custom-select" @onchange="@BatterSelected">
     @for (var i = 0; i < batters.Count; i++)
     {
-        <option value="@i">@batters[i].FullPlayerName</option>
+    <option value="@i">@batters[i].FullPlayerName</option>
     }
 </select>
 
@@ -45,7 +45,9 @@
         <form>
             <div class="form-group row">
                 <label for="seasonsInput" class="col-sm-4 col-form-label">Number of Seasons Played:</label>
+                <span class="sliderLabel">1</span>
                 <input type="range" class="form-control-range" style="width: 500px;" min="1" max="40" step="1" @bind-value="@numberOfSeasonsPlayed" @bind-value:event="oninput" />
+                <span class="sliderLabel">40</span>
             </div>
             <div class="form-group row">
                 <label for="OnHallOfFameBallot" class="col-sm-4 col-form-label">On Hall Of Fame Ballot:</label>
@@ -63,7 +65,8 @@
     </div>
 </div>
 
-@code {
+
+    @code {
     int numberOfSeasonsPlayed = 1;
     MLBHOFPrediction predictionHallOfFameInduction = null;
     MLBHOFPrediction predictionOnHallOfFameBallot = null;
@@ -210,4 +213,4 @@
         }
     }
 
-}
+    }
