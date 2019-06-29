@@ -1,8 +1,11 @@
 @page "/baseballprediction"
 @using BaseballPredictionBlazor.Shared
 @using BaseballPredictionBlazor.Service
-@inject IBaseballHallofFamePrediction baseBallPredictionService
-
+@using Scalable.Model.Engine;
+@*@using Microsoft.Extensions.ML;*@
+@*@inject IBaseballHallofFamePrediction baseBallPredictionService*@
+@*@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;*@
+@inject MLModelEngine<MLBBaseballBatter, MLBHOFPrediction> _predictionEngines;
 
 <h1>MLB Baseball Batter Prediction</h1>
 
@@ -61,7 +64,6 @@
 </div>
 
 @code {
-
     int numberOfSeasonsPlayed = 1;
     MLBHOFPrediction predictionHallOfFameInduction = null;
     MLBHOFPrediction predictionOnHallOfFameBallot = null;
@@ -150,15 +152,20 @@
 
     void MakePrediction()
     {
-        predictionHallOfFameInduction = baseBallPredictionService.PredictInductedToHOF(selectedBatter);
-        predictionOnHallOfFameBallot = baseBallPredictionService.PredictOnHallOfFameBallot(selectedBatter);
+        // predictionHallOfFameInduction = //_predictionEnginePool.Predict(selectedBatter);
+        //   baseBallPredictionService.PredictInductedToHOF(selectedBatter);
+        //predictionOnHallOfFameBallot = baseBallPredictionService.PredictOnHallOfFameBallot(selectedBatter);
+
+        predictionHallOfFameInduction = _predictionEngines.Predict("InductedToHallOfFame", selectedBatter);
+        predictionOnHallOfFameBallot = _predictionEngines.Predict("OnHallOfFameBallot", selectedBatter);
     }
 
     float MakePredictionHallOfFameInductionAdjustedForSeasons()
     {
         MLBBaseballBatter baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
 
-        predictionHallOfFameInductionAdjusted = baseBallPredictionService.PredictInductedToHOF(baseBallBatterPerSeason);
+        predictionHallOfFameInductionAdjusted = //_predictionEnginePool.Predict(baseBallBatterPerSeason);
+            _predictionEngines.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
 
         return predictionHallOfFameInductionAdjusted.Probability;
     }
@@ -167,7 +174,8 @@
     {
         MLBBaseballBatter baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
 
-        predictionOnHallOfFameBallotAdjusted = baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
+        predictionOnHallOfFameBallotAdjusted = // baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
+            _predictionEngines.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
 
         return predictionOnHallOfFameBallotAdjusted.Probability;
     }

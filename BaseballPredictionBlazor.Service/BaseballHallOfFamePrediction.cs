@@ -1,4 +1,5 @@
 ﻿using Microsoft.ML;
+using Microsoft.Extensions.ML;
 using System.IO;
 using BaseballPredictionBlazor.Shared;
 
@@ -12,9 +13,13 @@ namespace BaseballPredictionBlazor.Service
         protected readonly MLContext _mlContext;
         protected readonly DataViewSchema _schema;
 
+        protected readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionPoolInductedToHallOfFame;
+        protected readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionPoolOnHallOfFameBallot;
+
         public BaseballHallofFamePrediction(string modelPathInductedToHallOfFame, string modelPathOnHallOfFameBallot)
         {
             _mlContext = new MLContext(seed: 0);
+            // _predictionPoolInductedToHallOfFame = new PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
 
             using (var stream = new FileStream(modelPathInductedToHallOfFame, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
