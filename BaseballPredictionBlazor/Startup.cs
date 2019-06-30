@@ -31,6 +31,8 @@ namespace BaseballPredictionBlazor
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddApplicationInsightsTelemetry();
+
             string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Data", "InductedToHallOfFame.mlnet");
             string modelPathOnHallOfFameBallot = Path.Combine(Environment.CurrentDirectory, "Data", "OnHallOfFameBallot.mlnet");
 
@@ -71,6 +73,9 @@ namespace BaseballPredictionBlazor
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            // app.UseApplicationInsightsExceptionTelemetry();
+            app.UseApplicationInsightsRequestTelemetry();
         }
     }
 }
