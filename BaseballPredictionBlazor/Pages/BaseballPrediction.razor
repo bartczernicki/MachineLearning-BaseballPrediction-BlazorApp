@@ -16,10 +16,12 @@
     }
 </select>
 
+
 <div class="card">
     <h5 class="card-header">Static Predictions</h5>
     <div class="card-body">
         <small class="form-text text-muted">Single prediction of player being on Hall Of Ballot and actually being inducted into Hall Of Fame.</small>
+        
         <form>
             <div class="form-group row">
                 <label for="OnHallOfFameBallot" class="col-sm-4 col-form-label">On Hall Of Fame Ballot:</label>
@@ -45,9 +47,9 @@
         <form>
             <div class="form-group row">
                 <label for="seasonsInput" class="col-sm-4 col-form-label">Number of Seasons Played:</label>
-                <span class="sliderLabel">1</span>
-                <input type="range" class="form-control-range" style="width: 500px;" min="1" max="40" step="1" @bind-value="@numberOfSeasonsPlayed" @bind-value:event="oninput" />
-                <span class="sliderLabel">40</span>
+                <span class="sliderLabel">1 </span>
+                <input type="range" class="form-control-range" style="width: 50%;" min="1" max="40" step="1" @bind-value="@numberOfSeasonsPlayed" @bind-value:event="oninput" />
+                <span class="sliderLabel"> 40</span>
             </div>
             <div class="form-group row">
                 <label for="OnHallOfFameBallot" class="col-sm-4 col-form-label">On Hall Of Fame Ballot:</label>
