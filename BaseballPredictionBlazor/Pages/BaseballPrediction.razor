@@ -85,7 +85,7 @@
                     <div class="col-md-6 col-xl-6">
                         <div class="card bg-c-blue order-card">
                             <div class="card-block">
-                                <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", MakePredictionOnHallOfFameBallotAdjustedForSeasons())</b></span></h5>
+                                <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", MakePredictionHallOfFameInductionAdjustedForSeasons())</b></span></h5>
                                 <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
                                 <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
                                 <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
@@ -131,7 +131,7 @@ MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
     SB = 10f,
     BattingAverage = 0.3f,
     SluggingPct = 0.15f,
-    AllStarAppearances = 1f,
+    AllStarAppearances = 0f,
     MVPs = 0f,
     TripleCrowns = 0f,
     GoldGloves = 0f,
