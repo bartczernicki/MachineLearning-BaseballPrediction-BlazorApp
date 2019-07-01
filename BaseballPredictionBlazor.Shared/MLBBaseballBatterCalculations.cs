@@ -16,6 +16,11 @@ namespace BaseballPredictionBlazor.Shared
 
         public MLBBaseballBatter CalculateStatisticsProratedBySeason(int numberOfSeasons)
         {
+            var test = (float)Math.Round(
+                    (Decimal)(this._mlbBaseBallBatter.AllStarAppearances / this._mlbBaseBallBatter.YearsPlayed) * numberOfSeasons,
+                    0,
+                    MidpointRounding.AwayFromZero);
+
             var baseBallBatterAdjusted = new MLBBaseballBatter
             {
                 FullPlayerName = "Great Player",
@@ -34,7 +39,10 @@ namespace BaseballPredictionBlazor.Shared
                 SB = (this._mlbBaseBallBatter.SB / this._mlbBaseBallBatter.YearsPlayed) * numberOfSeasons,
                 BattingAverage = 0.350f,
                 SluggingPct = 0.65f,
-                AllStarAppearances = (this._mlbBaseBallBatter.AllStarAppearances / this._mlbBaseBallBatter.YearsPlayed) * numberOfSeasons,
+                AllStarAppearances = (float) Math.Round(
+                    (Decimal) (this._mlbBaseBallBatter.AllStarAppearances / this._mlbBaseBallBatter.YearsPlayed) * numberOfSeasons,
+                    0,
+                    MidpointRounding.AwayFromZero),
                 MVPs = (this._mlbBaseBallBatter.MVPs / this._mlbBaseBallBatter.YearsPlayed) * numberOfSeasons,
                 TripleCrowns = (this._mlbBaseBallBatter.TripleCrowns / this._mlbBaseBallBatter.YearsPlayed) * numberOfSeasons,
                 GoldGloves = (this._mlbBaseBallBatter.GoldGloves / this._mlbBaseBallBatter.YearsPlayed) * numberOfSeasons,

@@ -78,7 +78,7 @@ namespace BaseballPredictionBlazor.Shared
         {
             var batter = new MLBBaseballBatter
             {
-                FullPlayerName = "Great Player",
+                FullPlayerName = this.FullPlayerName,
                 ID = 100f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 0f,
@@ -94,7 +94,10 @@ namespace BaseballPredictionBlazor.Shared
                 SB = (this.SB / this.YearsPlayed) * numberOfSeasons,
                 BattingAverage = 0.350f,
                 SluggingPct = 0.65f,
-                AllStarAppearances = (this.AllStarAppearances / this.YearsPlayed) * numberOfSeasons,
+                AllStarAppearances = (float) Math.Round(
+                    (Decimal)(this.AllStarAppearances / this.YearsPlayed) * numberOfSeasons,
+                    0,
+                    MidpointRounding.AwayFromZero),
                 MVPs = (this.MVPs / this.YearsPlayed) * numberOfSeasons,
                 TripleCrowns = (this.TripleCrowns / this.YearsPlayed) * numberOfSeasons,
                 GoldGloves = (this.GoldGloves / this.YearsPlayed) * numberOfSeasons,

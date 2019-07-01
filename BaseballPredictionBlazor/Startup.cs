@@ -75,7 +75,7 @@ namespace BaseballPredictionBlazor
             });
 
             // app.UseApplicationInsightsExceptionTelemetry();
-            app.UseApplicationInsightsRequestTelemetry();
+            //app.UseApplicationInsightsRequestTelemetry();
         }
     }
 }

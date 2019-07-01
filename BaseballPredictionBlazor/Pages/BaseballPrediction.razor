@@ -9,6 +9,7 @@
 
 <h1>MLB Baseball Batter Prediction</h1>
 
+<div><b>Select a fictitious MLB Batter to make predictions:</b></div>
 <select class="custom-select" @onchange="@BatterSelected">
     @for (var i = 0; i < batters.Count; i++)
     {
@@ -16,26 +17,41 @@
     }
 </select>
 
-
+<p/>
 <div class="card">
     <h5 class="card-header">Static Predictions</h5>
     <div class="card-body">
-        <small class="form-text text-muted">Single prediction of player being on Hall Of Ballot and actually being inducted into Hall Of Fame.</small>
-        
-        <form>
-            <div class="form-group row">
-                <label for="OnHallOfFameBallot" class="col-sm-4 col-form-label">On Hall Of Fame Ballot:</label>
-                <div class="col-sm-8">
-                    <input type="text" readonly class="form-control-plaintext" id="OnHallOfFameBallot" value="@String.Format("{0:P4}.", predictionOnHallOfFameBallot.Probability)">
+        <small class="form-text text-muted">Single prediction of probability of the player being <b><i>On Hall Of Fame Ballot</i></b> and probability of being <b><i>Inducted to Hall Of Fame</i></b>.</small>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-xl-6">
+                    <div class="card bg-c-green order-card">
+                        <div class="card-block">
+                            <h5 class="text-right">On Hall Of Fame Ballot Probability - <span class="span-probability"><b>@String.Format("{0:P4}", predictionOnHallOfFameBallot.Probability)</b></span></h5>
+                            <h5 class="text-right"><span><b>@selectedBatter.FullPlayerName</b></span></h5>
+                            <div class="m-b-0">Seasons Played<span class="f-right">@selectedBatter.YearsPlayed</span></div>
+                            <div class="m-b-0">Total Bases<span class="f-right">@selectedBatter.TB</span></div>
+                            <div class="m-b-0">All-Star Appearances<span class="f-right">@selectedBatter.AllStarAppearances</span></div>
+                            <div class="m-b-0">Slugging %<span class="f-right">@selectedBatter.SluggingPct</span></div>
+                            <div class="m-b-0">...<span class="f-right"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
+                    <div class="card bg-c-blue order-card">
+                        <div class="card-block">
+                            <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P4}", predictionHallOfFameInduction.Probability)</b></span></h5>
+                            <h5 class="text-right"><span><b>@selectedBatter.FullPlayerName</b></span></h5>
+                            <div class="m-b-0">Seasons Played<span class="f-right">@selectedBatter.YearsPlayed</span></div>
+                            <div class="m-b-0">Total Bases<span class="f-right">@selectedBatter.TB</span></div>
+                            <div class="m-b-0">All-Star Appearances<span class="f-right">@selectedBatter.AllStarAppearances</span></div>
+                            <div class="m-b-0">Slugging %<span class="f-right">@selectedBatter.SluggingPct</span></div>
+                            <div class="m-b-0">...<span class="f-right"></span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="InductedToHallOfFame" class="col-sm-4 col-form-label">Inducted To Hall Of Fame:</label>
-                <div class="col-sm-8">
-                    <input type="text" readonly class="form-control-plaintext" id="InductedToHallOfFame" value="@String.Format("{0:P4}.", predictionHallOfFameInduction.Probability)">
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 <p></p>
@@ -43,7 +59,7 @@
     <h5 class="card-header">What-If Dynamic Predictions</h5>
     <div class="card-body">
         <small class="form-text text-muted">What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played.</small>
-        <small class="form-text text-muted">Dynamic prediction of player being <b><i>On Hall Of Fame Ballot</i></b> and probability of being <b><i>Inducted to Hall Of Fame</i></b>.</small>
+        <small class="form-text text-muted">Dynamic prediction of probability of the player being <b><i>On Hall Of Fame Ballot</i></b> and probability of being <b><i>Inducted to Hall Of Fame</i></b>.</small>
         <form>
             <div class="form-group row">
                 <label for="seasonsInput" class="col-sm-4 col-form-label">Number of Seasons Played:</label>
@@ -51,16 +67,34 @@
                 <input type="range" class="form-control-range" style="width: 50%;" min="1" max="40" step="1" @bind-value="@numberOfSeasonsPlayed" @bind-value:event="oninput" />
                 <span class="sliderLabel"> 40</span>
             </div>
-            <div class="form-group row">
-                <label for="OnHallOfFameBallot" class="col-sm-4 col-form-label">On Hall Of Fame Ballot:</label>
-                <div class="col-sm-8">
-                    <input type="text" readonly class="form-control-plaintext" id="OnHallOfFameBallot" value="@String.Format("{0:P4}.", MakePredictionOnHallOfFameBallotAdjustedForSeasons())">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="InductedToHallOfFame" class="col-sm-4 col-form-label">Inducted To Hall Of Fame:</label>
-                <div class="col-sm-8">
-                    <input type="text" readonly class="form-control-plaintext" id="InductedToHallOfFame" value="@String.Format("{0:P4}.", MakePredictionHallOfFameInductionAdjustedForSeasons())">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-xl-6">
+                        <div class="card bg-c-green order-card">
+                            <div class="card-block">
+                                <h5 class="text-right">On Hall Of Fame Ballot Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", MakePredictionOnHallOfFameBallotAdjustedForSeasons())</b></span></h5>
+                                <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
+                                <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
+                                <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
+                                <div class="m-b-0">All-Star Appearances<span class="f-right">@baseBallBatterPerSeason.AllStarAppearances</span></div>
+                                <div class="m-b-0">Slugging %<span class="f-right">@baseBallBatterPerSeason.SluggingPct</span></div>
+                                <div class="m-b-0">...<span class="f-right"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-6">
+                        <div class="card bg-c-blue order-card">
+                            <div class="card-block">
+                                <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", MakePredictionOnHallOfFameBallotAdjustedForSeasons())</b></span></h5>
+                                <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
+                                <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
+                                <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
+                                <div class="m-b-0">All-Star Appearances<span class="f-right">@baseBallBatterPerSeason.AllStarAppearances</span></div>
+                                <div class="m-b-0">Slugging %<span class="f-right">@baseBallBatterPerSeason.SluggingPct</span></div>
+                                <div class="m-b-0">...<span class="f-right"></span></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
@@ -68,151 +102,152 @@
 </div>
 
 
-    @code {
-    int numberOfSeasonsPlayed = 1;
-    MLBHOFPrediction predictionHallOfFameInduction = null;
-    MLBHOFPrediction predictionOnHallOfFameBallot = null;
-    MLBHOFPrediction predictionHallOfFameInductionAdjusted = null;
-    MLBHOFPrediction predictionOnHallOfFameBallotAdjusted = null;
-    public List<MLBBaseballBatter> batters;
-    MLBBaseballBatter selectedBatter;
+@code {
+int numberOfSeasonsPlayed = 1;
+MLBHOFPrediction predictionHallOfFameInduction = null;
+MLBHOFPrediction predictionOnHallOfFameBallot = null;
+MLBHOFPrediction predictionHallOfFameInductionAdjusted = null;
+MLBHOFPrediction predictionOnHallOfFameBallotAdjusted = null;
+public List<MLBBaseballBatter> batters;
+MLBBaseballBatter selectedBatter;
+MLBBaseballBatter baseBallBatterPerSeason;
 
 
-    MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
+MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
+{
+    FullPlayerName = "Barry Badd",
+    ID = 100f,
+    InductedToHallOfFame = false,
+    LastYearPlayed = 0f,
+    OnHallOfFameBallot = false,
+    YearsPlayed = 2f,
+    AB = 100f,
+    R = 10f,
+    H = 30f,
+    Doubles = 1f,
+    Triples = 1f,
+    HR = 1f,
+    RBI = 10f,
+    SB = 10f,
+    BattingAverage = 0.3f,
+    SluggingPct = 0.15f,
+    AllStarAppearances = 1f,
+    MVPs = 0f,
+    TripleCrowns = 0f,
+    GoldGloves = 0f,
+    MajorLeaguePlayerOfTheYearAwards = 0f,
+    TB = 200f
+};
+MLBBaseballBatter averageMLBBatter = new MLBBaseballBatter
+{
+    FullPlayerName = "Andy Average",
+    ID = 200f,
+    InductedToHallOfFame = false,
+    LastYearPlayed = 0f,
+    OnHallOfFameBallot = false,
+    YearsPlayed = 17f,
+    AB = 8393f,
+    R = 1162f,
+    H = 2300f,
+    Doubles = 410f,
+    Triples = 8f,
+    HR = 400f,
+    RBI = 1312f,
+    SB = 9f,
+    BattingAverage = 0.278f,
+    SluggingPct = 0.476f,
+    AllStarAppearances = 5f,
+    MVPs = 0f,
+    TripleCrowns = 0f,
+    GoldGloves = 0f,
+    MajorLeaguePlayerOfTheYearAwards = 0f,
+    TB = 3910f
+};
+MLBBaseballBatter greatMLBBatter = new MLBBaseballBatter
+{
+    FullPlayerName = "Gary The Great",
+    ID = 300f,
+    InductedToHallOfFame = false,
+    LastYearPlayed = 0f,
+    OnHallOfFameBallot = false,
+    YearsPlayed = 20f,
+    AB = 10000f,
+    R = 1900f,
+    H = 3500f,
+    Doubles = 500f,
+    Triples = 150f,
+    HR = 600f,
+    RBI = 1800f,
+    SB = 400f,
+    BattingAverage = 0.350f,
+    SluggingPct = 0.65f,
+    AllStarAppearances = 14f,
+    MVPs = 2f,
+    TripleCrowns = 1f,
+    GoldGloves = 4f,
+    MajorLeaguePlayerOfTheYearAwards = 2f,
+    TB = 7000f
+};
+
+
+void MakePrediction()
+{
+    // predictionHallOfFameInduction = //_predictionEnginePool.Predict(selectedBatter);
+    //   baseBallPredictionService.PredictInductedToHOF(selectedBatter);
+    //predictionOnHallOfFameBallot = baseBallPredictionService.PredictOnHallOfFameBallot(selectedBatter);
+
+    predictionHallOfFameInduction = _predictionEngines.Predict("InductedToHallOfFame", selectedBatter);
+    predictionOnHallOfFameBallot = _predictionEngines.Predict("OnHallOfFameBallot", selectedBatter);
+}
+
+float MakePredictionHallOfFameInductionAdjustedForSeasons()
+{
+    baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+
+    predictionHallOfFameInductionAdjusted = //_predictionEnginePool.Predict(baseBallBatterPerSeason);
+        _predictionEngines.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
+
+    return predictionHallOfFameInductionAdjusted.Probability;
+}
+
+float MakePredictionOnHallOfFameBallotAdjustedForSeasons()
+{
+    baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+
+    predictionOnHallOfFameBallotAdjusted = // baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
+        _predictionEngines.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
+
+    return predictionOnHallOfFameBallotAdjusted.Probability;
+}
+
+List<MLBBaseballBatter> GetBaseBallPlayers()
+{
+    batters = new List<MLBBaseballBatter>();
+    batters.Add(badMLBBatter);
+    batters.Add(averageMLBBatter);
+    batters.Add(greatMLBBatter);
+
+    return batters;
+}
+
+protected override void OnInit()
+{
+    // Build baseball batters list
+    batters = GetBaseBallPlayers();
+    // Select the initial batter, set UI state
+    selectedBatter = badMLBBatter;
+    numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
+    MakePrediction();
+}
+
+void BatterSelected(UIChangeEventArgs e)
+{
+    if (int.TryParse((string)e.Value, out var index) && index >= 0)
     {
-        FullPlayerName = "Bad Player",
-        ID = 100f,
-        InductedToHallOfFame = false,
-        LastYearPlayed = 0f,
-        OnHallOfFameBallot = false,
-        YearsPlayed = 2f,
-        AB = 100f,
-        R = 10f,
-        H = 30f,
-        Doubles = 1f,
-        Triples = 1f,
-        HR = 1f,
-        RBI = 10f,
-        SB = 10f,
-        BattingAverage = 0.3f,
-        SluggingPct = 0.15f,
-        AllStarAppearances = 1f,
-        MVPs = 0f,
-        TripleCrowns = 0f,
-        GoldGloves = 0f,
-        MajorLeaguePlayerOfTheYearAwards = 0f,
-        TB = 200f
-    };
-    MLBBaseballBatter averageMLBBatter = new MLBBaseballBatter
-    {
-        FullPlayerName = "Average Player",
-        ID = 200f,
-        InductedToHallOfFame = false,
-        LastYearPlayed = 0f,
-        OnHallOfFameBallot = false,
-        YearsPlayed = 17f,
-        AB = 8393f,
-        R = 1162f,
-        H = 2300f,
-        Doubles = 410f,
-        Triples = 8f,
-        HR = 400f,
-        RBI = 1312f,
-        SB = 9f,
-        BattingAverage = 0.278f,
-        SluggingPct = 0.476f,
-        AllStarAppearances = 5f,
-        MVPs = 0f,
-        TripleCrowns = 0f,
-        GoldGloves = 0f,
-        MajorLeaguePlayerOfTheYearAwards = 0f,
-        TB = 3910f
-    };
-    MLBBaseballBatter greatMLBBatter = new MLBBaseballBatter
-    {
-        FullPlayerName = "Great Player",
-        ID = 300f,
-        InductedToHallOfFame = false,
-        LastYearPlayed = 0f,
-        OnHallOfFameBallot = false,
-        YearsPlayed = 20f,
-        AB = 10000f,
-        R = 1900f,
-        H = 3500f,
-        Doubles = 500f,
-        Triples = 150f,
-        HR = 600f,
-        RBI = 1800f,
-        SB = 400f,
-        BattingAverage = 0.350f,
-        SluggingPct = 0.65f,
-        AllStarAppearances = 14f,
-        MVPs = 2f,
-        TripleCrowns = 1f,
-        GoldGloves = 4f,
-        MajorLeaguePlayerOfTheYearAwards = 2f,
-        TB = 7000f
-    };
-
-
-    void MakePrediction()
-    {
-        // predictionHallOfFameInduction = //_predictionEnginePool.Predict(selectedBatter);
-        //   baseBallPredictionService.PredictInductedToHOF(selectedBatter);
-        //predictionOnHallOfFameBallot = baseBallPredictionService.PredictOnHallOfFameBallot(selectedBatter);
-
-        predictionHallOfFameInduction = _predictionEngines.Predict("InductedToHallOfFame", selectedBatter);
-        predictionOnHallOfFameBallot = _predictionEngines.Predict("OnHallOfFameBallot", selectedBatter);
-    }
-
-    float MakePredictionHallOfFameInductionAdjustedForSeasons()
-    {
-        MLBBaseballBatter baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
-
-        predictionHallOfFameInductionAdjusted = //_predictionEnginePool.Predict(baseBallBatterPerSeason);
-            _predictionEngines.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
-
-        return predictionHallOfFameInductionAdjusted.Probability;
-    }
-
-    float MakePredictionOnHallOfFameBallotAdjustedForSeasons()
-    {
-        MLBBaseballBatter baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
-
-        predictionOnHallOfFameBallotAdjusted = // baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
-            _predictionEngines.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
-
-        return predictionOnHallOfFameBallotAdjusted.Probability;
-    }
-
-    List<MLBBaseballBatter> GetBaseBallPlayers()
-    {
-        batters = new List<MLBBaseballBatter>();
-        batters.Add(badMLBBatter);
-        batters.Add(averageMLBBatter);
-        batters.Add(greatMLBBatter);
-
-        return batters;
-    }
-
-    protected override void OnInit()
-    {
-        // Build baseball batters list
-        batters = GetBaseBallPlayers();
-        // Select the initial batter, set UI state
-        selectedBatter = badMLBBatter;
+        selectedBatter = batters[index];
         numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
         MakePrediction();
     }
+}
 
-    void BatterSelected(UIChangeEventArgs e)
-    {
-        if (int.TryParse((string)e.Value, out var index) && index >= 0)
-        {
-            selectedBatter = batters[index];
-            numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
-            MakePrediction();
-        }
-    }
-
-    }
+}
