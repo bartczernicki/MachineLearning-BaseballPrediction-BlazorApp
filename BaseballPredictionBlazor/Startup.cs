@@ -36,17 +36,16 @@ namespace BaseballPredictionBlazor
             string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Data", "InductedToHallOfFame.mlnet");
             string modelPathOnHallOfFameBallot = Path.Combine(Environment.CurrentDirectory, "Data", "OnHallOfFameBallot.mlnet");
 
-            // OLD Services
-            // PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predPool = new PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>(test, null, null);
-            // services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>().FromFile(modelPathInductedToHallOfFame);
-            // services.AddSingleton<IBaseballHallofFamePrediction>(sp => new BaseballHallofFamePrediction(modelPathInductedToHallOfFame, modelPathOnHallOfFameBallot));
+            //services.AddSingleton<MLModelEngine<MLBBaseballBatter, MLBHOFPrediction>>((ctx) =>
+            //{
+            //    List<string> modelPathNames = new List<string> { modelPathInductedToHallOfFame, modelPathOnHallOfFameBallot };
+            //    List<string> modelNames = new List<string> { "InductedToHallOfFame", "OnHallOfFameBallot" };
+            //    return new MLModelEngine<MLBBaseballBatter, MLBHOFPrediction>(modelNames, modelPathNames);
+            //});
 
-            services.AddSingleton<MLModelEngine<MLBBaseballBatter, MLBHOFPrediction>>((ctx) =>
-            {
-                List<string> modelPathNames = new List<string> { modelPathInductedToHallOfFame, modelPathOnHallOfFameBallot };
-                List<string> modelNames = new List<string> { "InductedToHallOfFame", "OnHallOfFameBallot" };
-                return new MLModelEngine<MLBBaseballBatter, MLBHOFPrediction>(modelNames, modelPathNames);
-            });
+            services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
+                .FromFile("InductedToHallOfFame", modelPathInductedToHallOfFame)
+                .FromFile("OnHallOfFameBallot", modelPathOnHallOfFameBallot);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

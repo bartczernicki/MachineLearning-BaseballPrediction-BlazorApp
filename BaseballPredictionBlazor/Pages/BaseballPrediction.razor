@@ -2,10 +2,11 @@
 @using BaseballPredictionBlazor.Shared
 @using BaseballPredictionBlazor.Service
 @using Scalable.Model.Engine;
-@*@using Microsoft.Extensions.ML;*@
+@using Microsoft.Extensions.ML;
+@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
+@*Previous Engines*@
 @*@inject IBaseballHallofFamePrediction baseBallPredictionService*@
-@*@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;*@
-@inject MLModelEngine<MLBBaseballBatter, MLBHOFPrediction> _predictionEngines;
+@*@inject MLModelEngine<MLBBaseballBatter, MLBHOFPrediction> _predictionEngines;*@
 
 <h1>MLB Baseball Batter Prediction</h1>
 
@@ -13,11 +14,11 @@
 <select class="custom-select" @onchange="@BatterSelected">
     @for (var i = 0; i < batters.Count; i++)
     {
-    <option value="@i">@batters[i].FullPlayerName</option>
+        <option value="@i">@batters[i].FullPlayerName</option>
     }
 </select>
 
-<p/>
+<p />
 <div class="card">
     <h5 class="card-header">Static Predictions</h5>
     <div class="card-body">
@@ -103,151 +104,151 @@
 
 
 @code {
-int numberOfSeasonsPlayed = 1;
-MLBHOFPrediction predictionHallOfFameInduction = null;
-MLBHOFPrediction predictionOnHallOfFameBallot = null;
-MLBHOFPrediction predictionHallOfFameInductionAdjusted = null;
-MLBHOFPrediction predictionOnHallOfFameBallotAdjusted = null;
-public List<MLBBaseballBatter> batters;
-MLBBaseballBatter selectedBatter;
-MLBBaseballBatter baseBallBatterPerSeason;
+    int numberOfSeasonsPlayed = 1;
+    MLBHOFPrediction predictionHallOfFameInduction = null;
+    MLBHOFPrediction predictionOnHallOfFameBallot = null;
+    MLBHOFPrediction predictionHallOfFameInductionAdjusted = null;
+    MLBHOFPrediction predictionOnHallOfFameBallotAdjusted = null;
+    public List<MLBBaseballBatter> batters;
+    MLBBaseballBatter selectedBatter;
+    MLBBaseballBatter baseBallBatterPerSeason;
 
 
-MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
-{
-    FullPlayerName = "Barry Badd",
-    ID = 100f,
-    InductedToHallOfFame = false,
-    LastYearPlayed = 0f,
-    OnHallOfFameBallot = false,
-    YearsPlayed = 2f,
-    AB = 100f,
-    R = 10f,
-    H = 30f,
-    Doubles = 1f,
-    Triples = 1f,
-    HR = 1f,
-    RBI = 10f,
-    SB = 10f,
-    BattingAverage = 0.3f,
-    SluggingPct = 0.15f,
-    AllStarAppearances = 0f,
-    MVPs = 0f,
-    TripleCrowns = 0f,
-    GoldGloves = 0f,
-    MajorLeaguePlayerOfTheYearAwards = 0f,
-    TB = 200f
-};
-MLBBaseballBatter averageMLBBatter = new MLBBaseballBatter
-{
-    FullPlayerName = "Andy Average",
-    ID = 200f,
-    InductedToHallOfFame = false,
-    LastYearPlayed = 0f,
-    OnHallOfFameBallot = false,
-    YearsPlayed = 17f,
-    AB = 8393f,
-    R = 1162f,
-    H = 2300f,
-    Doubles = 410f,
-    Triples = 8f,
-    HR = 400f,
-    RBI = 1312f,
-    SB = 9f,
-    BattingAverage = 0.278f,
-    SluggingPct = 0.476f,
-    AllStarAppearances = 5f,
-    MVPs = 0f,
-    TripleCrowns = 0f,
-    GoldGloves = 0f,
-    MajorLeaguePlayerOfTheYearAwards = 0f,
-    TB = 3910f
-};
-MLBBaseballBatter greatMLBBatter = new MLBBaseballBatter
-{
-    FullPlayerName = "Gary The Great",
-    ID = 300f,
-    InductedToHallOfFame = false,
-    LastYearPlayed = 0f,
-    OnHallOfFameBallot = false,
-    YearsPlayed = 20f,
-    AB = 10000f,
-    R = 1900f,
-    H = 3500f,
-    Doubles = 500f,
-    Triples = 150f,
-    HR = 600f,
-    RBI = 1800f,
-    SB = 400f,
-    BattingAverage = 0.350f,
-    SluggingPct = 0.65f,
-    AllStarAppearances = 14f,
-    MVPs = 2f,
-    TripleCrowns = 1f,
-    GoldGloves = 4f,
-    MajorLeaguePlayerOfTheYearAwards = 2f,
-    TB = 7000f
-};
-
-
-void MakePrediction()
-{
-    // predictionHallOfFameInduction = //_predictionEnginePool.Predict(selectedBatter);
-    //   baseBallPredictionService.PredictInductedToHOF(selectedBatter);
-    //predictionOnHallOfFameBallot = baseBallPredictionService.PredictOnHallOfFameBallot(selectedBatter);
-
-    predictionHallOfFameInduction = _predictionEngines.Predict("InductedToHallOfFame", selectedBatter);
-    predictionOnHallOfFameBallot = _predictionEngines.Predict("OnHallOfFameBallot", selectedBatter);
-}
-
-float MakePredictionHallOfFameInductionAdjustedForSeasons()
-{
-    baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
-
-    predictionHallOfFameInductionAdjusted = //_predictionEnginePool.Predict(baseBallBatterPerSeason);
-        _predictionEngines.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
-
-    return predictionHallOfFameInductionAdjusted.Probability;
-}
-
-float MakePredictionOnHallOfFameBallotAdjustedForSeasons()
-{
-    baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
-
-    predictionOnHallOfFameBallotAdjusted = // baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
-        _predictionEngines.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
-
-    return predictionOnHallOfFameBallotAdjusted.Probability;
-}
-
-List<MLBBaseballBatter> GetBaseBallPlayers()
-{
-    batters = new List<MLBBaseballBatter>();
-    batters.Add(badMLBBatter);
-    batters.Add(averageMLBBatter);
-    batters.Add(greatMLBBatter);
-
-    return batters;
-}
-
-protected override void OnInit()
-{
-    // Build baseball batters list
-    batters = GetBaseBallPlayers();
-    // Select the initial batter, set UI state
-    selectedBatter = badMLBBatter;
-    numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
-    MakePrediction();
-}
-
-void BatterSelected(UIChangeEventArgs e)
-{
-    if (int.TryParse((string)e.Value, out var index) && index >= 0)
+    MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
     {
-        selectedBatter = batters[index];
+        FullPlayerName = "Barry Badd",
+        ID = 100f,
+        InductedToHallOfFame = false,
+        LastYearPlayed = 0f,
+        OnHallOfFameBallot = false,
+        YearsPlayed = 2f,
+        AB = 100f,
+        R = 10f,
+        H = 30f,
+        Doubles = 1f,
+        Triples = 1f,
+        HR = 1f,
+        RBI = 10f,
+        SB = 10f,
+        BattingAverage = 0.3f,
+        SluggingPct = 0.15f,
+        AllStarAppearances = 0f,
+        MVPs = 0f,
+        TripleCrowns = 0f,
+        GoldGloves = 0f,
+        MajorLeaguePlayerOfTheYearAwards = 0f,
+        TB = 200f
+    };
+    MLBBaseballBatter averageMLBBatter = new MLBBaseballBatter
+    {
+        FullPlayerName = "Andy Average",
+        ID = 200f,
+        InductedToHallOfFame = false,
+        LastYearPlayed = 0f,
+        OnHallOfFameBallot = false,
+        YearsPlayed = 17f,
+        AB = 8393f,
+        R = 1162f,
+        H = 2300f,
+        Doubles = 410f,
+        Triples = 8f,
+        HR = 400f,
+        RBI = 1312f,
+        SB = 9f,
+        BattingAverage = 0.278f,
+        SluggingPct = 0.476f,
+        AllStarAppearances = 5f,
+        MVPs = 0f,
+        TripleCrowns = 0f,
+        GoldGloves = 0f,
+        MajorLeaguePlayerOfTheYearAwards = 0f,
+        TB = 3910f
+    };
+    MLBBaseballBatter greatMLBBatter = new MLBBaseballBatter
+    {
+        FullPlayerName = "Gary The Great",
+        ID = 300f,
+        InductedToHallOfFame = false,
+        LastYearPlayed = 0f,
+        OnHallOfFameBallot = false,
+        YearsPlayed = 20f,
+        AB = 10000f,
+        R = 1900f,
+        H = 3500f,
+        Doubles = 500f,
+        Triples = 150f,
+        HR = 600f,
+        RBI = 1800f,
+        SB = 400f,
+        BattingAverage = 0.350f,
+        SluggingPct = 0.65f,
+        AllStarAppearances = 14f,
+        MVPs = 2f,
+        TripleCrowns = 1f,
+        GoldGloves = 4f,
+        MajorLeaguePlayerOfTheYearAwards = 2f,
+        TB = 7000f
+    };
+
+
+    void MakePrediction()
+    {
+        // predictionHallOfFameInduction = //_predictionEnginePool.Predict(selectedBatter);
+        //   baseBallPredictionService.PredictInductedToHOF(selectedBatter);
+        //predictionOnHallOfFameBallot = baseBallPredictionService.PredictOnHallOfFameBallot(selectedBatter);
+
+        predictionHallOfFameInduction = _predictionEnginePool.Predict("InductedToHallOfFame", selectedBatter);
+        predictionOnHallOfFameBallot = _predictionEnginePool.Predict("OnHallOfFameBallot", selectedBatter);
+    }
+
+    float MakePredictionHallOfFameInductionAdjustedForSeasons()
+    {
+        baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+
+        predictionHallOfFameInductionAdjusted = //_predictionEnginePool.Predict(baseBallBatterPerSeason);
+            _predictionEnginePool.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
+
+        return predictionHallOfFameInductionAdjusted.Probability;
+    }
+
+    float MakePredictionOnHallOfFameBallotAdjustedForSeasons()
+    {
+        baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+
+        predictionOnHallOfFameBallotAdjusted = // baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
+            _predictionEnginePool.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
+
+        return predictionOnHallOfFameBallotAdjusted.Probability;
+    }
+
+    List<MLBBaseballBatter> GetBaseBallPlayers()
+    {
+        batters = new List<MLBBaseballBatter>();
+        batters.Add(badMLBBatter);
+        batters.Add(averageMLBBatter);
+        batters.Add(greatMLBBatter);
+
+        return batters;
+    }
+
+    protected override void OnInit()
+    {
+        // Build baseball batters list
+        batters = GetBaseBallPlayers();
+        // Select the initial batter, set UI state
+        selectedBatter = badMLBBatter;
         numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
         MakePrediction();
     }
-}
+
+    void BatterSelected(UIChangeEventArgs e)
+    {
+        if (int.TryParse((string)e.Value, out var index) && index >= 0)
+        {
+            selectedBatter = batters[index];
+            numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
+            MakePrediction();
+        }
+    }
 
 }
