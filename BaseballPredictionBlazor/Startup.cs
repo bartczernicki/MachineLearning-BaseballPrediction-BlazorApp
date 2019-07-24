@@ -36,6 +36,7 @@ namespace BaseballPredictionBlazor
             string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Data", "InductedToHallOfFame.mlnet");
             string modelPathOnHallOfFameBallot = Path.Combine(Environment.CurrentDirectory, "Data", "OnHallOfFameBallot.mlnet");
 
+            // OLD
             //services.AddSingleton<MLModelEngine<MLBBaseballBatter, MLBHOFPrediction>>((ctx) =>
             //{
             //    List<string> modelPathNames = new List<string> { modelPathInductedToHallOfFame, modelPathOnHallOfFameBallot };
