@@ -33,8 +33,8 @@ namespace BaseballPredictionBlazor
             services.AddServerSideBlazor();
             services.AddApplicationInsightsTelemetry();
 
-            string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Data", "InductedToHallOfFame.mlnet");
-            string modelPathOnHallOfFameBallot = Path.Combine(Environment.CurrentDirectory, "Data", "OnHallOfFameBallot.mlnet");
+            string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHallOfFame.mlnet");
+            string modelPathOnHallOfFameBallot = Path.Combine(Environment.CurrentDirectory, "Models", "OnHallOfFameBallot.mlnet");
 
             // OLD
             //services.AddSingleton<MLModelEngine<MLBBaseballBatter, MLBHOFPrediction>>((ctx) =>
