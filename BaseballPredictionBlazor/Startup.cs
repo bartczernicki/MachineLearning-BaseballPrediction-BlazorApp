@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using BaseballPredictionBlazor.Data;
 using BaseballPredictionBlazor.Service;
 using BaseballPredictionBlazor.Shared;
 using System.IO;
@@ -31,7 +33,7 @@ namespace BaseballPredictionBlazor
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddApplicationInsightsTelemetry();
+            services.AddSingleton<WeatherForecastService>();
 
             string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHallOfFame.mlnet");
             string modelPathOnHallOfFameBallot = Path.Combine(Environment.CurrentDirectory, "Models", "OnHallOfFameBallot.mlnet");
@@ -58,7 +60,7 @@ namespace BaseballPredictionBlazor
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -73,9 +75,6 @@ namespace BaseballPredictionBlazor
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
-
-            // app.UseApplicationInsightsExceptionTelemetry();
-            //app.UseApplicationInsightsRequestTelemetry();
         }
     }
 }

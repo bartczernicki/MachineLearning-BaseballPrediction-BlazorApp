@@ -1,7 +1,8 @@
-@page "/baseballprediction"
+﻿@page "/baseballprediction"
+
 @using BaseballPredictionBlazor.Shared
 @using BaseballPredictionBlazor.Service
-@using Scalable.Model.Engine;
+@*@using Scalable.Model.Engine;*@
 @using Microsoft.Extensions.ML;
 @inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 @*Previous Engines*@
@@ -231,7 +232,7 @@
         return batters;
     }
 
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
         // Build baseball batters list
         batters = GetBaseBallPlayers();
@@ -241,7 +242,7 @@
         MakePrediction();
     }
 
-    void BatterSelected(UIChangeEventArgs e)
+    void BatterSelected(ChangeEventArgs e)
     {
         if (int.TryParse((string)e.Value, out var index) && index >= 0)
         {
@@ -250,5 +251,4 @@
             MakePrediction();
         }
     }
-
 }
