@@ -22,6 +22,7 @@
         }
     </select>
 
+    <p>Inducted: @cardColorInductedToHallOfFameAdjusted</p>
     <p />
     <div class="card">
         <h5 class="card-header">Static Predictions</h5>
@@ -69,15 +70,17 @@
                 <div class="form-group row">
                     <label for="seasonsInput" class="col-sm-4 col-form-label">Number of Seasons Played:</label>
                     <span class="sliderLabel">1 </span>
-                    <input type="range" class="form-control-range" style="width: 50%;" min="1" max="40" step="1" @bind-value="@numberOfSeasonsPlayed" @bind-value:event="oninput" />
+                    <input type="range" class="form-control-range" style="width: 50%;" min="1" max="40" step="1" value="@numberOfSeasonsPlayed"
+                           @oninput="@SliderMoved"
+                           />
                     <span class="sliderLabel"> 40</span>
                 </div>
                 <div class="container">
                     <div class="row">
                         <div class="col-md-6 col-xl-6">
-                            <div class="card bg-c-blue order-card">
+                            <div class="card bg-c-@cardColorOnBallotAdjusted order-card">
                                 <div class="card-block">
-                                    <h5 class="text-right">On Hall Of Fame Ballot Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", MakePredictionOnHallOfFameBallotAdjustedForSeasons())</b></span></h5>
+                                    <h5 class="text-right">On Hall Of Fame Ballot Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", predictionOnHallOfFameBallotAdjusted.Probability)</b></span></h5>
                                     <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
                                     <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
                                     <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
@@ -88,9 +91,9 @@
                             </div>
                         </div>
                         <div class="col-md-6 col-xl-6">
-                            <div class="card bg-c-blue order-card">
+                            <div class="card bg-c-@cardColorInductedToHallOfFameAdjusted order-card">
                                 <div class="card-block">
-                                    <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", MakePredictionHallOfFameInductionAdjustedForSeasons())</b></span></h5>
+                                    <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", predictionHallOfFameInductionAdjusted.Probability)</b></span></h5>
                                     <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
                                     <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
                                     <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
@@ -138,6 +141,9 @@ else
 
         // Make the ML predictions
         MakePrediction();
+
+        MakePredictionHallOfFameInductionAdjustedForSeasons();
+        MakePredictionOnHallOfFameBallotAdjustedForSeasons();
 
         // set the page to loaded
         isLoaded = true;
@@ -187,6 +193,18 @@ else
             selectedBatter = batters[index];
             numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
             MakePrediction();
+            MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+            MakePredictionHallOfFameInductionAdjustedForSeasons();
+        }
+    }
+
+    void SliderMoved(ChangeEventArgs e)
+    {
+        if (int.TryParse((string)e.Value, out var index) && index >= 0)
+        {
+            numberOfSeasonsPlayed = index;
+            MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+            MakePredictionHallOfFameInductionAdjustedForSeasons();
         }
     }
 
