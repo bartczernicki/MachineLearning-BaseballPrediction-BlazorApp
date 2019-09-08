@@ -34,6 +34,7 @@ namespace BaseballPredictionBlazor
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<BaseballDataSampleService>();
 
             string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHallOfFame.mlnet");
             string modelPathOnHallOfFameBallot = Path.Combine(Environment.CurrentDirectory, "Models", "OnHallOfFameBallot.mlnet");
