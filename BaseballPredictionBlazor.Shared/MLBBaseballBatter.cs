@@ -89,7 +89,9 @@ namespace BaseballPredictionBlazor.Shared
                 H = (this.H / this.YearsPlayed) * numberOfSeasons,
                 Doubles = (this.Doubles / this.YearsPlayed) * numberOfSeasons,
                 Triples = (this.Triples / this.YearsPlayed) * numberOfSeasons,
-                HR = (this.HR / this.YearsPlayed) * numberOfSeasons,
+                HR = (float) Math.Round(
+                    ((this.HR / this.YearsPlayed) * numberOfSeasons), 0,
+                    MidpointRounding.AwayFromZero),
                 RBI = (this.RBI / this.YearsPlayed) * numberOfSeasons,
                 SB = (this.SB / this.YearsPlayed) * numberOfSeasons,
                 BattingAverage = 0.350f,
@@ -102,7 +104,8 @@ namespace BaseballPredictionBlazor.Shared
                 TripleCrowns = (this.TripleCrowns / this.YearsPlayed) * numberOfSeasons,
                 GoldGloves = (this.GoldGloves / this.YearsPlayed) * numberOfSeasons,
                 MajorLeaguePlayerOfTheYearAwards = (this.MajorLeaguePlayerOfTheYearAwards / this.YearsPlayed) * numberOfSeasons,
-                TB = (this.TB / this.YearsPlayed) * numberOfSeasons,
+                TB = (float) Math.Round(
+                ((this.TB / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero)
             };
 
             return batter;

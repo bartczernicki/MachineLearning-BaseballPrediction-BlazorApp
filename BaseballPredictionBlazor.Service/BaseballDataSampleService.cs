@@ -85,8 +85,33 @@ namespace BaseballPredictionBlazor.Service
                 MajorLeaguePlayerOfTheYearAwards = 2f,
                 TB = 7000f
             };
+            MLBBaseballBatter mikeTrout = new MLBBaseballBatter
+            {
+                FullPlayerName = "Mike Trout",
+                ID = 400f,
+                InductedToHallOfFame = false,
+                LastYearPlayed = 2019f,
+                OnHallOfFameBallot = false,
+                YearsPlayed = 8f,
+                AB = 3870f,
+                R = 793f,
+                H = 1187f,
+                Doubles = 224f,
+                Triples = 44f,
+                HR = 240f,
+                RBI = 648f,
+                SB = 189f,
+                BattingAverage = 0.306f,
+                SluggingPct = 0.573f,
+                AllStarAppearances = 7f,
+                MVPs = 2f,
+                TripleCrowns = 0f,
+                GoldGloves = 0f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 2727f
+            };
 
-            List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() { badMLBBatter, averageMLBBatter, greatMLBBatter };
+            List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() { badMLBBatter, averageMLBBatter, greatMLBBatter, mikeTrout };
             return Task.FromResult(
                 batters
             );

@@ -1,4 +1,4 @@
-﻿@page "/baseballprediction"
+﻿@page "/WhatIfAnalysisMultipleModels"
 
 @using BaseballPredictionBlazor.Shared
 @using BaseballPredictionBlazor.Service
@@ -22,7 +22,6 @@
         }
     </select>
 
-    <p>Inducted: @cardColorInductedToHallOfFameAdjusted</p>
     <p />
     <div class="card">
         <h5 class="card-header">Static Predictions</h5>
@@ -37,8 +36,8 @@
                                 <h5 class="text-right"><span><b>@selectedBatter.FullPlayerName</b></span></h5>
                                 <div class="m-b-0">Seasons Played<span class="f-right">@selectedBatter.YearsPlayed</span></div>
                                 <div class="m-b-0">Total Bases<span class="f-right">@selectedBatter.TB</span></div>
+                                <div class="m-b-0">HR<span class="f-right">@selectedBatter.HR</span></div>
                                 <div class="m-b-0">All-Star Appearances<span class="f-right">@selectedBatter.AllStarAppearances</span></div>
-                                <div class="m-b-0">Slugging %<span class="f-right">@selectedBatter.SluggingPct</span></div>
                                 <div class="m-b-0">...<span class="f-right"></span></div>
                             </div>
                         </div>
@@ -50,8 +49,8 @@
                                 <h5 class="text-right"><span><b>@selectedBatter.FullPlayerName</b></span></h5>
                                 <div class="m-b-0">Seasons Played<span class="f-right">@selectedBatter.YearsPlayed</span></div>
                                 <div class="m-b-0">Total Bases<span class="f-right">@selectedBatter.TB</span></div>
+                                <div class="m-b-0">HR<span class="f-right">@selectedBatter.HR</span></div>
                                 <div class="m-b-0">All-Star Appearances<span class="f-right">@selectedBatter.AllStarAppearances</span></div>
-                                <div class="m-b-0">Slugging %<span class="f-right">@selectedBatter.SluggingPct</span></div>
                                 <div class="m-b-0">...<span class="f-right"></span></div>
                             </div>
                         </div>
@@ -84,8 +83,8 @@
                                     <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
                                     <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
                                     <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
+                                    <div class="m-b-0">HR<span class="f-right">@baseBallBatterPerSeason.HR</span></div>
                                     <div class="m-b-0">All-Star Appearances<span class="f-right">@baseBallBatterPerSeason.AllStarAppearances</span></div>
-                                    <div class="m-b-0">Slugging %<span class="f-right">@baseBallBatterPerSeason.SluggingPct</span></div>
                                     <div class="m-b-0">...<span class="f-right"></span></div>
                                 </div>
                             </div>
@@ -97,8 +96,8 @@
                                     <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
                                     <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
                                     <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
+                                    <div class="m-b-0">HR<span class="f-right">@baseBallBatterPerSeason.HR</span></div>
                                     <div class="m-b-0">All-Star Appearances<span class="f-right">@baseBallBatterPerSeason.AllStarAppearances</span></div>
-                                    <div class="m-b-0">Slugging %<span class="f-right">@baseBallBatterPerSeason.SluggingPct</span></div>
                                     <div class="m-b-0">...<span class="f-right"></span></div>
                                 </div>
                             </div>
@@ -165,8 +164,8 @@ else
         predictionOnHallOfFameBallot = _predictionEnginePool.Predict("OnHallOfFameBallot", selectedBatter);
         
         // Get card color
-        cardColorOnBallot = getCardColor(predictionOnHallOfFameBallot.Probability);
-        cardColorInductedToHallOfFame = getCardColor(predictionHallOfFameInduction.Probability);
+        cardColorOnBallot = getCardColor(true, predictionOnHallOfFameBallot.Probability, 0);
+        cardColorInductedToHallOfFame = getCardColor(true, predictionHallOfFameInduction.Probability, 0);
         
     }
 
@@ -180,7 +179,7 @@ else
             _predictionEnginePool.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
 
         // Set the card color
-        cardColorInductedToHallOfFameAdjusted = getCardColor(predictionHallOfFameInductionAdjusted.Probability);
+        cardColorInductedToHallOfFameAdjusted = getCardColor(true, predictionHallOfFameInductionAdjusted.Probability, 0);
     }
 
     void MakePredictionOnHallOfFameBallotAdjustedForSeasons()
@@ -193,7 +192,7 @@ else
             _predictionEnginePool.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
 
         // Set the card color
-        cardColorOnBallotAdjusted = getCardColor(predictionOnHallOfFameBallotAdjusted.Probability);
+        cardColorOnBallotAdjusted = getCardColor(true, predictionOnHallOfFameBallotAdjusted.Probability, 0);
     }
 
     void BatterSelected(ChangeEventArgs e)
@@ -220,7 +219,7 @@ else
         }
     }
 
-    string getCardColor(float probability)
+    string getCardColor(bool useProbability, float probability, int homeRuns)
     {
         string cardColor = "red";
 
