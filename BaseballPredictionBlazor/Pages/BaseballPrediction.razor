@@ -159,7 +159,7 @@ else
 
         predictionHallOfFameInduction = _predictionEnginePool.Predict("InductedToHallOfFame", selectedBatter);
         predictionOnHallOfFameBallot = _predictionEnginePool.Predict("OnHallOfFameBallot", selectedBatter);
-        SetUserInterfaceInfo();
+        //SetUserInterfaceInfo();
     }
 
     float MakePredictionHallOfFameInductionAdjustedForSeasons()
@@ -169,7 +169,7 @@ else
         predictionHallOfFameInductionAdjusted = //_predictionEnginePool.Predict(baseBallBatterPerSeason);
             _predictionEnginePool.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
 
-        cardColorInductedToHallOfFameAdjusted = (predictionHallOfFameInductionAdjusted.Probability >= 0.5) ? "green" : "red";
+        cardColorInductedToHallOfFameAdjusted = getCardColor(predictionHallOfFameInductionAdjusted.Probability);
         //StateHasChanged();
         return predictionHallOfFameInductionAdjusted.Probability;
     }
@@ -181,7 +181,7 @@ else
         predictionOnHallOfFameBallotAdjusted = // baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
             _predictionEnginePool.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
 
-        cardColorOnBallotAdjusted = (predictionOnHallOfFameBallotAdjusted.Probability >= 0.5) ? "green" : "red";
+        cardColorOnBallotAdjusted = getCardColor(predictionOnHallOfFameBallotAdjusted.Probability);
         //StateHasChanged();
         return predictionOnHallOfFameBallotAdjusted.Probability;
     }
@@ -210,9 +210,23 @@ else
         }
     }
 
-    void SetUserInterfaceInfo()
+    string getCardColor(float probability)
     {
-        cardColorOnBallot = (predictionOnHallOfFameBallot.Probability >= 0.5) ? "green" : "red";
-        cardColorInductedToHallOfFame = (predictionHallOfFameInduction.Probability >= 0.5) ? "green" : "red";
+        string cardColor = "red";
+
+        if (probability >= 0.75)
+        {
+            cardColor = "green";
+        }
+        else if (probability >= 0.50)
+        {
+            cardColor = "lightgreen";
+        }
+        else if (probability >= 0.35)
+        {
+            cardColor = "yellow";
+        }
+
+        return cardColor;
     }
 }

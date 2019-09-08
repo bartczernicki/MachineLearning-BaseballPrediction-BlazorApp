@@ -292,12 +292,16 @@ span.sliderLabel {
     background: linear-gradient(45deg,#4099ff,#73b4ff);
 }
 
+.bg-c-lightgreen {
+    background: linear-gradient(45deg,#67e1c8,#59e0c5);
+}
+
 .bg-c-green {
-    background: linear-gradient(45deg,#2ed8b6,#59e0c5);
+    background: linear-gradient(45deg,#36ceaf,#0aba97);
 }
 
 .bg-c-yellow {
-    background: linear-gradient(45deg,#FFB64D,#ffcb80);
+    background: linear-gradient(45deg,#FFB64D,#dd4924);
 }
 
 .bg-c-pink {
