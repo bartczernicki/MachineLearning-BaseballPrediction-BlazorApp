@@ -193,6 +193,7 @@ else
             selectedBatter = batters[index];
             numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
             MakePrediction();
+
             MakePredictionOnHallOfFameBallotAdjustedForSeasons();
             MakePredictionHallOfFameInductionAdjustedForSeasons();
         }
@@ -203,6 +204,7 @@ else
         if (int.TryParse((string)e.Value, out var index) && index >= 0)
         {
             numberOfSeasonsPlayed = index;
+
             MakePredictionOnHallOfFameBallotAdjustedForSeasons();
             MakePredictionHallOfFameInductionAdjustedForSeasons();
         }
