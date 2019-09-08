@@ -30,7 +30,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6 col-xl-6">
-                        <div class="card bg-c-green order-card">
+                        <div class="card bg-c-@cardColorOnBallot order-card">
                             <div class="card-block">
                                 <h5 class="text-right">On Hall Of Fame Ballot Probability - <span class="span-probability"><b>@String.Format("{0:P4}", predictionOnHallOfFameBallot.Probability)</b></span></h5>
                                 <h5 class="text-right"><span><b>@selectedBatter.FullPlayerName</b></span></h5>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div class="col-md-6 col-xl-6">
-                        <div class="card bg-c-blue order-card">
+                        <div class="card bg-c-@cardColorInductedToHallOfFame order-card">
                             <div class="card-block">
                                 <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P4}", predictionHallOfFameInduction.Probability)</b></span></h5>
                                 <h5 class="text-right"><span><b>@selectedBatter.FullPlayerName</b></span></h5>
@@ -75,7 +75,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-6 col-xl-6">
-                            <div class="card bg-c-green order-card">
+                            <div class="card bg-c-blue order-card">
                                 <div class="card-block">
                                     <h5 class="text-right">On Hall Of Fame Ballot Probability - <span class="span-probability"><b>@String.Format("{0:P4}.", MakePredictionOnHallOfFameBallotAdjustedForSeasons())</b></span></h5>
                                     <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
@@ -113,6 +113,11 @@ else
 
 @code {
     bool isLoaded = false;
+    string cardColorOnBallot = string.Empty;
+    string cardColorInductedToHallOfFame = string.Empty;
+    string cardColorOnBallotAdjusted = "green";
+    string cardColorInductedToHallOfFameAdjusted = "green";
+
     int numberOfSeasonsPlayed = 1;
     MLBHOFPrediction predictionHallOfFameInduction = null;
     MLBHOFPrediction predictionOnHallOfFameBallot = null;
@@ -148,6 +153,7 @@ else
 
         predictionHallOfFameInduction = _predictionEnginePool.Predict("InductedToHallOfFame", selectedBatter);
         predictionOnHallOfFameBallot = _predictionEnginePool.Predict("OnHallOfFameBallot", selectedBatter);
+        SetUserInterfaceInfo();
     }
 
     float MakePredictionHallOfFameInductionAdjustedForSeasons()
@@ -157,6 +163,8 @@ else
         predictionHallOfFameInductionAdjusted = //_predictionEnginePool.Predict(baseBallBatterPerSeason);
             _predictionEnginePool.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
 
+        cardColorInductedToHallOfFameAdjusted = (predictionHallOfFameInductionAdjusted.Probability >= 0.5) ? "green" : "red";
+        //StateHasChanged();
         return predictionHallOfFameInductionAdjusted.Probability;
     }
 
@@ -167,6 +175,8 @@ else
         predictionOnHallOfFameBallotAdjusted = // baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
             _predictionEnginePool.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
 
+        cardColorOnBallotAdjusted = (predictionOnHallOfFameBallotAdjusted.Probability >= 0.5) ? "green" : "red";
+        //StateHasChanged();
         return predictionOnHallOfFameBallotAdjusted.Probability;
     }
 
@@ -178,5 +188,11 @@ else
             numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
             MakePrediction();
         }
+    }
+
+    void SetUserInterfaceInfo()
+    {
+        cardColorOnBallot = (predictionOnHallOfFameBallot.Probability >= 0.5) ? "green" : "red";
+        cardColorInductedToHallOfFame = (predictionHallOfFameInduction.Probability >= 0.5) ? "green" : "red";
     }
 }

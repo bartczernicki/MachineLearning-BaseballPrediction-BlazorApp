@@ -304,6 +304,10 @@ span.sliderLabel {
     background: linear-gradient(45deg,#FF5370,#ff869a);
 }
 
+.bg-c-red {
+    background: linear-gradient(45deg,#F05A73,#7E091D);
+}
+
 
 .card {
     border-radius: 5px;
