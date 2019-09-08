@@ -140,8 +140,11 @@ else
         numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
 
         // Make the ML predictions
-        MakePrediction();
 
+        // Static prediction
+        MakeStaticPrediction();
+
+        // Adjusted prediction
         MakePredictionHallOfFameInductionAdjustedForSeasons();
         MakePredictionOnHallOfFameBallotAdjustedForSeasons();
 
@@ -151,39 +154,46 @@ else
 
 
 
-    void MakePrediction()
+    void MakeStaticPrediction()
     {
         // predictionHallOfFameInduction = //_predictionEnginePool.Predict(selectedBatter);
         //   baseBallPredictionService.PredictInductedToHOF(selectedBatter);
         //predictionOnHallOfFameBallot = baseBallPredictionService.PredictOnHallOfFameBallot(selectedBatter);
 
+        // Make ML predictions
         predictionHallOfFameInduction = _predictionEnginePool.Predict("InductedToHallOfFame", selectedBatter);
         predictionOnHallOfFameBallot = _predictionEnginePool.Predict("OnHallOfFameBallot", selectedBatter);
-        //SetUserInterfaceInfo();
+        
+        // Get card color
+        cardColorOnBallot = getCardColor(predictionOnHallOfFameBallot.Probability);
+        cardColorInductedToHallOfFame = getCardColor(predictionHallOfFameInduction.Probability);
+        
     }
 
-    float MakePredictionHallOfFameInductionAdjustedForSeasons()
+    void MakePredictionHallOfFameInductionAdjustedForSeasons()
     {
+        // Calculate the adjusted statistics for the player
         baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
 
+        // Make Prediction
         predictionHallOfFameInductionAdjusted = //_predictionEnginePool.Predict(baseBallBatterPerSeason);
             _predictionEnginePool.Predict("InductedToHallOfFame", baseBallBatterPerSeason);
 
+        // Set the card color
         cardColorInductedToHallOfFameAdjusted = getCardColor(predictionHallOfFameInductionAdjusted.Probability);
-        //StateHasChanged();
-        return predictionHallOfFameInductionAdjusted.Probability;
     }
 
-    float MakePredictionOnHallOfFameBallotAdjustedForSeasons()
+    void MakePredictionOnHallOfFameBallotAdjustedForSeasons()
     {
+        // Calculate the adjusted statistics for the player
         baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
 
+        // Make Prediction
         predictionOnHallOfFameBallotAdjusted = // baseBallPredictionService.PredictOnHallOfFameBallot(baseBallBatterPerSeason);
             _predictionEnginePool.Predict("OnHallOfFameBallot", baseBallBatterPerSeason);
 
+        // Set the card color
         cardColorOnBallotAdjusted = getCardColor(predictionOnHallOfFameBallotAdjusted.Probability);
-        //StateHasChanged();
-        return predictionOnHallOfFameBallotAdjusted.Probability;
     }
 
     void BatterSelected(ChangeEventArgs e)
@@ -192,7 +202,7 @@ else
         {
             selectedBatter = batters[index];
             numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
-            MakePrediction();
+            MakeStaticPrediction();
 
             MakePredictionOnHallOfFameBallotAdjustedForSeasons();
             MakePredictionHallOfFameInductionAdjustedForSeasons();
@@ -222,7 +232,7 @@ else
         {
             cardColor = "lightgreen";
         }
-        else if (probability >= 0.35)
+        else if (probability >= 0.25)
         {
             cardColor = "yellow";
         }
