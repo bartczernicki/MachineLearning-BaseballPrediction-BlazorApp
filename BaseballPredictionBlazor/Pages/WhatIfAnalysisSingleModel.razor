@@ -1,4 +1,4 @@
-﻿@page "/WhatIfAnalysisMultipleModels"
+﻿@page "/WhatIfAnalysisSingleModel"
 
 @using BaseballPredictionBlazor.Shared
 @using BaseballPredictionBlazor.Service
@@ -10,7 +10,7 @@
 @*@inject IBaseballHallofFamePrediction baseBallPredictionService*@
 @*@inject MLModelEngine<MLBBaseballBatter, MLBHOFPrediction> _predictionEngines;*@
 
-<h1>What-If Analysis (Multiple Machine Learning Models)</h1>
+<h1>What-If Analysis (Single Machine Learning Model)</h1>
 
 @if (isLoaded)
 {
@@ -28,20 +28,7 @@
         <div class="card-body">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6 col-xl-6">
-                        <div class="card bg-c-@cardColorOnBallot order-card">
-                            <div class="card-block">
-                                <h5 class="text-right">On Hall Of Fame Ballot Probability - <span class="span-probability"><b>@String.Format("{0:P2}", predictionOnHallOfFameBallot.Probability)</b></span></h5>
-                                <h5 class="text-right"><span><b>@selectedBatter.FullPlayerName</b></span></h5>
-                                <div class="m-b-0">Seasons Played<span class="f-right">@selectedBatter.YearsPlayed</span></div>
-                                <div class="m-b-0">Total Bases<span class="f-right">@selectedBatter.TB</span></div>
-                                <div class="m-b-0">HR<span class="f-right">@selectedBatter.HR</span></div>
-                                <div class="m-b-0">All-Star Appearances<span class="f-right">@selectedBatter.AllStarAppearances</span></div>
-                                <div class="m-b-0">...<span class="f-right"></span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xl-6">
+                    <div class="col-md-12 col-xl-12">
                         <div class="card bg-c-@cardColorInductedToHallOfFame order-card">
                             <div class="card-block">
                                 <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P2}", predictionHallOfFameInduction.Probability)</b></span></h5>
@@ -57,7 +44,7 @@
                 </div>
             </div>
             <small class="form-text text-muted"><b>Notes:</b></small>
-            <small class="form-text text-muted">Single prediction of probability of the player being <b><i>On Hall Of Fame Ballot</i></b> and probability of being <b><i>Inducted to Hall Of Fame</i></b>.</small>
+            <small class="form-text text-muted">Single prediction of probability of the player being <b><i>Inducted to Hall Of Fame</i></b>.</small>
         </div>
     </div>
     <p></p>
@@ -74,20 +61,7 @@
                 </div>
                 <div class="container">
                     <div class="row">
-                        <div class="col-md-6 col-xl-6">
-                            <div class="card bg-c-@cardColorOnBallotAdjusted order-card">
-                                <div class="card-block">
-                                    <h5 class="text-right">On Hall Of Fame Ballot Probability - <span class="span-probability"><b>@String.Format("{0:P2}.", predictionOnHallOfFameBallotAdjusted.Probability)</b></span></h5>
-                                    <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
-                                    <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
-                                    <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
-                                    <div class="m-b-0">HR<span class="f-right">@baseBallBatterPerSeason.HR</span></div>
-                                    <div class="m-b-0">All-Star Appearances<span class="f-right">@baseBallBatterPerSeason.AllStarAppearances</span></div>
-                                    <div class="m-b-0">...<span class="f-right"></span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-6">
+                        <div class="col-md-12 col-xl-12">
                             <div class="card bg-c-@cardColorInductedToHallOfFameAdjusted order-card">
                                 <div class="card-block">
                                     <h5 class="text-right">Inducted to Hall Of Fame Probability - <span class="span-probability"><b>@String.Format("{0:P2}.", predictionHallOfFameInductionAdjusted.Probability)</b></span></h5>
@@ -104,7 +78,7 @@
                 </div>
                 <small class="form-text text-muted"><b>Notes:</b></small>
                 <small class="form-text text-muted">What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played.</small>
-                <small class="form-text text-muted">Dynamic prediction of probability of the player being <b><i>On Hall Of Fame Ballot</i></b> and probability of being <b><i>Inducted to Hall Of Fame</i></b>.</small>
+                <small class="form-text text-muted">Dynamic prediction of probability of the player being <b><i>Inducted to Hall Of Fame</i></b>.</small>
             </form>
         </div>
     </div>
@@ -146,7 +120,7 @@ else
 
         // Adjusted prediction
         MakePredictionHallOfFameInductionAdjustedForSeasons();
-        MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+        // MakePredictionOnHallOfFameBallotAdjustedForSeasons();
 
         // set the page to loaded
         isLoaded = true;
@@ -163,11 +137,11 @@ else
         // Make ML predictions
         predictionHallOfFameInduction = _predictionEnginePool.Predict("InductedToHallOfFame", selectedBatter);
         predictionOnHallOfFameBallot = _predictionEnginePool.Predict("OnHallOfFameBallot", selectedBatter);
-        
+
         // Get card color
         cardColorOnBallot = getCardColor(true, predictionOnHallOfFameBallot.Probability, 0);
         cardColorInductedToHallOfFame = getCardColor(true, predictionHallOfFameInduction.Probability, 0);
-        
+
     }
 
     void MakePredictionHallOfFameInductionAdjustedForSeasons()
@@ -204,7 +178,7 @@ else
             numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
             MakeStaticPrediction();
 
-            MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+            // MakePredictionOnHallOfFameBallotAdjustedForSeasons();
             MakePredictionHallOfFameInductionAdjustedForSeasons();
         }
     }
@@ -215,7 +189,7 @@ else
         {
             numberOfSeasonsPlayed = index;
 
-            MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+            //MakePredictionOnHallOfFameBallotAdjustedForSeasons();
             MakePredictionHallOfFameInductionAdjustedForSeasons();
         }
     }
