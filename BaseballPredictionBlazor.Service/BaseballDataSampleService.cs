@@ -12,7 +12,7 @@ namespace BaseballPredictionBlazor.Service
         {
             MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
             {
-                FullPlayerName = "Barry Badd",
+                FullPlayerName = "Barry Badd (fictitious)",
                 ID = 100f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 0f,
@@ -37,7 +37,7 @@ namespace BaseballPredictionBlazor.Service
             };
             MLBBaseballBatter averageMLBBatter = new MLBBaseballBatter
             {
-                FullPlayerName = "Andy Average",
+                FullPlayerName = "Andy Average (fictitious)",
                 ID = 200f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 0f,
@@ -62,7 +62,7 @@ namespace BaseballPredictionBlazor.Service
             };
             MLBBaseballBatter greatMLBBatter = new MLBBaseballBatter
             {
-                FullPlayerName = "Gary The Great",
+                FullPlayerName = "Gary The Great (fictitious)",
                 ID = 300f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 0f,
@@ -110,8 +110,33 @@ namespace BaseballPredictionBlazor.Service
                 MajorLeaguePlayerOfTheYearAwards = 0f,
                 TB = 2727f
             };
+            MLBBaseballBatter haroldBaines = new MLBBaseballBatter
+            {
+                FullPlayerName = "Harold Baines",
+                ID = 500f,
+                InductedToHallOfFame = false,
+                LastYearPlayed = 2001f,
+                OnHallOfFameBallot = false,
+                YearsPlayed = 22f,
+                AB = 9908f,
+                R = 1299f,
+                H = 2866f,
+                Doubles = 488f,
+                Triples = 49f,
+                HR = 384f,
+                RBI = 1628f,
+                SB = 34f,
+                BattingAverage = 0.289f,
+                SluggingPct = 0.289f,
+                AllStarAppearances = 6f,
+                MVPs = 0f,
+                TripleCrowns = 0f,
+                GoldGloves = 0f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 5525f
+            };
 
-            List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() { badMLBBatter, averageMLBBatter, greatMLBBatter, mikeTrout };
+            List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() { badMLBBatter, averageMLBBatter, greatMLBBatter, mikeTrout, haroldBaines };
             return Task.FromResult(
                 batters
             );

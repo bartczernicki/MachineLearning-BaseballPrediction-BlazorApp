@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BaseballPredictionBlazor.Data;
 using BaseballPredictionBlazor.Service;
 using BaseballPredictionBlazor.Shared;
 using System.IO;
@@ -33,7 +32,7 @@ namespace BaseballPredictionBlazor
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+
             services.AddSingleton<BaseballDataSampleService>();
 
             string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHallOfFame.mlnet");

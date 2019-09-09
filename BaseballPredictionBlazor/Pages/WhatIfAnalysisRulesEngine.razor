@@ -113,7 +113,7 @@ else
         batters = await BaseballDataService.GetSampleBaseballData();
 
         // Select the initial batter, set UI state
-        selectedBatter = batters.Where(a => a.FullPlayerName == "Barry Badd").FirstOrDefault();
+        selectedBatter = batters.FirstOrDefault();
         numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
 
         // Make the ML predictions
