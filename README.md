@@ -1,0 +1,1 @@
+Blazor.NET Application
