@@ -10,3 +10,5 @@ The application has the following features:
 Requirements:
 * Visual Studio 2019, .NET Core 3.0 RC1, ML.NET v1.3.1
 
+![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench.png)
+
