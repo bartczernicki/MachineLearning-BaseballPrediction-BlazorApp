@@ -1,6 +1,10 @@
 # MachineLearning-BaseballPrediction-BlazorApp
 A web application that showcases performing what-if analysis using in-memory Machine Learning models. 
 
+Live Demo:
+https://baseballpredictionblazor.azurewebsites.net
+
+
 The application has the following features:
 * Three different decision analysis mechanisms using what-if analysis
 * A simple rules engine to predict baseball hall of fame induction
