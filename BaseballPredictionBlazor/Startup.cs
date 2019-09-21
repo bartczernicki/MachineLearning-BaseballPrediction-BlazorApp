@@ -33,6 +33,10 @@ namespace BaseballPredictionBlazor
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
+            // Add .NET Core App Version service
+            services.AddTransient<IAppVersionService, AppVersionService>();
+
+            // Add data service (provides data to the application)
             services.AddSingleton<BaseballDataSampleService>();
 
             string modelPathInductedToHallOfFame = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHallOfFame.mlnet");

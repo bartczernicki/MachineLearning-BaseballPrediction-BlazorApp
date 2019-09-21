@@ -1,5 +1,7 @@
 ﻿@page "/"
 
+@inject IAppVersionService AppVersionService
+
 <h2>Welcome to the Baseball Machine Learning Workbench</h2>
 
 <p>The Baseball Machine Learning Workbench is a Blazor web application created to explore various analytics, Machine Intelligence techniques using MLB data.</p>
@@ -34,5 +36,11 @@
             Machine Intelligence is used to classify the batter baseball data.
             <b>The key difference between the rules engine is a probability is returned; allowing a decision to be made on a probability threshhold</b>.
         </p>
+    </div>
+</div>
+
+<div class="navbar navbar-default navbar-fixed-bottom">
+    <div>
+        <h6 class="pb-2 mb-0"><b>ASP.NET Core Version: </b>@AppVersionService.Version</h6>
     </div>
 </div>
