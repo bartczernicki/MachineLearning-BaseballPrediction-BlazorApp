@@ -22,7 +22,7 @@
         }
     </select>
 
-    <p />
+    <p/>
     <div class="card">
         <h5 class="card-header"><b>Static Predictions</b> - Based on actual career statistics</h5>
         <div class="card-body">
@@ -47,7 +47,7 @@
             <small class="form-text text-muted">Single prediction of probability of the player being <b><i>Inducted to Hall Of Fame</i></b>.</small>
         </div>
     </div>
-    <p></p>
+    <p/>
     <div class="card">
         <h5 class="card-header"><b>What-If Dynamic Predictions</b> - Based on (Avg season statistics) * (Number of Seasons)</h5>
         <div class="card-body">
@@ -82,6 +82,9 @@
             </form>
         </div>
     </div>
+
+    @*<BaseballPredictionBlazor.Components.BaseballCard
+        BaseBallBatter=baseBallBatterPerSeason Prediction=predictionHallOfFameInductionAdjusted/>*@
 }
 else
 {
@@ -90,6 +93,7 @@ else
 
 @code {
     bool isLoaded = false;
+
     string cardColorOnBallot = string.Empty;
     string cardColorInductedToHallOfFame = string.Empty;
     string cardColorOnBallotAdjusted = "green";
@@ -141,7 +145,6 @@ else
         // Get card color
         cardColorOnBallot = getCardColor(true, predictionOnHallOfFameBallot.Probability, 0);
         cardColorInductedToHallOfFame = getCardColor(true, predictionHallOfFameInduction.Probability, 0);
-
     }
 
     void MakePredictionHallOfFameInductionAdjustedForSeasons()
@@ -178,7 +181,6 @@ else
             numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
             MakeStaticPrediction();
 
-            // MakePredictionOnHallOfFameBallotAdjustedForSeasons();
             MakePredictionHallOfFameInductionAdjustedForSeasons();
         }
     }
