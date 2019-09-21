@@ -33,9 +33,7 @@ namespace BaseballPredictionBlazor
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            /*
-            Custom Services
-             */
+            /* Custom Services */
             
             // Add .NET Core App Version service
             services.AddTransient<IAppVersionService, AppVersionService>();
