@@ -1,0 +1,81 @@
+﻿@using BaseballPredictionBlazor.Shared
+@using BaseballPredictionBlazor.Service
+@using Microsoft.Extensions.ML;
+
+@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
+@inject BaseballDataSampleService BaseballDataService
+
+<div class="card">
+    <h5 class="card-header"><b>@Title</b> - @SubTitle</h5>
+    <div class="card-body">
+        <form>
+            <div class="form-group row" style="@(StaticPrediction ? "display: none;" : string.Empty)">
+                <label for="seasonsInput" class="col-sm-3 col-form-label">Seasons Played:</label>
+                <span class="sliderLabel">1 </span>
+                <input type="range" class="form-control-range" style="width: 50%;" min="1" max="30" step="1" value="@numberOfSeasonsPlayed"
+                       @oninput="@SliderMoved" />
+                <span class="sliderLabel"> 30</span>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 col-xl-12">
+                        <BaseballPredictionBlazor.Components.BaseballCard BaseBallBatter=baseBallBatterCalculated Prediction=Prediction />
+                    </div>
+                </div>
+            </div>
+            <small class="form-text text-muted"><b>Notes:</b></small>
+            <small class="form-text text-muted">Single prediction of probability of the player being <b><i>Inducted to Hall Of Fame</i></b>.</small>
+        </form>
+    </div>
+</div>
+<p />
+
+@code {
+
+    /* Parameters */
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string SubTitle { get; set; }
+
+    [Parameter]
+    public bool StaticPrediction { get; set; } = true;
+
+    [Parameter]
+    public MLBBaseballBatter BaseBallBatter { get; set; }
+
+    [Parameter]
+    public MLBHOFPrediction Prediction { get; set; }
+
+
+    private int numberOfSeasonsPlayed = 1;
+    MLBBaseballBatter baseBallBatterCalculated;
+    MLBHOFPrediction predictionOnHallOfFameBallotAdjusted = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
+        this.MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+    }
+
+    void MakePredictionOnHallOfFameBallotAdjustedForSeasons()
+    {
+        // Calculate the adjusted statistics for the player
+        baseBallBatterCalculated = BaseBallBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+
+        // Make Prediction
+        Prediction = _predictionEnginePool.Predict("OnHallOfFameBallot", baseBallBatterCalculated);
+    }
+
+    void SliderMoved(ChangeEventArgs e)
+    {
+        if (int.TryParse((string)e.Value, out var index) && index >= 0)
+        {
+            numberOfSeasonsPlayed = index;
+
+            MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+        }
+    }
+}

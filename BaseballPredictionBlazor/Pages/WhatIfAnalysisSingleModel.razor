@@ -83,8 +83,10 @@
         </div>
     </div>
 
-    @*<BaseballPredictionBlazor.Components.BaseballCard
-        BaseBallBatter=baseBallBatterPerSeason Prediction=predictionHallOfFameInductionAdjusted/>*@
+    <BaseballPredictionBlazor.Components.BaseballCardParent
+        Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+        StaticPrediction=true
+        BaseBallBatter=baseBallBatterPerSeason Prediction=predictionHallOfFameInductionAdjusted/>
 }
 else
 {

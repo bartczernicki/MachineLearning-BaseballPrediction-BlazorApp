@@ -1,30 +1,16 @@
 ﻿@using System.Globalization
 
-<div class="card">
-    <h5 class="card-header"><b>Static Predictions</b> - Based on actual career statistics</h5>
-    <div class="card-body">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 col-xl-12">
-                    <div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(true, Prediction.Probability, 0))  order-card">
-                        <div class="card-block">
-                            <h5 class="text-right">Hall Of Fame Induction Probability - <span class="span-probability"><b>@this.getPredictionValue(false)</b></span></h5>
-                            <h5 class="text-right"><span><b>@BaseBallBatter.FullPlayerName</b></span></h5>
-                            <div class="m-b-0">Seasons Played<span class="f-right">@BaseBallBatter.YearsPlayed</span></div>
-                            <div class="m-b-0">Total Bases<span class="f-right">@BaseBallBatter.TB</span></div>
-                            <div class="m-b-0">HR<span class="f-right">@BaseBallBatter.HR</span></div>
-                            <div class="m-b-0">All-Star Appearances<span class="f-right">@BaseBallBatter.AllStarAppearances</span></div>
-                            <div class="m-b-0">...<span class="f-right"></span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <small class="form-text text-muted"><b>Notes:</b></small>
-        <small class="form-text text-muted">Single prediction of probability of the player being <b><i>Inducted to Hall Of Fame</i></b>.</small>
+<div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(true, Prediction.Probability, 0))  order-card">
+    <div class="card-block">
+        <h5 class="text-right">Hall Of Fame Induction Probability - <span class="span-probability"><b>@this.getPredictionValue(false)</b></span></h5>
+        <h5 class="text-right"><span><b>@BaseBallBatter.FullPlayerName</b></span></h5>
+        <div class="m-b-0">Seasons Played<span class="f-right">@BaseBallBatter.YearsPlayed</span></div>
+        <div class="m-b-0">Total Bases<span class="f-right">@BaseBallBatter.TB</span></div>
+        <div class="m-b-0">HR<span class="f-right">@BaseBallBatter.HR</span></div>
+        <div class="m-b-0">All-Star Appearances<span class="f-right">@BaseBallBatter.AllStarAppearances</span></div>
+        <div class="m-b-0">...<span class="f-right"></span></div>
     </div>
 </div>
-<p />
 
 @code {
 
