@@ -1,8 +1,8 @@
-﻿@using System.Globalization
+﻿@using BaseballPredictionBlazor.Shared
 
 <div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(true, Prediction.Probability, 0))  order-card">
     <div class="card-block">
-        <h5 class="text-right">Hall Of Fame Induction Probability - <span class="span-probability"><b>@this.getPredictionValue(false)</b></span></h5>
+        <h5 class="text-right">@Shared.MLModelPredictionType.GetPredictionLabel(this.MLModelPredictionType) Probability - <span class="span-probability"><b>@this.getPredictionValue(false)</b></span></h5>
         <h5 class="text-right"><span><b>@BaseBallBatter.FullPlayerName</b></span></h5>
         <div class="m-b-0">Seasons Played<span class="f-right">@BaseBallBatter.YearsPlayed</span></div>
         <div class="m-b-0">Total Bases<span class="f-right">@BaseBallBatter.TB</span></div>
@@ -15,6 +15,9 @@
 @code {
 
     /* Parameters */
+
+    [Parameter]
+    public string MLModelPredictionType { get; set; } = Shared.MLModelPredictionType.InductedToHallOfFame;
 
     [Parameter]
     public MLBBaseballBatter BaseBallBatter { get; set; }

@@ -19,7 +19,9 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-12 col-xl-12">
-                        <BaseballPredictionBlazor.Components.BaseballCard BaseBallBatter=baseBallBatterCalculated Prediction=Prediction />
+                        <BaseballPredictionBlazor.Components.BaseballCard
+                            MLModelPredictionType=MLModelPredictionType
+                            BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameter />
                     </div>
                 </div>
             </div>
@@ -41,6 +43,9 @@
     public string SubTitle { get; set; }
 
     [Parameter]
+    public string MLModelPredictionType { get; set; } = Shared.MLModelPredictionType.InductedToHallOfFame;
+
+    [Parameter]
     public bool StaticPrediction { get; set; } = true;
 
     [Parameter]
@@ -49,24 +54,38 @@
     [Parameter]
     public MLBHOFPrediction Prediction { get; set; }
 
-
+    /* Variables */
     private int numberOfSeasonsPlayed = 1;
     MLBBaseballBatter baseBallBatterCalculated;
     MLBHOFPrediction predictionOnHallOfFameBallotAdjusted = null;
+    // parameters to send in
+    MLBBaseballBatter BaseBallBatterParameter = null;
+    MLBHOFPrediction PredictionParameter = null;
 
     protected override async Task OnInitializedAsync()
     {
         numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
-        this.MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+
+        if (!StaticPrediction)
+        {
+            this.MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+        }
+        else
+        {
+            BaseBallBatterParameter = BaseBallBatter;
+            PredictionParameter = Prediction;
+        }
     }
 
     void MakePredictionOnHallOfFameBallotAdjustedForSeasons()
     {
         // Calculate the adjusted statistics for the player
         baseBallBatterCalculated = BaseBallBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+        BaseBallBatterParameter = baseBallBatterCalculated;
 
-        // Make Prediction
-        Prediction = _predictionEnginePool.Predict("OnHallOfFameBallot", baseBallBatterCalculated);
+        // Make ML Model Prediction
+        PredictionParameter = _predictionEnginePool.Predict(Shared.MLModelPredictionType.InductedToHallOfFame,
+            baseBallBatterCalculated);
     }
 
     void SliderMoved(ChangeEventArgs e)
