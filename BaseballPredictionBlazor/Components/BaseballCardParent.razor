@@ -40,7 +40,7 @@
                 </div>
             </div>
             <small class="form-text text-muted"><b>Notes:</b></small>
-            <small class="form-text text-muted">Single prediction of probability of the player being <b><i>Inducted to Hall Of Fame</i></b>.</small>
+            <small class="form-text text-muted">@Notes</small>
         </form>
     </div>
 </div>
@@ -58,6 +58,9 @@
 
     [Parameter]
     public string SubTitle { get; set; }
+
+    [Parameter]
+    public string Notes { get; set; } = string.Empty;
 
     [Parameter]
     public string MLModelPredictionType { get; set; } = Shared.MLModelPredictionType.InductedToHallOfFame;
