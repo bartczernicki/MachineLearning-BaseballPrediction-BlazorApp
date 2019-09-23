@@ -20,7 +20,7 @@
                 <div class="row">
                     <div class="col-md-12 col-xl-12">
                         <BaseballPredictionBlazor.Components.BaseballCard
-                            MLModelPredictionType=MLModelPredictionType
+                            MLModelPredictionType=MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
                             BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameter />
                     </div>
                 </div>
@@ -46,13 +46,14 @@
     public string MLModelPredictionType { get; set; } = Shared.MLModelPredictionType.InductedToHallOfFame;
 
     [Parameter]
+    public bool UseMachineLearningModel { get; set; } = true;
+
+    [Parameter]
     public bool StaticPrediction { get; set; } = true;
 
     [Parameter]
     public MLBBaseballBatter BaseBallBatter { get; set; }
 
-    [Parameter]
-    public MLBHOFPrediction Prediction { get; set; }
 
     /* Variables */
     private int numberOfSeasonsPlayed = 1;
@@ -62,30 +63,49 @@
     MLBBaseballBatter BaseBallBatterParameter = null;
     MLBHOFPrediction PredictionParameter = null;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnParametersSet()
     {
-        numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
-
-        if (!StaticPrediction)
+        if (!(BaseBallBatterParameter is null))
         {
-            this.MakePredictionOnHallOfFameBallotAdjustedForSeasons();
-        }
-        else
-        {
-            BaseBallBatterParameter = BaseBallBatter;
-            PredictionParameter = Prediction;
+            // Check if new parameter is newer than the current
+            if (BaseBallBatter != BaseBallBatterParameter)
+            {
+                numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
+                MakeBaseballPredictions();
+            }
         }
     }
 
-    void MakePredictionOnHallOfFameBallotAdjustedForSeasons()
+    protected override async Task OnInitializedAsync()
     {
-        // Calculate the adjusted statistics for the player
-        baseBallBatterCalculated = BaseBallBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
-        BaseBallBatterParameter = baseBallBatterCalculated;
+        numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
+        this.MakeBaseballPredictions();
+    }
 
-        // Make ML Model Prediction
-        PredictionParameter = _predictionEnginePool.Predict(Shared.MLModelPredictionType.InductedToHallOfFame,
-            baseBallBatterCalculated);
+    void MakeBaseballPredictions()
+    {
+        if (!StaticPrediction)
+        {
+            // Calculate the adjusted statistics for the player
+            baseBallBatterCalculated = BaseBallBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+            BaseBallBatterParameter = baseBallBatterCalculated;
+        }
+        else
+        {
+            BaseBallBatterParameter = this.BaseBallBatter;
+        }
+
+        if (UseMachineLearningModel)
+        {
+            // Make ML Model Prediction
+            PredictionParameter = _predictionEnginePool.Predict(Shared.MLModelPredictionType.InductedToHallOfFame,
+                BaseBallBatterParameter);
+        }
+        else
+        {
+            // Make Rules based Prediction
+            PredictionParameter = BaseBallBatterParameter.GetHallOfFameInductionPredictionBasedOn500HrRule();
+        }
     }
 
     void SliderMoved(ChangeEventArgs e)
@@ -94,7 +114,7 @@
         {
             numberOfSeasonsPlayed = index;
 
-            MakePredictionOnHallOfFameBallotAdjustedForSeasons();
+            MakeBaseballPredictions();
         }
     }
 }

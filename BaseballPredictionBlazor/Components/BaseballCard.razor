@@ -1,8 +1,8 @@
 ﻿@using BaseballPredictionBlazor.Shared
 
-<div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(true, Prediction.Probability, 0))  order-card">
+<div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(this.UseMachineLearningModel, Prediction.Probability, (int) this.BaseBallBatter.HR))  order-card">
     <div class="card-block">
-        <h5 class="text-right">@Shared.MLModelPredictionType.GetPredictionLabel(this.MLModelPredictionType) Probability - <span class="span-probability"><b>@this.getPredictionValue(false)</b></span></h5>
+        <h5 class="text-right">@Shared.MLModelPredictionType.GetPredictionLabel(this.MLModelPredictionType, UseMachineLearningModel) - <span class="span-probability"><b>@this.getPredictionValue(this.UseMachineLearningModel)</b></span></h5>
         <h5 class="text-right"><span><b>@BaseBallBatter.FullPlayerName</b></span></h5>
         <div class="m-b-0">Seasons Played<span class="f-right">@BaseBallBatter.YearsPlayed</span></div>
         <div class="m-b-0">Total Bases<span class="f-right">@BaseBallBatter.TB</span></div>
@@ -20,47 +20,60 @@
     public string MLModelPredictionType { get; set; } = Shared.MLModelPredictionType.InductedToHallOfFame;
 
     [Parameter]
+    public bool UseMachineLearningModel { get; set; } = true;
+
+    [Parameter]
     public MLBBaseballBatter BaseBallBatter { get; set; }
 
     [Parameter]
     public MLBHOFPrediction Prediction { get; set; }
 
     // Used for setting the background color of the baseball card
-    private string getCardColor(bool useProbability, float probability, int homeRuns)
+    string getCardColor(bool useMachineLearningModel, float probability, int homeRuns)
     {
         string cardColor = "red";
 
-        if (probability >= 0.75)
+        if (useMachineLearningModel)
         {
-            cardColor = "green";
+            if (probability >= 0.75)
+            {
+                cardColor = "green";
+            }
+            else if (probability >= 0.50)
+            {
+                cardColor = "lightgreen";
+            }
+            else if (probability >= 0.25)
+            {
+                cardColor = "yellow";
+            }
         }
-        else if (probability >= 0.50)
+        else
         {
-            cardColor = "lightgreen";
-        }
-        else if (probability >= 0.25)
-        {
-            cardColor = "yellow";
+            if (homeRuns >= 500)
+            {
+                cardColor = "green";
+            }
         }
 
         return cardColor;
     }
 
     // Used for setting the prediction value
-    private string getPredictionValue(bool useLabelInsteadofProbability)
+    private string getPredictionValue(bool useMachineLearningModel)
     {
         if (Prediction is null)
             return string.Empty;
 
         string predictionLabel = string.Empty;
 
-        if (useLabelInsteadofProbability)
+        if (useMachineLearningModel)
         {
-            predictionLabel = Prediction.Prediction.ToString();
+            predictionLabel = String.Format("{0:P2}.", Prediction.Probability);
         }
         else
         {
-            predictionLabel = String.Format("{0:P2}.", Prediction.Probability);
+            predictionLabel = Prediction.Prediction.ToString();
         }
 
         return predictionLabel;

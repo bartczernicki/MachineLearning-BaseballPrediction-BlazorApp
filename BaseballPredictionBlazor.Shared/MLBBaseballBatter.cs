@@ -110,6 +110,24 @@ namespace BaseballPredictionBlazor.Shared
 
             return batter;
         }
+
+        public MLBHOFPrediction GetHallOfFameInductionPredictionBasedOn500HrRule()
+        {
+            var mlbHofPrediction = new MLBHOFPrediction
+            {
+                Prediction = false,
+                Probability = 0f,
+                Score = 0f
+            };
+
+            if (this.HR >= 500)
+            {
+                mlbHofPrediction.Probability = 1f;
+                mlbHofPrediction.Prediction = true;
+            }
+
+            return mlbHofPrediction;
+        }
     }
 
     public class MLBHOFPrediction

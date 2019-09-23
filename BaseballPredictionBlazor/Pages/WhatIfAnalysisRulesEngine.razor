@@ -12,6 +12,7 @@
 
 <h2>What-If Analysis (Rules Engine)</h2>
 
+
 @if (isLoaded)
 {
     <div>Select a fictitious or real MLB Batter to perform what-if analysis:</div>
@@ -23,65 +24,16 @@
     </select>
 
     <p />
-    <div class="card">
-        <h5 class="card-header"><b>Static Predictions</b> - Based on actual career statistics</h5>
-        <div class="card-body">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12 col-xl-12">
-                        <div class="card bg-c-@cardColorInductedToHallOfFame order-card">
-                            <div class="card-block">
-                                <h5 class="text-right">Hall Of Fame Induction Label - <span class="span-probability"><b>@predictionHallOfFameInductionLabel</b></span></h5>
-                                <h5 class="text-right"><span><b>@selectedBatter.FullPlayerName</b></span></h5>
-                                <div class="m-b-0">Seasons Played<span class="f-right">@selectedBatter.YearsPlayed</span></div>
-                                <div class="m-b-0">Total Bases<span class="f-right">@selectedBatter.TB</span></div>
-                                <div class="m-b-0">HR<span class="f-right">@selectedBatter.HR</span></div>
-                                <div class="m-b-0">All-Star Appearances<span class="f-right">@selectedBatter.AllStarAppearances</span></div>
-                                <div class="m-b-0">...<span class="f-right"></span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <small class="form-text text-muted"><b>Notes:</b></small>
-            <small class="form-text text-muted">Single rules-based prediction of the player being <b><i>Inducted to Hall Of Fame</i></b> based on the rule: <b>HR >= 500</b>.</small>
-        </div>
-    </div>
-    <p></p>
-    <div class="card">
-        <h5 class="card-header"><b>What-If Dynamic Predictions</b> - Based on (Avg season statistics) * (Number of Seasons)</h5>
-        <div class="card-body">
-            <form>
-                <div class="form-group row">
-                    <label for="seasonsInput" class="col-sm-3 col-form-label">Seasons Played:</label>
-                    <span class="sliderLabel">1 </span>
-                    <input type="range" class="form-control-range" style="width: 50%;" min="1" max="30" step="1" value="@numberOfSeasonsPlayed"
-                           @oninput="@SliderMoved" />
-                    <span class="sliderLabel"> 30</span>
-                </div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12 col-xl-12">
-                            <div class="card bg-c-@cardColorInductedToHallOfFameAdjusted order-card">
-                                <div class="card-block">
-                                    <h5 class="text-right">Hall Of Fame Induction Label - <span class="span-probability"><b>@predictionHallOfFameInductionAdjustedLabel</b></span></h5>
-                                    <h5 class="text-right"><span><b>@baseBallBatterPerSeason.FullPlayerName</b></span></h5>
-                                    <div class="m-b-0">Seasons Played<span class="f-right">@baseBallBatterPerSeason.YearsPlayed</span></div>
-                                    <div class="m-b-0">Total Bases<span class="f-right">@baseBallBatterPerSeason.TB</span></div>
-                                    <div class="m-b-0">HR<span class="f-right">@baseBallBatterPerSeason.HR</span></div>
-                                    <div class="m-b-0">All-Star Appearances<span class="f-right">@baseBallBatterPerSeason.AllStarAppearances</span></div>
-                                    <div class="m-b-0">...<span class="f-right"></span></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <small class="form-text text-muted"><b>Notes:</b></small>
-                <small class="form-text text-muted">What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played.</small>
-                <small class="form-text text-muted">Dynamic rules-based prediction of the player being <b><i>Inducted to Hall Of Fame</i></b> based on the rule: <b>HR >= 500</b>.</small>
-            </form>
-        </div>
-    </div>
+    <BaseballPredictionBlazor.Components.BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+                                                            StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFame
+                                                            UseMachineLearningModel=false
+                                                            BaseBallBatter=selectedBatter />
+    <p />
+    <BaseballPredictionBlazor.Components.BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
+                                                            StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFame
+                                                            UseMachineLearningModel=false
+                                                            BaseBallBatter=selectedBatter />
+
 }
 else
 {
@@ -90,22 +42,9 @@ else
 
 @code {
     bool isLoaded = false;
-    string cardColorOnBallot = string.Empty;
-    string cardColorInductedToHallOfFame = string.Empty;
-    string cardColorOnBallotAdjusted = "green";
-    string cardColorInductedToHallOfFameAdjusted = "green";
-
-    int numberOfSeasonsPlayed = 1;
-    MLBHOFPrediction predictionHallOfFameInduction = null;
-    MLBHOFPrediction predictionOnHallOfFameBallot = null;
-    MLBHOFPrediction predictionHallOfFameInductionAdjusted = null;
-    MLBHOFPrediction predictionOnHallOfFameBallotAdjusted = null;
-    bool predictionHallOfFameInductionLabel = false;
-    bool predictionHallOfFameInductionAdjustedLabel = false;
 
     public List<MLBBaseballBatter> batters;
     MLBBaseballBatter selectedBatter;
-    MLBBaseballBatter baseBallBatterPerSeason;
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,44 +53,9 @@ else
 
         // Select the initial batter, set UI state
         selectedBatter = batters.FirstOrDefault();
-        numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
-
-        // Make the ML predictions
-
-        // Static prediction
-        MakeStaticPrediction();
-
-        // Adjusted prediction
-        MakePredictionHallOfFameInductionAdjustedForSeasons();
-        // MakePredictionOnHallOfFameBallotAdjustedForSeasons();
 
         // set the page to loaded
         isLoaded = true;
-    }
-
-
-
-    void MakeStaticPrediction()
-    {
-        // Make ML predictions
-        predictionHallOfFameInductionLabel = selectedBatter.HR >= 500 ? true : false;
-
-        // Get card color
-        cardColorOnBallot = getCardColor(false, 0f, (int) selectedBatter.HR);
-        cardColorInductedToHallOfFame = getCardColor(false, 0f, (int) selectedBatter.HR);
-
-    }
-
-    void MakePredictionHallOfFameInductionAdjustedForSeasons()
-    {
-        // Calculate the adjusted statistics for the player
-        baseBallBatterPerSeason = selectedBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
-
-        // Make Prediction
-        predictionHallOfFameInductionAdjustedLabel = baseBallBatterPerSeason.HR >= 500 ? true : false;
-
-        // Set the card color
-        cardColorInductedToHallOfFameAdjusted = getCardColor(false, 0f, (int) baseBallBatterPerSeason.HR);
     }
 
     void BatterSelected(ChangeEventArgs e)
@@ -159,50 +63,7 @@ else
         if (int.TryParse((string)e.Value, out var index) && index >= 0)
         {
             selectedBatter = batters[index];
-            numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
-            MakeStaticPrediction();
-
-            MakePredictionHallOfFameInductionAdjustedForSeasons();
+            base.StateHasChanged();
         }
-    }
-
-    void SliderMoved(ChangeEventArgs e)
-    {
-        if (int.TryParse((string)e.Value, out var index) && index >= 0)
-        {
-            numberOfSeasonsPlayed = index;
-
-            MakePredictionHallOfFameInductionAdjustedForSeasons();
-        }
-    }
-
-    string getCardColor(bool useProbability, float probability, int homeRuns)
-    {
-        string cardColor = "red";
-
-        if (useProbability)
-        {
-            if (probability >= 0.75)
-            {
-                cardColor = "green";
-            }
-            else if (probability >= 0.50)
-            {
-                cardColor = "lightgreen";
-            }
-            else if (probability >= 0.25)
-            {
-                cardColor = "yellow";
-            }
-        }
-        else
-        {
-            if (homeRuns >= 500)
-            {
-                cardColor = "green";
-            }
-        }
-
-        return cardColor;
     }
 }

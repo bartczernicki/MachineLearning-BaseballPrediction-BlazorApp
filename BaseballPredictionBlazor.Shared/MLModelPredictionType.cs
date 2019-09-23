@@ -16,9 +16,10 @@ namespace BaseballPredictionBlazor.Shared
         /// </summary>
         public const string InductedToHallOfFame = "InductedToHallOfFame";
 
-        public static string GetPredictionLabel(string mlModelPredictionType)
+        public static string GetPredictionLabel(string mlModelPredictionType, bool isProbability)
         {
             var predictionLabel = string.Empty;
+            var predictionLabelSuffix = "Probability";
 
             if (mlModelPredictionType == OnHallOfFameBallot)
             {
@@ -29,7 +30,12 @@ namespace BaseballPredictionBlazor.Shared
                 predictionLabel = "Hall Of Fame Induction";
             }
 
-            return predictionLabel;
+            if (!isProbability)
+            {
+                predictionLabelSuffix = "Label";
+            }
+
+            return string.Format("{0} {1}", predictionLabel, predictionLabelSuffix);
         }
     }
 }
