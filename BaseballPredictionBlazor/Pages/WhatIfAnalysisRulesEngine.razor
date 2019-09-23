@@ -25,11 +25,13 @@
 
     <p />
     <BaseballPredictionBlazor.Components.BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+                                                            MultipleModels=false
                                                             StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFame
                                                             UseMachineLearningModel=false
                                                             BaseBallBatter=selectedBatter />
     <p />
     <BaseballPredictionBlazor.Components.BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
+                                                            MultipleModels=false
                                                             StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFame
                                                             UseMachineLearningModel=false
                                                             BaseBallBatter=selectedBatter />

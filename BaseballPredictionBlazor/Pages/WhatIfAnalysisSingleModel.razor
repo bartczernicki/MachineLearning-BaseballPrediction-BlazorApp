@@ -23,12 +23,16 @@
     </select>
 
     <p />
-    <BaseballPredictionBlazor.Components.BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+    <BaseballPredictionBlazor.Components.BaseballCardParent
+        MultipleModels=false
+        Title="Static Prediction" SubTitle="Based on player's actual career statistics"
         StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFame
         UseMachineLearningModel=true
         BaseBallBatter=selectedBatter />
     <p />
-    <BaseballPredictionBlazor.Components.BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
+    <BaseballPredictionBlazor.Components.BaseballCardParent
+        MultipleModels=false
+        Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
         StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFame
         UseMachineLearningModel=true
         BaseBallBatter=selectedBatter />
