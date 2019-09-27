@@ -2,7 +2,7 @@
 
 <div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(this.UseMachineLearningModel, Prediction.Probability, (int) this.BaseBallBatter.HR))  order-card">
     <div class="card-block">
-        <h5 class="text-right">@Shared.MLModelPredictionType.GetPredictionLabel(this.MLModelPredictionType, UseMachineLearningModel) - <span class="span-probability"><b>@this.getPredictionValue(this.UseMachineLearningModel)</b></span></h5>
+        <h5 class="text-right">Hall of Fame <b>@Shared.MLModelPredictionType.GetPredictionLabel(this.MLModelPredictionType, UseMachineLearningModel)</b> - <span class="span-probability"><b>@this.getPredictionValue(this.UseMachineLearningModel)</b></span></h5>
         <h5 class="text-right"><span><b>@BaseBallBatter.FullPlayerName</b></span></h5>
         <div class="m-b-0">Seasons Played<span class="f-right">@BaseBallBatter.YearsPlayed</span></div>
         <div class="m-b-0">Total Bases<span class="f-right">@BaseBallBatter.TB</span></div>
@@ -69,7 +69,7 @@
 
         if (useMachineLearningModel)
         {
-            predictionLabel = String.Format("{0:P2}.", Prediction.Probability);
+            predictionLabel = String.Format("{0:P2}", Prediction.Probability);
         }
         else
         {

@@ -23,11 +23,11 @@ namespace BaseballPredictionBlazor.Shared
 
             if (mlModelPredictionType == OnHallOfFameBallot)
             {
-                predictionLabel = "On Hall of Fame Ballot";
+                predictionLabel = "Ballot";
             }
             else
             {
-                predictionLabel = "Hall Of Fame Induction";
+                predictionLabel = "Induction";
             }
 
             if (!isProbability)

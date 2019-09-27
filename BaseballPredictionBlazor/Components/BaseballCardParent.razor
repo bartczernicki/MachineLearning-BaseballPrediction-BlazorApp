@@ -97,7 +97,7 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
         this.MakeBaseballPredictions();
