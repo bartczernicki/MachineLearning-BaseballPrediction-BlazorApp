@@ -1,8 +1,11 @@
 # MachineLearning-BaseballPrediction-BlazorApp
 A web application that showcases performing what-if analysis using in-memory Machine Learning models. 
 
+![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
+
 Live Demo:
 https://baseballpredictionblazor.azurewebsites.net
+
 
 
 The application has the following features:
@@ -13,6 +16,4 @@ The application has the following features:
 
 Requirements:
 * Visual Studio 2019, .NET Core 3.0, Blazor, ML.NET v1.3.1
-
-![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
 
