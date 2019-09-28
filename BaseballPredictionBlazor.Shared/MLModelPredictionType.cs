@@ -32,7 +32,7 @@ namespace BaseballPredictionBlazor.Shared
 
             if (!isProbability)
             {
-                predictionLabelSuffix = "Label";
+                predictionLabelSuffix = "Category";
             }
 
             return string.Format("{0} {1}", predictionLabel, predictionLabelSuffix);
