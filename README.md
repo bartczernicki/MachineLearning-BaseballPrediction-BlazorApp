@@ -1,7 +1,7 @@
 **Baseball Machine Learning Workbench**
 A web application that showcases performing what-if analysis using in-memory Machine Learning models. 
 
-**Live Demo:** https://baseballpredictionblazor.azurewebsites.net
+**Live Demo:** https://baseballmlworkbench-v1.azurewebsites.net
 
 ![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
 
@@ -12,5 +12,5 @@ A web application that showcases performing what-if analysis using in-memory Mac
 * Surfaced via the Blazor.NET SPA application framework for real-time low latency predictions
 
 **Requirements:**
-* Visual Studio 2019, .NET Core 3.0, Blazor, ML.NET v1.3.1
+* Visual Studio 2019 Preview 3.0, .NET Core 3.0, Blazor, ML.NET v1.3.1
 
