@@ -97,13 +97,15 @@
         }
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
-        this.MakeBaseballPredictions();
+
+        // Note: Only first page call is expensive
+        await this.MakeBaseballPredictions();
     }
 
-    void MakeBaseballPredictions()
+    Task MakeBaseballPredictions()
     {
         if (!StaticPrediction)
         {
@@ -134,6 +136,8 @@
             // Make Rules based Prediction
             PredictionParameterHallOfFameInduction = BaseBallBatterParameter.GetHallOfFameInductionPredictionBasedOn500HrRule();
         }
+
+        return Task.CompletedTask;
     }
 
     void SliderMoved(ChangeEventArgs e)

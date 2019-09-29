@@ -63,7 +63,9 @@
     private string getPredictionValue(bool useMachineLearningModel)
     {
         if (Prediction is null)
+        {
             return string.Empty;
+        }
 
         string predictionLabel = string.Empty;
 

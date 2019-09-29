@@ -85,10 +85,35 @@ namespace BaseballPredictionBlazor.Service
                 MajorLeaguePlayerOfTheYearAwards = 2f,
                 TB = 7000f
             };
+            MLBBaseballBatter babeRuth = new MLBBaseballBatter
+            {
+                FullPlayerName = "Babe Ruth",
+                ID = 400f,
+                InductedToHallOfFame = true,
+                LastYearPlayed = 1935f,
+                OnHallOfFameBallot = true,
+                YearsPlayed = 22f,
+                AB = 8399f,
+                R = 2174f,
+                H = 2873f,
+                Doubles = 506f,
+                Triples = 136f,
+                HR = 714f,
+                RBI = 2214f,
+                SB = 123f,
+                BattingAverage = 0.342f,
+                SluggingPct = 0.690f,
+                AllStarAppearances = 2f,
+                MVPs = 1f,
+                TripleCrowns = 0f,
+                GoldGloves = 0f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 5793f
+            };
             MLBBaseballBatter mikeTrout = new MLBBaseballBatter
             {
                 FullPlayerName = "Mike Trout",
-                ID = 400f,
+                ID = 500f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 2019f,
                 OnHallOfFameBallot = false,
@@ -113,7 +138,7 @@ namespace BaseballPredictionBlazor.Service
             MLBBaseballBatter haroldBaines = new MLBBaseballBatter
             {
                 FullPlayerName = "Harold Baines",
-                ID = 500f,
+                ID = 600f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 2001f,
                 OnHallOfFameBallot = false,
@@ -136,7 +161,10 @@ namespace BaseballPredictionBlazor.Service
                 TB = 5525f
             };
 
-            List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() { badMLBBatter, averageMLBBatter, greatMLBBatter, mikeTrout, haroldBaines };
+            List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() {
+                badMLBBatter, averageMLBBatter, greatMLBBatter,
+                babeRuth, mikeTrout, haroldBaines };
+
             return Task.FromResult(
                 batters
             );
