@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <ApplicationInsightsResourceId>/subscriptions/79dd471a-fd2a-4ce7-82a0-b8e7c6eecfc7/resourcegroups/MachineIntelligence-BaseballMLWorkbench/providers/microsoft.insights/components/BaseballMLWorkbenchAppInsights</ApplicationInsightsResourceId>
-    <ApplicationInsightsAnnotationResourceId>/subscriptions/79dd471a-fd2a-4ce7-82a0-b8e7c6eecfc7/resourcegroups/BaseballPredictionBlazor/providers/microsoft.insights/components/BaseballPredictionBlazor</ApplicationInsightsAnnotationResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/79dd471a-fd2a-4ce7-82a0-b8e7c6eecfc7/resourceGroups/MachineIntelligence-BaseballMLWorkbench/providers/microsoft.insights/components/BaseballMLWorkbenchAppInsights</ApplicationInsightsAnnotationResourceId>
     <Configurations>Debug;Release;test</Configurations>
   </PropertyGroup>
 
