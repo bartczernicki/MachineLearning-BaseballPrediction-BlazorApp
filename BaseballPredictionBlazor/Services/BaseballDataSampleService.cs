@@ -161,10 +161,35 @@ namespace BaseballPredictionBlazor.Services
                 MajorLeaguePlayerOfTheYearAwards = 0f,
                 TB = 5525f
             };
+            MLBBaseballBatter bryceHarper = new MLBBaseballBatter
+            {
+                FullPlayerName = "Bryce Harper",
+                ID = 700f,
+                InductedToHallOfFame = false,
+                LastYearPlayed = 2019f,
+                OnHallOfFameBallot = false,
+                YearsPlayed = 8f,
+                AB = 3879f,
+                R = 708f,
+                H = 1071f,
+                Doubles = 219f,
+                Triples = 19f,
+                HR = 219f,
+                RBI = 635f,
+                SB = 90f,
+                BattingAverage = 0.276f,
+                SluggingPct = 0.512f,
+                AllStarAppearances = 6f,
+                MVPs = 1f,
+                TripleCrowns = 0f,
+                GoldGloves = 0f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 1985f
+            };
 
             List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() {
                 badMLBBatter, averageMLBBatter, greatMLBBatter,
-                babeRuth, mikeTrout, haroldBaines };
+                haroldBaines, bryceHarper, mikeTrout, babeRuth};
 
             return Task.FromResult(
                 batters
