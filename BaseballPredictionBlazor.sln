@@ -5,10 +5,6 @@ VisualStudioVersion = 16.0.29230.61
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseballPredictionBlazor", "BaseballPredictionBlazor\BaseballPredictionBlazor.csproj", "{62A6B2B6-D028-4D54-A364-72C8FC5EA7AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseballPredictionBlazor.Service", "BaseballPredictionBlazor.Service\BaseballPredictionBlazor.Service.csproj", "{E11D475B-8E38-4F98-9E22-EE6D966A1AE7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseballPredictionBlazor.Shared", "BaseballPredictionBlazor.Shared\BaseballPredictionBlazor.Shared.csproj", "{288BB4C1-DB9F-4BFF-B25B-E926D2B561C3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,14 +15,6 @@ Global
 		{62A6B2B6-D028-4D54-A364-72C8FC5EA7AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62A6B2B6-D028-4D54-A364-72C8FC5EA7AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62A6B2B6-D028-4D54-A364-72C8FC5EA7AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E11D475B-8E38-4F98-9E22-EE6D966A1AE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E11D475B-8E38-4F98-9E22-EE6D966A1AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E11D475B-8E38-4F98-9E22-EE6D966A1AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E11D475B-8E38-4F98-9E22-EE6D966A1AE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{288BB4C1-DB9F-4BFF-B25B-E926D2B561C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{288BB4C1-DB9F-4BFF-B25B-E926D2B561C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{288BB4C1-DB9F-4BFF-B25B-E926D2B561C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{288BB4C1-DB9F-4BFF-B25B-E926D2B561C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

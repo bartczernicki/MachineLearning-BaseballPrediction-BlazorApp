@@ -22,11 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BaseballPredictionBlazor.Service\BaseballPredictionBlazor.Service.csproj" />
-    <ProjectReference Include="..\BaseballPredictionBlazor.Shared\BaseballPredictionBlazor.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 

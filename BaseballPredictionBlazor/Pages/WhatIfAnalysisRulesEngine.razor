@@ -1,14 +1,12 @@
 ﻿@page "/WhatIfAnalysisRulesEngine"
 
+@using BaseballPredictionBlazor.MachineLearning
 @using BaseballPredictionBlazor.Shared
-@using BaseballPredictionBlazor.Service
-@*@using Scalable.Model.Engine;*@
+@using BaseballPredictionBlazor.Services
 @using Microsoft.Extensions.ML;
+
 @inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 @inject BaseballDataSampleService BaseballDataService
-@*Previous Engines*@
-@*@inject IBaseballHallofFamePrediction baseBallPredictionService*@
-@*@inject MLModelEngine<MLBBaseballBatter, MLBHOFPrediction> _predictionEngines;*@
 
 <h2>What-If Analysis (Rules Engine)</h2>
 
