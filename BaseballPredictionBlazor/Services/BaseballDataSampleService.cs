@@ -11,6 +11,7 @@ namespace BaseballPredictionBlazor.Services
     {
         public Task<List<MLBBaseballBatter>> GetSampleBaseballData()
         {
+            // fictious players
             MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
             {
                 FullPlayerName = "Barry Badd (fictitious)",
@@ -86,6 +87,7 @@ namespace BaseballPredictionBlazor.Services
                 MajorLeaguePlayerOfTheYearAwards = 2f,
                 TB = 7000f
             };
+            // real players up to 2019 season
             MLBBaseballBatter babeRuth = new MLBBaseballBatter
             {
                 FullPlayerName = "Babe Ruth",
@@ -186,10 +188,35 @@ namespace BaseballPredictionBlazor.Services
                 MajorLeaguePlayerOfTheYearAwards = 0f,
                 TB = 1985f
             };
+            MLBBaseballBatter ryanZimmerman = new MLBBaseballBatter
+            {
+                FullPlayerName = "Ryan Zimmerman",
+                ID = 800f,
+                InductedToHallOfFame = false,
+                LastYearPlayed = 2019f,
+                OnHallOfFameBallot = false,
+                YearsPlayed = 15f,
+                AB = 6399f,
+                R = 936f,
+                H = 1784f,
+                Doubles = 401f,
+                Triples = 22f,
+                HR = 270f,
+                RBI = 1015f,
+                SB = 43f,
+                BattingAverage = 0.279f,
+                SluggingPct = 0.479f,
+                AllStarAppearances = 2f,
+                MVPs = 0f,
+                TripleCrowns = 0f,
+                GoldGloves = 1f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 3039f
+            };
 
             List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() {
                 badMLBBatter, averageMLBBatter, greatMLBBatter,
-                haroldBaines, bryceHarper, mikeTrout, babeRuth};
+                haroldBaines, bryceHarper, mikeTrout, babeRuth, ryanZimmerman};
 
             return Task.FromResult(
                 batters

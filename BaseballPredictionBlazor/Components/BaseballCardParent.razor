@@ -63,7 +63,7 @@
     public string Notes { get; set; } = string.Empty;
 
     [Parameter]
-    public string MLModelPredictionType { get; set; } = MachineLearning.MLModelPredictionType.InductedToHallOfFame;
+    public MLModelPredictionType MLModelPredictionType { get; set; } = MachineLearning.MLModelPredictionType.InductedToHallOfFame;
 
     [Parameter]
     public bool UseMachineLearningModel { get; set; } = true;
@@ -121,13 +121,13 @@
         if (UseMachineLearningModel)
         {
             // Make ML Model Prediction
-            PredictionParameterHallOfFameInduction = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.InductedToHallOfFame,
+            PredictionParameterHallOfFameInduction = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.InductedToHallOfFame.ToString(),
                 BaseBallBatterParameter);
 
             if (MultipleModels)
             {
                 // Make ML Model Prediction
-                PredictionParameterOnHallOfFameBallot = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.OnHallOfFameBallot,
+                PredictionParameterOnHallOfFameBallot = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.OnHallOfFameBallot.ToString(),
                 BaseBallBatterParameter);
             }
         }
