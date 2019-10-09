@@ -11,7 +11,7 @@ namespace BaseballPredictionBlazor.Services
     {
         public Task<List<MLBBaseballBatter>> GetSampleBaseballData()
         {
-            // fictious players
+            // Fictious players
             MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
             {
                 FullPlayerName = "Barry Badd (fictitious)",
@@ -87,7 +87,7 @@ namespace BaseballPredictionBlazor.Services
                 MajorLeaguePlayerOfTheYearAwards = 2f,
                 TB = 7000f
             };
-            // real players up to 2019 season
+            // Real players up to 2019 season
             MLBBaseballBatter babeRuth = new MLBBaseballBatter
             {
                 FullPlayerName = "Babe Ruth",
@@ -188,10 +188,60 @@ namespace BaseballPredictionBlazor.Services
                 MajorLeaguePlayerOfTheYearAwards = 0f,
                 TB = 1985f
             };
+            MLBBaseballBatter willieMays = new MLBBaseballBatter
+            {
+                FullPlayerName = "Willie Mays",
+                ID = 900f,
+                InductedToHallOfFame = true,
+                LastYearPlayed = 1973f,
+                OnHallOfFameBallot = true,
+                YearsPlayed = 22f,
+                AB = 10881f,
+                R = 2062f,
+                H = 3283f,
+                Doubles = 523f,
+                Triples = 140f,
+                HR = 660f,
+                RBI = 1903f,
+                SB = 338f,
+                BattingAverage = 0.302f,
+                SluggingPct = 0.557f,
+                AllStarAppearances = 24f,
+                MVPs = 2f,
+                TripleCrowns = 0f,
+                GoldGloves = 12f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 6066f
+            };
+            MLBBaseballBatter calRipken = new MLBBaseballBatter
+            {
+                FullPlayerName = "Cal Ripken Jr",
+                ID = 1000f,
+                InductedToHallOfFame = true,
+                LastYearPlayed = 2001f,
+                OnHallOfFameBallot = true,
+                YearsPlayed = 21f,
+                AB = 11551f,
+                R = 1647f,
+                H = 3184f,
+                Doubles = 603f,
+                Triples = 44f,
+                HR = 431f,
+                RBI = 1695f,
+                SB = 36f,
+                BattingAverage = 0.276f,
+                SluggingPct = 0.447f,
+                AllStarAppearances = 19f,
+                MVPs = 2f,
+                TripleCrowns = 0f,
+                GoldGloves = 2f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 5168f
+            };
             MLBBaseballBatter ryanZimmerman = new MLBBaseballBatter
             {
                 FullPlayerName = "Ryan Zimmerman",
-                ID = 800f,
+                ID = 1100f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 2019f,
                 OnHallOfFameBallot = false,
@@ -216,7 +266,8 @@ namespace BaseballPredictionBlazor.Services
 
             List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() {
                 badMLBBatter, averageMLBBatter, greatMLBBatter,
-                haroldBaines, bryceHarper, mikeTrout, babeRuth, ryanZimmerman};
+                haroldBaines, bryceHarper, willieMays,
+                calRipken, babeRuth, mikeTrout, ryanZimmerman};
 
             return Task.FromResult(
                 batters
