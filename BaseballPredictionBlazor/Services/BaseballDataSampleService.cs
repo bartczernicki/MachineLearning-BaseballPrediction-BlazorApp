@@ -14,7 +14,7 @@ namespace BaseballPredictionBlazor.Services
             // Fictious players
             MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
             {
-                FullPlayerName = "Barry Badd (fictitious)",
+                FullPlayerName = "Barry Badd (Fictitious Player)",
                 ID = 100f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 0f,
@@ -39,7 +39,7 @@ namespace BaseballPredictionBlazor.Services
             };
             MLBBaseballBatter averageMLBBatter = new MLBBaseballBatter
             {
-                FullPlayerName = "Andy Average (fictitious)",
+                FullPlayerName = "Andy Average (Fictitious Player)",
                 ID = 200f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 0f,
@@ -64,7 +64,7 @@ namespace BaseballPredictionBlazor.Services
             };
             MLBBaseballBatter greatMLBBatter = new MLBBaseballBatter
             {
-                FullPlayerName = "Gary The Great (fictitious)",
+                FullPlayerName = "Gary The Great (Fictitious Player)",
                 ID = 300f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 0f,
@@ -115,7 +115,7 @@ namespace BaseballPredictionBlazor.Services
             };
             MLBBaseballBatter mikeTrout = new MLBBaseballBatter
             {
-                FullPlayerName = "Mike Trout",
+                FullPlayerName = "Mike Trout (Active Player)",
                 ID = 500f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 2019f,
@@ -165,7 +165,7 @@ namespace BaseballPredictionBlazor.Services
             };
             MLBBaseballBatter bryceHarper = new MLBBaseballBatter
             {
-                FullPlayerName = "Bryce Harper",
+                FullPlayerName = "Bryce Harper (Active Player)",
                 ID = 700f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 2019f,
@@ -240,7 +240,7 @@ namespace BaseballPredictionBlazor.Services
             };
             MLBBaseballBatter ryanZimmerman = new MLBBaseballBatter
             {
-                FullPlayerName = "Ryan Zimmerman",
+                FullPlayerName = "Ryan Zimmerman (Active Player)",
                 ID = 1100f,
                 InductedToHallOfFame = false,
                 LastYearPlayed = 2019f,
