@@ -12,5 +12,5 @@ A web application that showcases performing what-if analysis using in-memory Mac
 * Surfaced via the Blazor.NET SPA application framework for real-time low latency predictions
 
 **Requirements:**
-* Visual Studio 2019 Preview 3.0, .NET Core 3.0, Blazor, ML.NET v1.3.1
+* Visual Studio 2019 Preview 3.0, .NET Core 3.0, Blazor, ML.NET v1.4
 
