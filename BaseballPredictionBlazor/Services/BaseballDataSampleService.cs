@@ -213,6 +213,31 @@ namespace BaseballPredictionBlazor.Services
                 MajorLeaguePlayerOfTheYearAwards = 0f,
                 TB = 6066f
             };
+            MLBBaseballBatter daleMurphy = new MLBBaseballBatter
+            {
+                FullPlayerName = "Dale Murphy",
+                ID = 1900f,
+                InductedToHallOfFame = false,
+                LastYearPlayed = 1993f,
+                OnHallOfFameBallot = true,
+                YearsPlayed = 18f,
+                AB = 7960f,
+                R = 1197f,
+                H = 2111f,
+                Doubles = 350f,
+                Triples = 39f,
+                HR = 398f,
+                RBI = 1266f,
+                SB = 161f,
+                BattingAverage = 0.265f,
+                SluggingPct = 0.469f,
+                AllStarAppearances = 7f,
+                MVPs = 2f,
+                TripleCrowns = 0f,
+                GoldGloves = 5f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 3733f
+            };
             MLBBaseballBatter calRipken = new MLBBaseballBatter
             {
                 FullPlayerName = "Cal Ripken Jr",
@@ -266,7 +291,7 @@ namespace BaseballPredictionBlazor.Services
 
             List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() {
                 badMLBBatter, averageMLBBatter, greatMLBBatter,
-                haroldBaines, bryceHarper, willieMays,
+                haroldBaines, bryceHarper, willieMays, daleMurphy,
                 calRipken, babeRuth, mikeTrout, ryanZimmerman};
 
             return Task.FromResult(
