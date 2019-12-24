@@ -1,5 +1,8 @@
 ﻿@using BaseballPredictionBlazor.MachineLearning
+@using BlazorAnimate
 
+
+<Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(1.5)">
 <div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(this.UseMachineLearningModel, Prediction.Probability, (int) this.BaseBallBatter.HR))  order-card">
     <div class="card-block">
         <h5 class="text-right">Hall of Fame <b>@MachineLearning.Helpers.GetPredictionLabel(this.MLModelPredictionType, UseMachineLearningModel)</b> - <span class="span-probability"><b>@this.getPredictionValue(this.UseMachineLearningModel)</b></span></h5>
@@ -11,6 +14,7 @@
         <div class="m-b-0">...<span class="f-right"></span></div>
     </div>
 </div>
+</Animate>
 
 @code {
 
