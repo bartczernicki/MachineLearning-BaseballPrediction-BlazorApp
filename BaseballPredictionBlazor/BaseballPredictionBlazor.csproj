@@ -39,10 +39,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Models\InductedToHallOfFame.mlnet">
+    <None Update="Models\InductedToHallOfFameGeneralizedAdditiveModel.mlnet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Models\OnHallOfFameBallot.mlnet">
+    <None Update="Models\OnHallOfFameBallotGeneralizedAdditiveModel.mlnet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

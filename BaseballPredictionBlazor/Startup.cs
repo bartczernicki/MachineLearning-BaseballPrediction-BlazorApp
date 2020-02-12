@@ -33,12 +33,12 @@ namespace BaseballPredictionBlazor
             // Add data service (provides sample Baseball data to the application)
             services.AddSingleton<BaseballDataSampleService>();
 
-            string modelPathInductedToHallOfFame = Path.Combine(Environment.ContentRootPath, "Models", "InductedToHallOfFame.mlnet");
-            string modelPathOnHallOfFameBallot = Path.Combine(Environment.ContentRootPath, "Models", "OnHallOfFameBallot.mlnet");
+            string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.ContentRootPath, "Models", "InductedToHallOfFameGeneralizedAdditiveModel.mlnet");
+            string modelPathOnHallOfFameBallotGeneralizedAdditiveModel = Path.Combine(Environment.ContentRootPath, "Models", "OnHallOfFameBallotGeneralizedAdditiveModel.mlnet");
 
             services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
-                .FromFile("InductedToHallOfFame", modelPathInductedToHallOfFame)
-                .FromFile("OnHallOfFameBallot", modelPathOnHallOfFameBallot);
+                .FromFile("InductedToHallOfFameGeneralizedAdditiveModel", modelPathInductedToHallOfFameGeneralizedAdditiveModel)
+                .FromFile("OnHallOfFameBallotGeneralizedAdditiveModel", modelPathOnHallOfFameBallotGeneralizedAdditiveModel);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

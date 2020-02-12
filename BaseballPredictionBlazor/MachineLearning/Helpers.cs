@@ -12,7 +12,7 @@ namespace BaseballPredictionBlazor.MachineLearning
             var predictionLabel = string.Empty;
             var predictionLabelSuffix = "Probability";
 
-            if (mlModelPredictionType == MLModelPredictionType.OnHallOfFameBallot)
+            if (mlModelPredictionType == MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel)
             {
                 predictionLabel = "Ballot";
             }

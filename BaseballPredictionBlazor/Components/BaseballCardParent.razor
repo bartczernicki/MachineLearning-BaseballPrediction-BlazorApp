@@ -22,11 +22,11 @@
                     @if (this.MultipleModels)
                     {
                         <div class="col-md-6 col-xl-6">
-                            <BaseballPredictionBlazor.Components.BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallot UseMachineLearningModel=this.UseMachineLearningModel
+                            <BaseballPredictionBlazor.Components.BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
                                                                               BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
                         </div>
                         <div class="col-md-6 col-xl-6">
-                            <BaseballPredictionBlazor.Components.BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFame UseMachineLearningModel=this.UseMachineLearningModel
+                            <BaseballPredictionBlazor.Components.BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
                                                                               BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
                         </div>
                     }
@@ -63,7 +63,7 @@
     public string Notes { get; set; } = string.Empty;
 
     [Parameter]
-    public MLModelPredictionType MLModelPredictionType { get; set; } = MachineLearning.MLModelPredictionType.InductedToHallOfFame;
+    public MLModelPredictionType MLModelPredictionType { get; set; } = MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel;
 
     [Parameter]
     public bool UseMachineLearningModel { get; set; } = true;
@@ -121,13 +121,13 @@
         if (UseMachineLearningModel)
         {
             // Make ML Model Prediction
-            PredictionParameterHallOfFameInduction = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.InductedToHallOfFame.ToString(),
+            PredictionParameterHallOfFameInduction = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(),
                 BaseBallBatterParameter);
 
             if (MultipleModels)
             {
                 // Make ML Model Prediction
-                PredictionParameterOnHallOfFameBallot = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.OnHallOfFameBallot.ToString(),
+                PredictionParameterOnHallOfFameBallot = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(),
                 BaseBallBatterParameter);
             }
         }

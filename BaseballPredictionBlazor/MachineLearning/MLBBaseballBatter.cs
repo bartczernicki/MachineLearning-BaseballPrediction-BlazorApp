@@ -94,8 +94,19 @@ namespace BaseballPredictionBlazor.MachineLearning
                     MidpointRounding.AwayFromZero),
                 RBI = (this.RBI / this.YearsPlayed) * numberOfSeasons,
                 SB = (this.SB / this.YearsPlayed) * numberOfSeasons,
-                BattingAverage = 0.350f,
-                SluggingPct = 0.65f,
+                BattingAverage =
+                    (float)
+                    (
+                    ((this.H / this.YearsPlayed) * numberOfSeasons) / 
+                    ((this.AB / this.YearsPlayed) * numberOfSeasons)
+                    ),
+                SluggingPct =
+                    (float)
+                    (
+                    (Math.Round(
+                    ((this.TB / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero)) /
+                    ((this.AB / this.YearsPlayed) * numberOfSeasons)
+                    ),
                 AllStarAppearances = (float) Math.Round(
                     (Decimal)(this.AllStarAppearances / this.YearsPlayed) * numberOfSeasons,
                     0,

@@ -21,7 +21,7 @@
     /* Parameters */
 
     [Parameter]
-    public MLModelPredictionType MLModelPredictionType { get; set; } = MachineLearning.MLModelPredictionType.InductedToHallOfFame;
+    public MLModelPredictionType MLModelPredictionType { get; set; } = MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel;
 
     [Parameter]
     public bool UseMachineLearningModel { get; set; } = true;
@@ -36,6 +36,7 @@
     string getCardColor(bool useMachineLearningModel, float probability, int homeRuns)
     {
         string cardColor = "red";
+
 
         if (useMachineLearningModel)
         {
