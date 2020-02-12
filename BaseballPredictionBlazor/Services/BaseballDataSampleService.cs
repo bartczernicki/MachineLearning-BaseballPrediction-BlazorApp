@@ -15,7 +15,8 @@ namespace BaseballPredictionBlazor.Services
             // Mix of fictitious, active & retired players of all skills
 
             // Note: In a production system this service would load the list of batters
-            // from persisted storage, an information retrieval engine, a relational database etc.
+            // from persisted storage, searched in information retrieval engine (i.e. Azure Search, Lucene),
+            // a relational database etc.
 
             // Fictitious players
             MLBBaseballBatter badMLBBatter = new MLBBaseballBatter
@@ -93,6 +94,7 @@ namespace BaseballPredictionBlazor.Services
                 MajorLeaguePlayerOfTheYearAwards = 2f,
                 TB = 7000f
             };
+
             // Real players statistics (up to the end of the 2019 season)
             MLBBaseballBatter babeRuth = new MLBBaseballBatter
             {
@@ -194,6 +196,31 @@ namespace BaseballPredictionBlazor.Services
                 MajorLeaguePlayerOfTheYearAwards = 0f,
                 TB = 1985f
             };
+            MLBBaseballBatter derekJeter = new MLBBaseballBatter
+            {
+                FullPlayerName = "Derek Jeter",
+                ID = 101f,
+                InductedToHallOfFame = true,
+                LastYearPlayed = 2014f,
+                OnHallOfFameBallot = true,
+                YearsPlayed = 20f,
+                AB = 11195f,
+                R = 1923f,
+                H = 3465f,
+                Doubles = 544f,
+                Triples = 66f,
+                HR = 260f,
+                RBI = 1311f,
+                SB = 358f,
+                BattingAverage = 0.310f,
+                SluggingPct = 0.440f,
+                AllStarAppearances = 14f,
+                MVPs = 1f,
+                TripleCrowns = 0f,
+                GoldGloves = 5f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 4921f
+            };
             MLBBaseballBatter willieMays = new MLBBaseballBatter
             {
                 FullPlayerName = "Willie Mays",
@@ -243,6 +270,31 @@ namespace BaseballPredictionBlazor.Services
                 GoldGloves = 5f,
                 MajorLeaguePlayerOfTheYearAwards = 0f,
                 TB = 3733f
+            };
+            MLBBaseballBatter davidOrtiz = new MLBBaseballBatter
+            {
+                FullPlayerName = "David Ortiz",
+                ID = 1905f,
+                InductedToHallOfFame = false,
+                LastYearPlayed = 2016f,
+                OnHallOfFameBallot = false,
+                YearsPlayed = 20f,
+                AB = 8640f,
+                R = 1419f,
+                H = 2472f,
+                Doubles = 632f,
+                Triples = 19f,
+                HR = 541f,
+                RBI = 1768f,
+                SB = 17f,
+                BattingAverage = 0.286f,
+                SluggingPct = 0.552f,
+                AllStarAppearances = 10f,
+                MVPs = 0f,
+                TripleCrowns = 0f,
+                GoldGloves = 0f,
+                MajorLeaguePlayerOfTheYearAwards = 0f,
+                TB = 4765f
             };
             MLBBaseballBatter calRipken = new MLBBaseballBatter
             {
@@ -372,8 +424,8 @@ namespace BaseballPredictionBlazor.Services
 
             List<MLBBaseballBatter> batters = new List<MLBBaseballBatter>() {
                 badMLBBatter, averageMLBBatter, greatMLBBatter,
-                haroldBaines, bryceHarper, willieMays, daleMurphy,
-                calRipken, babeRuth, garySheffield, mikeTrout,
+                haroldBaines, bryceHarper, derekJeter, willieMays, davidOrtiz,
+                daleMurphy, calRipken, babeRuth, garySheffield, mikeTrout,
                 omarVizquel, larryWalker, ryanZimmerman};
 
             return Task.FromResult(
