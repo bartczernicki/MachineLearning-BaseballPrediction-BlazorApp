@@ -3,7 +3,7 @@ A web application that showcases performing what-if analysis using in-memory Mac
 
 **Live Demo:** https://baseballmlworkbench-v1.azurewebsites.net
 
-![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
+![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/c45c8129aec7d88539687807fd614c17f719406a/BaseballMLWorkbenchDemo.gif)
 
 **The application has the following features:**
 * Three different decision analysis mechanisms using what-if analysis
