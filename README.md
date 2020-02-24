@@ -12,6 +12,9 @@ A web application that showcases performing advanced analysis (decision threshol
 * Machine Learning models are surfaced via ML.NET
 * Surfaced via the Blazor .NET Core application framework for real-time low latency predictions
 
+**Architecture Deployment Diagram:**
+![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
+
 **Project Structure:**
 * Visual Studio 2019 v4.0, .NET Core 3.1, Server-Side Blazor, ML.NET v1.4, SignalR
 
