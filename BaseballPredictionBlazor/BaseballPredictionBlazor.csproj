@@ -16,7 +16,7 @@
   <ItemGroup>
     <PackageReference Include="BlazorAnimate" Version="2.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.4.1" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="1.4.0" />
     <PackageReference Include="Microsoft.ML" Version="1.4.0" />
     <PackageReference Include="Microsoft.ML.FastTree" Version="1.4.0" />
