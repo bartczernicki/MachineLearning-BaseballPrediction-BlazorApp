@@ -17,7 +17,14 @@
     <select class="custom-select" @onchange="@BatterSelected">
         @for (var i = 0; i < batters.Count; i++)
         {
-            <option value="@i">@batters[i].FullPlayerName</option>
+            @if (@batters[i].FullPlayerName == selectedBatter.FullPlayerName)
+            {
+                <option value="@i" selected>@batters[i].FullPlayerName</option>
+            }
+            else
+            {
+                <option value="@i">@batters[i].FullPlayerName</option>
+            }
         }
     </select>
 
@@ -54,7 +61,8 @@ else
         batters = await BaseballDataService.GetSampleBaseballData();
 
         // Select the initial batter, set UI state
-        selectedBatter = batters.FirstOrDefault();
+        // Set the initial batter to Andy Average
+        selectedBatter = batters.Where(a => a.FullPlayerName == "Andy Average (Fictitious Player)").FirstOrDefault();
 
         // set the page to loaded
         isLoaded = true;
