@@ -1,10 +1,10 @@
 ﻿using Microsoft.ML;
 using Microsoft.Extensions.ML;
 using System.IO;
-using BaseballPredictionBlazor.Shared;
-using BaseballPredictionBlazor.MachineLearning;
+using BaseballMachineLearningWorkbench.Shared;
+using BaseballMachineLearningWorkbench.MachineLearning;
 
-namespace BaseballPredictionBlazor.Services
+namespace BaseballMachineLearningWorkbench.Services
 {
     public class BaseballHallofFamePrediction : IBaseballHallofFamePrediction
     {

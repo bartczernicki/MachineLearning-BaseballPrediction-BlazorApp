@@ -1,7 +1,7 @@
 ﻿using System;
-using BaseballPredictionBlazor.MachineLearning;
+using BaseballMachineLearningWorkbench.MachineLearning;
 
-namespace BaseballPredictionBlazor.Services
+namespace BaseballMachineLearningWorkbench.Services
 {
     public interface IBaseballHallofFamePrediction
     {

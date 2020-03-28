@@ -1,5 +1,5 @@
-using BaseballPredictionBlazor.Services;
-using BaseballPredictionBlazor.MachineLearning;
+using BaseballMachineLearningWorkbench.Services;
+using BaseballMachineLearningWorkbench.MachineLearning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ML;
 using System.IO;
 
-namespace BaseballPredictionBlazor
+namespace BaseballMachineLearningWorkbench
 {
     public class Startup
     {

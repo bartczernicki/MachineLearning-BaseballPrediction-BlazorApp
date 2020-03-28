@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BaseballPredictionBlazor.MachineLearning
+namespace BaseballMachineLearningWorkbench.MachineLearning
 {
     public enum MLModelPredictionType
     {

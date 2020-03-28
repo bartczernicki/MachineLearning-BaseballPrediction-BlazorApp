@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BaseballPredictionBlazor.MachineLearning
+namespace BaseballMachineLearningWorkbench.MachineLearning
 {
     public static class Helpers
     {

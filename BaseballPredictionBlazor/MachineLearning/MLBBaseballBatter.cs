@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 
-namespace BaseballPredictionBlazor.MachineLearning
+namespace BaseballMachineLearningWorkbench.MachineLearning
 {
     public class MLBBaseballBatter
     {

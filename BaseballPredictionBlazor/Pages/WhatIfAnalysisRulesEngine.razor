@@ -1,8 +1,8 @@
 ﻿@page "/WhatIfAnalysisRulesEngine"
 
-@using BaseballPredictionBlazor.MachineLearning
-@using BaseballPredictionBlazor.Shared
-@using BaseballPredictionBlazor.Services
+@using BaseballMachineLearningWorkbench.MachineLearning
+@using BaseballMachineLearningWorkbench.Shared
+@using BaseballMachineLearningWorkbench.Services
 @using Microsoft.Extensions.ML;
 
 @inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
@@ -29,14 +29,14 @@
     </select>
 
     <p />
-    <BaseballPredictionBlazor.Components.BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+    <BaseballMachineLearningWorkbench.Components.BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
                                                             Notes="Single rules-based prediction of the player being Inducted to Hall Of Fame based on the rule: HR >= 500."
                                                             MultipleModels=false
                                                             StaticPrediction=true MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
                                                             UseMachineLearningModel=false
                                                             BaseBallBatter=selectedBatter />
     <p />
-    <BaseballPredictionBlazor.Components.BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
+    <BaseballMachineLearningWorkbench.Components.BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
                                                             Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
                                                             MultipleModels=false
                                                             StaticPrediction=false MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace BaseballPredictionBlazor
+namespace BaseballMachineLearningWorkbench
 {
     public class Program
     {

@@ -5,6 +5,9 @@
     <ApplicationInsightsResourceId>/subscriptions/79dd471a-fd2a-4ce7-82a0-b8e7c6eecfc7/resourcegroups/MachineIntelligence-BaseballMLWorkbench/providers/microsoft.insights/components/BaseballMLWorkbenchAppInsights</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/79dd471a-fd2a-4ce7-82a0-b8e7c6eecfc7/resourceGroups/MachineIntelligence-BaseballMLWorkbench/providers/microsoft.insights/components/BaseballMLWorkbenchAppInsights</ApplicationInsightsAnnotationResourceId>
     <Configurations>Debug;Release;test</Configurations>
+    <UserSecretsId>bef2e84e-98f6-45b2-b6e7-db3ab9e59336</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.ML" Version="1.4.0" />
     <PackageReference Include="Microsoft.ML" Version="1.4.0" />
     <PackageReference Include="Microsoft.ML.FastTree" Version="1.4.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
   </ItemGroup>
 
   <ItemGroup>

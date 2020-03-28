@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using BaseballPredictionBlazor.MachineLearning;
-using BaseballPredictionBlazor.Shared;
+using BaseballMachineLearningWorkbench.MachineLearning;
+using BaseballMachineLearningWorkbench.Shared;
 
-namespace BaseballPredictionBlazor.Services
+namespace BaseballMachineLearningWorkbench.Services
 {
     public class BaseballDataSampleService
     {
