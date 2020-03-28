@@ -124,6 +124,7 @@
             PredictionParameterHallOfFameInduction = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(),
                 BaseBallBatterParameter);
 
+            // If surfacing multiple models include the prediction for On Hall of Fame Ballot
             if (MultipleModels)
             {
                 // Make ML Model Prediction
