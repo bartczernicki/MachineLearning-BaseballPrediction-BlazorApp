@@ -8,6 +8,8 @@
     <UserSecretsId>bef2e84e-98f6-45b2-b6e7-db3ab9e59336</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
+    <Copyright>Bart Czernicki (bartczernicki@outlook.com)</Copyright>
+    <PackageProjectUrl>https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
