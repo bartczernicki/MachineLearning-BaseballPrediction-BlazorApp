@@ -7,16 +7,16 @@
 
 @if (isLoaded)
 {
-    <div>Select a fictitious or real MLB Batter to perform what-if analysis:</div>
+    <div>Select or Search any MLB Batter to perform what-if analysis:</div>
     <BlazoredTypeahead SearchMethod="@SearchBaseballPlayers"
                        @bind-Value="@selectedBatter"
                        Debounce="200" MaximumSuggestions="15"
                        EnableDropDown="true" ShowDropDownOnFocus="true">
         <SelectedTemplate>
-            <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Year Played: @context.LastYearPlayed)
+            <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Season Played: @context.LastYearPlayed)
         </SelectedTemplate>
         <ResultTemplate>
-            <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Year Played: @context.LastYearPlayed)
+            <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Season Played: @context.LastYearPlayed)
         </ResultTemplate>
         <NotFoundTemplate>
             Sorry, there weren't any search results.
