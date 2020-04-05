@@ -139,6 +139,37 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
 
             return mlbHofPrediction;
         }
+
+        public static MLBBaseballBatter FromCsv(string csvLine)
+        {
+            string[] values = csvLine.Split(',');
+            MLBBaseballBatter mlbBaseballBatter = new MLBBaseballBatter();
+
+            mlbBaseballBatter.InductedToHallOfFame = Convert.ToBoolean(values[0]);
+            mlbBaseballBatter.OnHallOfFameBallot = Convert.ToBoolean(values[1]);
+            mlbBaseballBatter.FullPlayerName = Convert.ToString(values[2]);
+            mlbBaseballBatter.YearsPlayed = float.Parse(values[3], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.AB = float.Parse(values[4], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.R = float.Parse(values[5], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.H = float.Parse(values[6], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.Doubles = float.Parse(values[7], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.Triples = float.Parse(values[8], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.HR = float.Parse(values[9], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.RBI = float.Parse(values[10], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.SB = float.Parse(values[11], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.BattingAverage = float.Parse(values[12], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.SluggingPct = float.Parse(values[13], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.AllStarAppearances = float.Parse(values[14], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.MVPs = float.Parse(values[15], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.TripleCrowns = float.Parse(values[16], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.GoldGloves = float.Parse(values[17], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.MajorLeaguePlayerOfTheYearAwards = float.Parse(values[18], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.TB = float.Parse(values[19], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.LastYearPlayed = float.Parse(values[20], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.ID = float.Parse(values[21], System.Globalization.NumberStyles.Any);
+
+            return mlbBaseballBatter;
+        }
     }
 
     public class MLBHOFPrediction

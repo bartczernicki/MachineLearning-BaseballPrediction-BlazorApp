@@ -1,7 +1,4 @@
-﻿@using BaseballMachineLearningWorkbench.MachineLearning
-@using BlazorAnimate
-
-
+﻿
 <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(1.5)">
 <div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(this.UseMachineLearningModel, Prediction.Probability, (int) this.BaseBallBatter.HR))  order-card">
     <div class="card-block">

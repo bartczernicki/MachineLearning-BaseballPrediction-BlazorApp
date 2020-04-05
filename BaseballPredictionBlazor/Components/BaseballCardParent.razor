@@ -1,9 +1,4 @@
-﻿@using BaseballMachineLearningWorkbench
-@using BaseballMachineLearningWorkbench.MachineLearning
-@using BaseballMachineLearningWorkbench.Services
-@using Microsoft.Extensions.ML;
-
-@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
+﻿@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 @inject BaseballDataSampleService BaseballDataService
 
 <div class="card">
@@ -22,18 +17,18 @@
                     @if (this.MultipleModels)
                     {
                         <div class="col-md-6 col-xl-6">
-                            <BaseballMachineLearningWorkbench.Components.BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
+                            <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
                                                                               BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
                         </div>
                         <div class="col-md-6 col-xl-6">
-                            <BaseballMachineLearningWorkbench.Components.BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
+                            <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
                                                                               BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
                         </div>
                     }
                     else
                     {
                         <div class="col-md-12 col-xl-12">
-                            <BaseballMachineLearningWorkbench.Components.BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
+                            <BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
                                                                               BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
                         </div>
                     }

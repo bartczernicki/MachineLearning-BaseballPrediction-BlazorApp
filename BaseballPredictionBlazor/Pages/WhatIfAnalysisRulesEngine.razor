@@ -1,47 +1,42 @@
 ﻿@page "/WhatIfAnalysisRulesEngine"
 
-@using BaseballMachineLearningWorkbench.MachineLearning
-@using BaseballMachineLearningWorkbench.Shared
-@using BaseballMachineLearningWorkbench.Services
-@using Microsoft.Extensions.ML;
-
 @inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 @inject BaseballDataSampleService BaseballDataService
 
 <h2>What-If Analysis (Rules Engine)</h2>
 
-
 @if (isLoaded)
 {
     <div>Select a fictitious or real MLB Batter to perform what-if analysis:</div>
-    <select class="custom-select" @onchange="@BatterSelected">
-        @for (var i = 0; i < batters.Count; i++)
-        {
-            @if (@batters[i].FullPlayerName == selectedBatter.FullPlayerName)
-            {
-                <option value="@i" selected>@batters[i].FullPlayerName</option>
-            }
-            else
-            {
-                <option value="@i">@batters[i].FullPlayerName</option>
-            }
-        }
-    </select>
+    <BlazoredTypeahead SearchMethod="@SearchBaseballPlayers"
+                       @bind-Value="@selectedBatter"
+                       Debounce="200" MaximumSuggestions="15"
+                       EnableDropDown="true" ShowDropDownOnFocus="true">
+        <SelectedTemplate>
+            <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Year Played: @context.LastYearPlayed)
+        </SelectedTemplate>
+        <ResultTemplate>
+            <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Year Played: @context.LastYearPlayed)
+        </ResultTemplate>
+        <NotFoundTemplate>
+            Sorry, there weren't any search results.
+        </NotFoundTemplate>
+    </BlazoredTypeahead>
 
     <p />
-    <BaseballMachineLearningWorkbench.Components.BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
-                                                            Notes="Single rules-based prediction of the player being Inducted to Hall Of Fame based on the rule: HR >= 500."
-                                                            MultipleModels=false
-                                                            StaticPrediction=true MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
-                                                            UseMachineLearningModel=false
-                                                            BaseBallBatter=selectedBatter />
+    <BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+        Notes="Single rules-based prediction of the player being Inducted to Hall Of Fame based on the rule: HR >= 500."
+        MultipleModels=false
+        StaticPrediction=true MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
+        UseMachineLearningModel=false
+        BaseBallBatter=selectedBatter />
     <p />
-    <BaseballMachineLearningWorkbench.Components.BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
-                                                            Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
-                                                            MultipleModels=false
-                                                            StaticPrediction=false MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
-                                                            UseMachineLearningModel=false
-                                                            BaseBallBatter=selectedBatter />
+    <BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
+        Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
+        MultipleModels=false
+        StaticPrediction=false MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
+        UseMachineLearningModel=false
+        BaseBallBatter=selectedBatter />
 
 }
 else
@@ -68,12 +63,8 @@ else
         isLoaded = true;
     }
 
-    void BatterSelected(ChangeEventArgs e)
+    private async Task<IEnumerable<MLBBaseballBatter>> SearchBaseballPlayers(string searchText)
     {
-        if (int.TryParse((string)e.Value, out var index) && index >= 0)
-        {
-            selectedBatter = batters[index];
-            base.StateHasChanged();
-        }
+        return await Task.FromResult(batters.Where(x => x.FullPlayerName.ToLower().Contains(searchText.ToLower())).ToList());
     }
 }
