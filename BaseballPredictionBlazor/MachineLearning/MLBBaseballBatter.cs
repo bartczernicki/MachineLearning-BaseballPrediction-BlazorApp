@@ -159,7 +159,7 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
             mlbBaseballBatter.SB = float.Parse(values[11], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.BattingAverage = float.Parse(values[12], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.SluggingPct = float.Parse(values[13], System.Globalization.NumberStyles.Any);
-            mlbBaseballBatter.AllStarAppearances = float.Parse(values[14], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.AllStarAppearances = float.Parse(values[14]);
             mlbBaseballBatter.MVPs = float.Parse(values[15], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.TripleCrowns = float.Parse(values[16], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.GoldGloves = float.Parse(values[17], System.Globalization.NumberStyles.Any);
@@ -169,6 +169,11 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
             mlbBaseballBatter.ID = float.Parse(values[21], System.Globalization.NumberStyles.Any);
 
             return mlbBaseballBatter;
+        }
+
+        public static string GetDefaultBatter()
+        {
+            return "Mike Trout";
         }
     }
 

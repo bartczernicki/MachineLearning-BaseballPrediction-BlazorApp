@@ -2,7 +2,7 @@
 @inject BaseballDataSampleService BaseballDataService
 
 <div class="card">
-    <h5 class="card-header"><b>@Title</b> - @SubTitle</h5>
+    <h6 class="card-header"><b>@Title</b> - @SubTitle</h6>
     <div class="card-body">
         <form>
             <div class="form-group row" style="@(StaticPrediction ? "display: none;" : string.Empty)">
@@ -16,26 +16,25 @@
                 <div class="row">
                     @if (this.MultipleModels)
                     {
-                        <div class="col-md-6 col-xl-6">
-                            <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
-                                                                              BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
-                        </div>
-                        <div class="col-md-6 col-xl-6">
-                            <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
-                                                                              BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
-                        </div>
+                    <div class="col-md-6 col-xl-6">
+                        <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
+                                      BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
+                    </div>
+                    <div class="col-md-6 col-xl-6">
+                        <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
+                                      BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                    </div>
                     }
                     else
                     {
-                        <div class="col-md-12 col-xl-12">
-                            <BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
-                                                                              BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
-                        </div>
+                    <div class="col-md-12 col-xl-12">
+                        <BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
+                                      BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                    </div>
                     }
                 </div>
+                <small class="form-text text-muted"><b>Notes: </b>@Notes</small>
             </div>
-            <small class="form-text text-muted"><b>Notes:</b></small>
-            <small class="form-text text-muted">@Notes</small>
         </form>
     </div>
 </div>

@@ -2,6 +2,7 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.2;
 }
 
 a, .btn-link {
@@ -263,7 +264,7 @@ span.sliderLabel {
     padding-top: .375rem;
     padding-bottom: .375rem;
     margin-bottom: 0;
-    line-height: 1.5;
+    line-height: 1.0;
     color: #0366d6;
     background-color: transparent;
     border: solid transparent;
