@@ -49,12 +49,6 @@
     <None Update="Data\MLBBaseballBatters.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Models\InductedToHallOfFameGeneralizedAdditiveModel.mlnet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\OnHallOfFameBallotGeneralizedAdditiveModel.mlnet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
