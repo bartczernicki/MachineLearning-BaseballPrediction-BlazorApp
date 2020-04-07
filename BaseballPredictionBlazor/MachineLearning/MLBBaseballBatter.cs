@@ -166,7 +166,7 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
             mlbBaseballBatter.MajorLeaguePlayerOfTheYearAwards = float.Parse(values[18], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.TB = float.Parse(values[19], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.LastYearPlayed = float.Parse(values[20], System.Globalization.NumberStyles.Any);
-            mlbBaseballBatter.ID = float.Parse(values[21], System.Globalization.NumberStyles.Any);
+            //mlbBaseballBatter.ID = float.Parse(values[21], System.Globalization.NumberStyles.Any);
 
             return mlbBaseballBatter;
         }
