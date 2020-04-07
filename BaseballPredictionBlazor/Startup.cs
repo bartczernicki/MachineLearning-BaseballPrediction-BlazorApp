@@ -33,8 +33,8 @@ namespace BaseballMachineLearningWorkbench
             // Add data service (provides sample Baseball data to the application)
             services.AddSingleton<BaseballDataSampleService>();
 
-            string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.ContentRootPath, "Models", "InductedToHallOfFameGeneralizedAdditiveModel.mlnet");
-            string modelPathOnHallOfFameBallotGeneralizedAdditiveModel = Path.Combine(Environment.ContentRootPath, "Models", "OnHallOfFameBallotGeneralizedAdditiveModel.mlnet");
+            string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.ContentRootPath, "Models", "InductedToHallOfFame-GeneralizedAdditiveModel.mlnet");
+            string modelPathOnHallOfFameBallotGeneralizedAdditiveModel = Path.Combine(Environment.ContentRootPath, "Models", "OnHallOfFameBallot-GeneralizedAdditiveModel.mlnet");
 
             services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
                 .FromFile("InductedToHallOfFameGeneralizedAdditiveModel", modelPathInductedToHallOfFameGeneralizedAdditiveModel)
