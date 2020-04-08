@@ -52,7 +52,7 @@
     <None Update="Models\InductedToHallOfFame-FastTree.mlnet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Models\InductedToHallOfFame-GeneralizedAdditiveModels.mlnet">
+    <None Update="Models\InductedToHallOfFame-GeneralizedAdditiveModel.mlnet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Models\InductedToHallOfFame-LogisticRegression.mlnet">
@@ -61,7 +61,7 @@
     <None Update="Models\OnHallOfFameBallot-FastTree.mlnet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Models\OnHallOfFameBallot-GeneralizedAdditiveModels.mlnet">
+    <None Update="Models\OnHallOfFameBallot-GeneralizedAdditiveModel.mlnet">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Models\OnHallOfFameBallot-LogisticRegression.mlnet">
