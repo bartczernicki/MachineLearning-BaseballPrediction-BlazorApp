@@ -7,7 +7,7 @@
 
 @if (isLoaded)
 {
-    <div>Select or Search any MLB Batter to perform what-if analysis:</div>
+    <small class="form-text text-muted"><b>Select or Search</b> any MLB Batter to perform what-if analysis:</small>
     <BlazoredTypeahead SearchMethod="@SearchBaseballPlayers"
                        @bind-Value="@selectedBatter"
                        Debounce="150" MaximumSuggestions="20"

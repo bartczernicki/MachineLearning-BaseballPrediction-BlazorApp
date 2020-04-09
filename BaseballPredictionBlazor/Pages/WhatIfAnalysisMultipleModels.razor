@@ -7,7 +7,7 @@
 
 @if (isLoaded)
 {
-    <div>Select or Search any MLB Batter to perform what-if analysis:</div>
+    <small class="form-text text-muted"><b>Select or Search</b> any MLB Batter to perform what-if analysis:</small>
     <BlazoredTypeahead SearchMethod="@SearchBaseballPlayers"
                        @bind-Value="@selectedBatter"
                        Debounce="150" MaximumSuggestions="20"
@@ -25,18 +25,18 @@
 
     <p />
     <BaseballMachineLearningWorkbench.Components.BaseballCardParent MultipleModels=true
-        Title="Static Prediction" SubTitle="Based on player's actual career statistics"
-        Notes="Single prediction of probability of the player being on Hall Of Fame Ballot and probability of being Inducted to Hall Of Fame."
-        StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
-        UseMachineLearningModel=true
-        BaseBallBatter=selectedBatter />
+                                                                    Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+                                                                    Notes="Single prediction of probability of the player being on Hall Of Fame Ballot and probability of being Inducted to Hall Of Fame."
+                                                                    StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
+                                                                    UseMachineLearningModel=true
+                                                                    BaseBallBatter=selectedBatter />
     <p />
     <BaseballMachineLearningWorkbench.Components.BaseballCardParent MultipleModels=true
-        Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
-        Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
-        StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
-        UseMachineLearningModel=true
-        BaseBallBatter=selectedBatter />
+                                                                    Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
+                                                                    Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
+                                                                    StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
+                                                                    UseMachineLearningModel=true
+                                                                    BaseBallBatter=selectedBatter />
 
 }
 else
