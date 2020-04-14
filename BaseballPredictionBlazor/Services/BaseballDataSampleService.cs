@@ -1,11 +1,8 @@
-﻿using System;
+﻿using BaseballMachineLearningWorkbench.MachineLearning;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using BaseballMachineLearningWorkbench.MachineLearning;
-using BaseballMachineLearningWorkbench.Shared;
 
 namespace BaseballMachineLearningWorkbench.Services
 {

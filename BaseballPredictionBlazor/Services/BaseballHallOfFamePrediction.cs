@@ -1,8 +1,7 @@
-﻿using Microsoft.ML;
+﻿using BaseballMachineLearningWorkbench.MachineLearning;
 using Microsoft.Extensions.ML;
+using Microsoft.ML;
 using System.IO;
-using BaseballMachineLearningWorkbench.Shared;
-using BaseballMachineLearningWorkbench.MachineLearning;
 
 namespace BaseballMachineLearningWorkbench.Services
 {
