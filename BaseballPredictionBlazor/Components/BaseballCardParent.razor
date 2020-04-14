@@ -99,7 +99,7 @@
         await this.MakeBaseballPredictions();
     }
 
-    Task MakeBaseballPredictions()
+    private Task MakeBaseballPredictions()
     {
         if (!StaticPrediction)
         {
@@ -135,7 +135,7 @@
         return Task.CompletedTask;
     }
 
-    void SliderMoved(ChangeEventArgs e)
+    private void SliderMoved(ChangeEventArgs e)
     {
         if (int.TryParse((string)e.Value, out var index) && index >= 0)
         {

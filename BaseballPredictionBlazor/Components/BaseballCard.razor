@@ -1,8 +1,8 @@
 ﻿
 <Animate Animation="Animations.FadeIn" Duration="TimeSpan.FromSeconds(1.5)">
-<div class="card bg-c-@((Prediction is null) ? "blue" : getCardColor(this.UseMachineLearningModel, Prediction.Probability, (int) this.BaseBallBatter.HR))  order-card">
+<div class="card bg-c-@((Prediction is null) ? "blue" : GetCardColor(this.UseMachineLearningModel, Prediction.Probability, (int) this.BaseBallBatter.HR))  order-card">
     <div class="card-block">
-        <h6 class="text-right">Hall of Fame <b>@MachineLearning.Helpers.GetPredictionLabel(this.MLModelPredictionType, UseMachineLearningModel)</b> - <span class="span-probability"><b>@this.getPredictionValue(this.UseMachineLearningModel)</b></span></h6>
+        <h6 class="text-right">Hall of Fame <b>@MachineLearning.Helpers.GetPredictionLabel(this.MLModelPredictionType, UseMachineLearningModel)</b> - <span class="span-probability"><b>@this.GetPredictionValue(this.UseMachineLearningModel)</b></span></h6>
         <h6 class="text-right"><span><b>@BaseBallBatter.FullPlayerName</b></span></h6>
         <div class="m-b-0">Seasons Played<span class="f-right">@BaseBallBatter.YearsPlayed</span></div>
         <div class="m-b-0">Total Bases<span class="f-right">@BaseBallBatter.TB</span></div>
@@ -30,7 +30,7 @@
     public MLBHOFPrediction Prediction { get; set; }
 
     // Used for setting the background color of the baseball card
-    string getCardColor(bool useMachineLearningModel, float probability, int homeRuns)
+    private string GetCardColor(bool useMachineLearningModel, float probability, int homeRuns)
     {
         string cardColor = "red";
 
@@ -62,7 +62,7 @@
     }
 
     // Used for setting the prediction value
-    private string getPredictionValue(bool useMachineLearningModel)
+    private string GetPredictionValue(bool useMachineLearningModel)
     {
         if (Prediction is null)
         {
