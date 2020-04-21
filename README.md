@@ -7,11 +7,11 @@ is a web application that showcases performing decision analysis (decision thres
 ![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/c45c8129aec7d88539687807fd614c17f719406a/BaseballMLWorkbenchDemo.gif)
 
 **The application has the following features:**
-* Three different decision analysis mechanisms performning what-if analysis
-* A simple rules engine to predict baseball hall of fame induction contrasted with Machine Intelligence
+* Three different decision analysis mechanisms performing what-if analysis
+* A simple rules engine to predict baseball hall of fame induction, contrasted with Machine Intelligence
 * Single and multiple machine learning models working together to predict baseball hall of fame ballot and induction
 * Machine Learning models are surfaced via ML.NET in-memory for very quick inference (predictions)
-* Surfaced via the Server-Side Blazor .NET Core application framework using SignalR to deliver the predictions from the server to the web client at scale
+* Surfaced via the Server-Side Blazor .NET Core web application framework using SignalR to deliver the predictions from the server to the web client at scale
 
 **Architecture - Cloud Deployment Diagram:**
 ![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
