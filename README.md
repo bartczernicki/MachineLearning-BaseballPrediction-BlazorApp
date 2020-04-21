@@ -1,7 +1,7 @@
 **Baseball Machine Learning Workbench**
 A web application that showcases performing advanced analysis (decision thresholding, what-if analysis) using in-memory Machine Learning models.
 
-**Live Demo:** https://aka.ms/BaseballMLWorkbench  
+**Live Demo Web Site:** https://aka.ms/BaseballMLWorkbench  
 **DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmlworkbench
 
 ![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/c45c8129aec7d88539687807fd614c17f719406a/BaseballMLWorkbenchDemo.gif)
