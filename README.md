@@ -1,17 +1,18 @@
 **Baseball Machine Learning Workbench**
-A web application that showcases performing advanced analysis (decision thresholding, what-if analysis) using in-memory Machine Learning models.
+is a web application that showcases performing decision analysis (decision thresholding, what-if analysis) using in-memory Machine Learning models with baseball data.
 
-**Live Demo:** https://baseballmlworkbench-v1.azurewebsites.net  
+**Live Demo Web Site:** https://aka.ms/BaseballMLWorkbench  
 **DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmlworkbench
 
 ![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/c45c8129aec7d88539687807fd614c17f719406a/BaseballMLWorkbenchDemo.gif)
 
 **The application has the following features:**
-* Three different decision analysis mechanisms performning what-if analysis
-* A simple rules engine to predict baseball hall of fame induction contrasted with Machine Intelligence
-* Single and multiple machine learning models working together to predict baseball hall of fame ballot and induction
+* Three different decision analysis mechanisms, performing what-if analysis
+* A simple rules engine to predict baseball hall of fame induction, contrasted with Machine Intelligence
+* Single and multiple machine learning models working together to predict baseball hall of fame ballot and induction metrics
 * Machine Learning models are surfaced via ML.NET in-memory for very quick inference (predictions)
-* Surfaced via the Server-Side Blazor .NET Core application framework using SignalR to deliver the predictions from the server to the web client at scale
+* Surfaced via the Server-Side Blazor .NET Core web application framework using SignalR to deliver the predictions from the server to the web client at scale
+* Self-contained application in a Docker container on DockerHub, allowing you to run it completely offline or locally
 
 **Architecture - Cloud Deployment Diagram:**
 ![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
@@ -22,6 +23,6 @@ A web application that showcases performing advanced analysis (decision threshol
 **More Information:**
 * ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet
 * Blazor: https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor
-* Historical Baseball Statistics Database: http://www.seanlahman.com/baseball-archive/statistics/
+* Historical Baseball Statistics Database (used as the data set): http://www.seanlahman.com/baseball-archive/statistics/
 * Decision Management Systems (Amazon book): https://www.amazon.com/Decision-Management-Systems-Practical-Predictive/dp/0132884380
 
