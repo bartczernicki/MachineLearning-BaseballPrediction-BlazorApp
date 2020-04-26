@@ -132,7 +132,10 @@
             PredictionParameterHallOfFameInduction = BaseBallBatterParameter.GetHallOfFameInductionPredictionBasedOn500HrRule();
         }
 
-        System.Diagnostics.Debug.WriteLine(BaseBallBatterParameter);
+        #if DEBUG
+                System.Diagnostics.Debug.WriteLine(BaseBallBatterParameter);
+        #endif
+
         return Task.CompletedTask;
     }
 
