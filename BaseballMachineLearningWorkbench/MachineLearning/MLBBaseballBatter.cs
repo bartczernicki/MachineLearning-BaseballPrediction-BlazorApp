@@ -71,22 +71,32 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
         [LoadColumn(21), ColumnName("ID")]
         public float ID { get; set; }
 
+        public override string ToString()
+        {
+            var mlbBatterString = $@"FullPlayerName:{this.FullPlayerName}, YearPlayed:{this.YearsPlayed}, AB:{this.AB}
+            R:{this.R}, H:{this.H}, Doubles:{this.Doubles}, Triples:{this.Triples}, HR:{this.HR}, RBI:{this.RBI}, SB:{this.SB},
+            BattingAvg:{this.BattingAverage}, Slg:{this.SluggingPct}, AllStar:{this.AllStarAppearances}, MVPs:{this.MVPs},
+            TripleCrowns:{this.TripleCrowns}, GoldGloves:{this.GoldGloves}, PlayerOfYear:{this.MajorLeaguePlayerOfTheYearAwards}, TB:{this.TB}, LastYearPlayed:{this.LastYearPlayed}, ID:{this.ID}";
+
+            return mlbBatterString;
+        }
+
         public MLBBaseballBatter CalculateStatisticsProratedBySeason(int numberOfSeasons)
         {
             var batter = new MLBBaseballBatter
             {
                 FullPlayerName = this.FullPlayerName,
-                ID = 100f,
+                ID = this.ID,
                 InductedToHallOfFame = false,
-                LastYearPlayed = 0f,
+                LastYearPlayed = this.LastYearPlayed,
                 OnHallOfFameBallot = false,
                 YearsPlayed = numberOfSeasons * 1f,
-                AB = (this.AB/this.YearsPlayed) * numberOfSeasons,
+                AB = (this.AB / this.YearsPlayed) * numberOfSeasons,
                 R = (this.R / this.YearsPlayed) * numberOfSeasons,
                 H = (this.H / this.YearsPlayed) * numberOfSeasons,
                 Doubles = (this.Doubles / this.YearsPlayed) * numberOfSeasons,
                 Triples = (this.Triples / this.YearsPlayed) * numberOfSeasons,
-                HR = (float) Math.Round(
+                HR = (float)Math.Round(
                     ((this.HR / this.YearsPlayed) * numberOfSeasons), 0,
                     MidpointRounding.AwayFromZero),
                 RBI = (this.RBI / this.YearsPlayed) * numberOfSeasons,
@@ -94,26 +104,21 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
                 BattingAverage =
                     (float)
                     (
-                    ((this.H / this.YearsPlayed) * numberOfSeasons) / 
+                    ((this.H / this.YearsPlayed) * numberOfSeasons) /
                     ((this.AB / this.YearsPlayed) * numberOfSeasons)
                     ),
-                SluggingPct =
-                    (float)
-                    (
-                    (Math.Round(
-                    ((this.TB / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero)) /
-                    ((this.AB / this.YearsPlayed) * numberOfSeasons)
-                    ),
-                AllStarAppearances = (float) Math.Round(
+                AllStarAppearances = (float)Math.Round(
                     (Decimal)(this.AllStarAppearances / this.YearsPlayed) * numberOfSeasons,
                     0,
                     MidpointRounding.AwayFromZero),
                 MVPs = (this.MVPs / this.YearsPlayed) * numberOfSeasons,
                 TripleCrowns = (this.TripleCrowns / this.YearsPlayed) * numberOfSeasons,
-                GoldGloves = (this.GoldGloves / this.YearsPlayed) * numberOfSeasons,
+                GoldGloves = (float) Math.Round(
+                    ((this.GoldGloves / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero),
                 MajorLeaguePlayerOfTheYearAwards = (this.MajorLeaguePlayerOfTheYearAwards / this.YearsPlayed) * numberOfSeasons,
-                TB = (float) Math.Round(
-                ((this.TB / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero)
+                TB = (float)Math.Round(
+                ((this.TB / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero),
+                SluggingPct = TB / AB
             };
 
             return batter;
