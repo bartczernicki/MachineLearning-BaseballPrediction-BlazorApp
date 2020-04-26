@@ -153,8 +153,9 @@ app {
 
 input[type=range] {
     -webkit-appearance: none;
-    margin: 18px 0;
+    margin: 0px 0;
     width: 100%;
+    background: none;
 }
 
     input[type=range]:focus {
@@ -316,17 +317,29 @@ span.sliderLabel {
 
 
 .card {
-    border-radius: 5px;
-    -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
-    box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+    border-radius: 0px;
+    /*-webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);*/
+    box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
+    /*box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);*/
     border: none;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
 }
 
+.blazored-typeahead {
+    position: relative;
+    width: 100%;
+    box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
+    border-radius: 0px;
+}
+
 .card-header {
-    background-color: #d5d2de;
+    /*background-color: #d5d2de;*/
+}
+
+.card-header:first-child {
+        border-radius: 0px;
 }
 
 .card .card-block {
