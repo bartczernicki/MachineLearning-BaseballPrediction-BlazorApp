@@ -324,10 +324,10 @@ span.sliderLabel {
     box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
     /*box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);*/
     border: none;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
-    min-height: 220px;
+    min-height: 200px;
 }
 
 .blazored-typeahead {
@@ -348,7 +348,7 @@ span.sliderLabel {
 }
 
 .card .card-block {
-    padding: 25px;
+    padding: 15px;
 }
 
 .order-card i {
