@@ -175,8 +175,8 @@ input[type=range] {
     }
 
     input[type=range]::-webkit-slider-thumb {
-        box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-        border: 1px solid #000000;
+        box-shadow: 1px 1px 1px #0366d6, 0px 0px 1px #0366d6;
+        border: 0.5px solid #0366d6;
         height: 30px;
         width: 16px;
         border-radius: 3px;
@@ -203,8 +203,8 @@ input[type=range] {
     }
 
     input[type=range]::-moz-range-thumb {
-        box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-        border: 1px solid #000000;
+        box-shadow: 1px 1px 1px #0366d6, 0px 0px 1px #0366d6;
+        border: 0.5px solid #0366d6;
         height: 30px;
         width: 16px;
         border-radius: 3px;
@@ -238,8 +238,8 @@ input[type=range] {
     }
 
     input[type=range]::-ms-thumb {
-        box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-        border: 1px solid #000000;
+        box-shadow: 1px 1px 1px #0366d6, 0px 0px 1px #0366d6;
+        border: 0.5px solid #0366d6;
         height: 30px;
         width: 16px;
         border-radius: 3px;
@@ -324,7 +324,7 @@ span.sliderLabel {
     box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
     /*box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);*/
     border: none;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
     min-height: 220px;
@@ -335,6 +335,7 @@ span.sliderLabel {
     width: 100%;
     box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
     border-radius: 0px;
+    color: #2f3233;
 }
 
 .card-header {
@@ -342,7 +343,8 @@ span.sliderLabel {
 }
 
 .card-header:first-child {
-        border-radius: 0px;
+    border-radius: 0px;
+    color: #2f3233;
 }
 
 .card .card-block {
@@ -432,7 +434,7 @@ ul {
     font-weight: bold;
     padding: 15px 0;
     text-transform: uppercase;
-    min-height: 75px;
+    min-height: 85px;
 }
 
 .our-webcoderskull .cnt-block h3 a {
