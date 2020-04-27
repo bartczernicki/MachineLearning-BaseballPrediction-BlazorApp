@@ -10,7 +10,7 @@
     <small class="form-text text-muted"><b>Select or Search</b> any MLB Batter to perform what-if analysis:</small>
     <BlazoredTypeahead SearchMethod="@SearchBaseballPlayers"
                        @bind-Value="@selectedBatter"
-                       Debounce="150" MaximumSuggestions="20"
+                       Debounce="150" MaximumSuggestions="25"
                        EnableDropDown="true" ShowDropDownOnFocus="true">
         <SelectedTemplate>
             <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Season Played: @context.LastYearPlayed-@(context.LastYearPlayed+1))
