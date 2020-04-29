@@ -65,10 +65,13 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
         [LoadColumn(19), ColumnName("TB")]
         public float TB { get; set; }
 
-        [LoadColumn(20), ColumnName("LastYearPlayed")]
+        [LoadColumn(20), ColumnName("TotalPlayerAwards")]
+        public float TotalPlayerAwards { get; set; }
+
+        [LoadColumn(21), ColumnName("LastYearPlayed")]
         public float LastYearPlayed { get; set; }
 
-        [LoadColumn(21), ColumnName("ID")]
+        [LoadColumn(22), ColumnName("ID")]
         public float ID { get; set; }
 
         public override string ToString()
@@ -118,6 +121,7 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
                 MajorLeaguePlayerOfTheYearAwards = (this.MajorLeaguePlayerOfTheYearAwards / this.YearsPlayed) * numberOfSeasons,
                 TB = (float)Math.Round(
                 ((this.TB / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero),
+                TotalPlayerAwards = (this.TotalPlayerAwards / this.YearsPlayed) * numberOfSeasons,
                 SluggingPct = TB / AB
             };
 
@@ -167,7 +171,8 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
             mlbBaseballBatter.GoldGloves = float.Parse(values[17], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.MajorLeaguePlayerOfTheYearAwards = float.Parse(values[18], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.TB = float.Parse(values[19], System.Globalization.NumberStyles.Any);
-            mlbBaseballBatter.LastYearPlayed = float.Parse(values[20], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.TotalPlayerAwards = float.Parse(values[20], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.LastYearPlayed = float.Parse(values[21], System.Globalization.NumberStyles.Any);
             //mlbBaseballBatter.ID = float.Parse(values[21], System.Globalization.NumberStyles.Any);
 
             return mlbBaseballBatter;

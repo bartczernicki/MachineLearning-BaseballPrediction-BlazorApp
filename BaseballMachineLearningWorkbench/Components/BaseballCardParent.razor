@@ -6,11 +6,15 @@
     <div class="card-body">
         <form>
             <div class="form-group row" style="@(StaticPrediction ? "display: none;" : string.Empty)">
-                <label for="seasonsInput" class="col-sm-3 col-form-label">Seasons Played:</label>
-                <span class="sliderLabel">1 </span>
-                <input type="range" class="form-control-range" style="width: 50%;" min="1" max="30" step="1" value="@numberOfSeasonsPlayed"
-                       @oninput="@SliderMoved" />
-                <span class="sliderLabel"> 30</span>
+                <div style="text-align: center; width: 100%;">
+                    <div 
+                        <label for="seasonsInput" class="">Seasons Played:</label>
+                        <span class="sliderLabel">1 </span>
+                        <input type="range" class="" style="width: 50%;" min="1" max="30" step="1" value="@numberOfSeasonsPlayed"
+                               @oninput="@SliderMoved" />
+                        <span class="sliderLabel"> 30</span>
+                    </div>
+                </div>
             </div>
             <div class="container">
                 <div class="row">
