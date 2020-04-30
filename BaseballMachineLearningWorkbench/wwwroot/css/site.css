@@ -491,3 +491,138 @@ ul {
 .our-webcoderskull .cnt-block .follow-us li .fa:hover {
     color: #025a8e;
 }
+
+
+.containerFadeIn {
+    animation: fadeIn ease 1.75s;
+    -webkit-animation: fadeIn ease 1.75s;
+    -moz-animation: fadeIn ease 1.75s;
+    -o-animation: fadeIn ease 1.75s;
+    -ms-animation: fadeIn ease 1.75s;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@-o-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@-ms-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
+
+    section {
+        float: left;
+        width: 100%;
+        background: #43cea2; /* fallback for old browsers */
+        background: -webkit-linear-gradient(to left, #185a9d, #43cea2); /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to left, #185a9d, #43cea2); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        padding: 30px 0;
+    }
+
+    .card {
+        -moz-box-direction: normal;
+        -moz-box-orient: vertical;
+        background-color: #fff;
+        border-radius: 0.25rem;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin-bottom: 1px;
+        border: none;
+    }
+
+    .card-header:first-child {
+        border-radius: 0;
+    }
+
+    .card-header {
+        background-color: #f7f7f9;
+        margin-bottom: 0;
+        padding: 20px 1.25rem;
+        border: none;
+    }
+
+    .card-header a i {
+        float: left;
+        font-size: 25px;
+        padding: 5px 0;
+        margin: 0 25px 0 0px;
+        color: #195C9D;
+    }
+
+    .card-header i {
+        float: right;
+        font-size: 30px;
+        width: 1%;
+        margin-top: 8px;
+        margin-right: 10px;
+    }
+
+    .card-header a {
+        width: 97%;
+        float: left;
+        color: #565656;
+    }
+
+    .card-header p {
+        margin: 0;
+    }
+
+    .card-header h3 {
+        margin: 0 0 0px;
+        font-size: 20px;
+        font-family: 'Slabo 27px', serif;
+        font-weight: bold;
+        color: #3fc199;
+    }
+
+    .card-block {
+        -moz-box-flex: 1;
+        flex: 1 1 auto;
+        padding: 20px;
+        color: #232323;
+        box-shadow: inset 0px 4px 5px rgba(0,0,0,0.1);
+        border-top: 1px soild #000;
+        border-radius: 0;
+    }
