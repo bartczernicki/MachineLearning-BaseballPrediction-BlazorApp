@@ -1,7 +1,13 @@
 ## **Get Started with the Baseball Machine Learning Workbench**  
 There are multiple ways to get started with the Baseball Machine Learning Workbench, from non-technical users to professional software developers.
 
-### 1. Live Demo Site  
+[Live Demo Site](#LiveDemoSite)
+
+
+
+
+
+### 1. <a name="LiveDemoSite"></a>Live Demo Site
 The easiest way without performing any technical tasks is to simply use the live demo application located here:  
 **Live Demo Web Site:** https://aka.ms/BaseballMLWorkbench  
 A getting started guide is provided inside the workbench.
