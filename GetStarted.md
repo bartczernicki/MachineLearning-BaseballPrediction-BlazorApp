@@ -1,8 +1,8 @@
 ## **Get Started with the Baseball Machine Learning Workbench**  
 There are multiple ways to get started with the Baseball Machine Learning Workbench, from non-technical users to professional software developers.
 
-[Live Demo Site](#LiveDemoSite)
-[Run Docker Locally In your environment](#RunDockerLocally)
+[Live Demo Site](#LiveDemoSite)  
+[Run Docker Locally In your environment](#RunDockerLocally)  
 [Publish Docker Container to the Azure Cloud](#PublishDockerContainerToAzure)
 
 
