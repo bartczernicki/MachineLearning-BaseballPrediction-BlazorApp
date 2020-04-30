@@ -63,7 +63,7 @@ This more advanced publishing option allows you to build the workbench source co
 
 * There are several publish targets available.  Select the __Azure App Service__ publish target.  Select __Create New__ if you don't have an existing instance. Select the __Create Profile__ button.
 <p align="center">
-  <img width=600 height=300 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio2PublishTarget.png">
+  <img width=700 height=350 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio2PublishTarget.png">
 </p>
 
 * Fill out the App Service details: __Subscription, Resource Group, Hosting Plan, Application Insights (optional)__. Finally select the __Create__ button.
