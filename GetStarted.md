@@ -52,3 +52,31 @@ Since the Baseball Machine Learning Workbench is containerized and published on 
 </p>
 
 ### 4. <a name="PublishToAppInstance"></a>Publish to Azure App Instance with SignalR
+This more advanced publishing option allows you to build the workbench source code, target your desired architecture & frameworks and add more advanced dependencies such as App Insights Instrumentation and scaling out messaging with SignalR.  In order to continue, you will need the Visual Studio 2019 IDE and local Git installed.
+* Start by cloning the workbench GitHub repository:  
+<code>git clone https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp.git</code>
+* Open the solution using Visual Studio 2019, the NuGet packages should automatically restore.  Feel free to ensure the solution builds and you can run it locally.
+* __Right-click on the BaseballMachineLearningWorkbench Solution__ and select __Pulish__.  This will bring you to the Publish wizard.
+<p align="center">
+  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio1Publish.png">
+</p>
+
+* There are several publish targets available.  Select the __Azure App Service__ publish target.  Select __Create New__ if you don't have an existing instance. Select the __Create Profile__ button.
+<p align="center">
+  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio2Publish.png">
+</p>
+
+* Fill out the App Service details: __Subscription, Resource Group, Hosting Plan, Application Insights (optional)__. Finally select the __Create__ button.
+<p align="center">
+  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio3Profile.png">
+</p>
+
+* You will notice there is a yellow marker next to our Publish button providing a warning, that there are dependencies missing that could improve the performance application.  Scroll down and select the __+ Add__ button, this will bring up the Add dependency dialog.  Select the __Azure SignalR Service__ option and select __Next__.  In the next window you can create a new Azure SignalR Service instance or select an existing one to route messages from the workbench.  Note: Azure SignalR has a FREE tier that can be used.
+<p align="center">
+  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio4PublishDependency.png">
+</p>
+
+* Note the variety of deployment options (target frameworks, Deployment modes that can be changed).  Click the __Publish__ button, this will start the process of building the solution and pushing it out to Azure. Once publishing has completed, you will see a successful message in the Output window.  It will also provide you with a web link for you to immediately test the workbench to ensure it is has been successfully deployed.
+<p align="center">
+  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio5Published.png">
+</p>
