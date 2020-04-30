@@ -1,9 +1,12 @@
 ## **Get Started with the Baseball Machine Learning Workbench**  
 There are multiple ways to get started with the Baseball Machine Learning Workbench, from non-technical users to professional software developers.
 
-[Live Demo Site](#LiveDemoSite)  
-[Run Docker Locally In your environment](#RunDockerLocally)  
-[Publish Docker Container to the Azure Cloud](#PublishDockerContainerToAzure)
+Type | Azure Required | Description
+--- | --- | ---
+[Live Demo Site](#LiveDemoSite) | No | Get started directly with the workbench on the web.
+[Run Docker Locally In your environment](#RunDockerLocally)  | No | Run the workbench container locally in your docker environment.  Allows for offline exploration.
+[Publish Docker Container to the Azure Cloud](#PublishDockerContainerToAzure)  | Yes | Publish the workbench Docker conatainer to Azure using Azure Container Instances (ACI)
+[Publish to Azure App Instance with SignalR](#PublishToAppInstance)  | Yes | Publish the workbench application using Visual Studio with more advanced options.  Use SignalR to scale the communication between the Blazor client and the server.
 
 
 
@@ -47,3 +50,5 @@ Since the Baseball Machine Learning Workbench is containerized and published on 
 <p align="center">
   <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/ACIDeployment.png">
 </p>
+
+### 4. <a name="PublishToAppInstance"></a>Publish to Azure App Instance with SignalR
