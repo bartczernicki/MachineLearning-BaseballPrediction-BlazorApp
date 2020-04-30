@@ -4,7 +4,7 @@ There are multiple ways to get started with the Baseball Machine Learning Workbe
 Type | Azure Required | Description
 --- | --- | ---
 [Live Demo Site](#LiveDemoSite) | No | Get started exploring the workbench directly on the web.
-[Run Docker Locally In your environment](#RunDockerLocally)  | No | Run the workbench container locally in your Docker environment.  Allows for offline exploration.
+[Run the Docker container locally in your environment](#RunDockerLocally)  | No | Run the workbench container locally in your Docker environment.  Allows for offline exploration.
 [Publish Docker Container to the Azure Cloud](#PublishDockerContainerToAzure)  | Yes | Publish the workbench Docker conatainer to Azure using Azure Container Instances (ACI)
 [Publish to Azure App Instance with SignalR](#PublishToAppInstance)  | Yes | Publish the workbench application using Visual Studio with more advanced options.  Use SignalR to scale the communication between the Blazor client and the server.
 
