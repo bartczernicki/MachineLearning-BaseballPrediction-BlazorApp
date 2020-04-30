@@ -1,5 +1,5 @@
 ## **Get Started with the Baseball Machine Learning Workbench**  
-There are multiple ways to get started with the Baseball Machine Learning Workbench, from non-technical users to professional software developers.
+There are multiple ways to get started with the Baseball Machine Learning Workbench, for non-technical users to professional software developers.
 
 Type | Azure Required | Description
 --- | --- | ---
