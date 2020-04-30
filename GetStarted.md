@@ -37,5 +37,5 @@ Since the Baseball Machine Learning Workbench is containerized and published on 
 * There are more advanced options that could be set, however for now the deployment is ready.  Select **Review + Create**.  Your deployment will be validated, if it has been filled out correctly click **Create**.  It will take a few seconds to deploy the Baseball Machine Learning Workbench container to Azure.
 * After your deployment succeeds, you can select **Go to resource**, where you will have the IP address and the FQDN (DNS) name where you can access the web application. Using your browser, access the application using either the IP address of FQDN. The screenshot below shows where you can find the IP & FQDN in your ACI resource deployment:  
 <p align="center">
-  <img width=700 height=200 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/ACIDeployment.png">
+  <img width=700 height=175 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/ACIDeployment.png">
 </p>
