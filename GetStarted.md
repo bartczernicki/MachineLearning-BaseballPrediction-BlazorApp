@@ -24,11 +24,12 @@ Since the Baseball Machine Learning Workbench is containerized and published on 
 * Type in **Azure Container Instance** inside Azure Marketplace  
 * Select the **Container Instances** Marketplace offer; and select **Create** on the next screen  
 * Fill out the **Resource group** information.  You can name the **Container name** anything you like; select a **Region**
-* Select the **Image Source: DockerHub or other registry** option.  The **Image** name is **artczernicki/baseballmachinelearningworkbench:latest**.  The **OS Type** is **Linux**
+* Select the **Image Source: DockerHub or other registry** option.  The **Image** name is **bartczernicki/baseballmachinelearningworkbench:latest**.  The **OS Type** is **Linux**
 * You can change the size of the image if you like.   Below is a screenshot of how this should look like filled out.
 <p align="center">
   <img width=500 height=250 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/CreateAzureContainerInstance.png">
 </p>  
+
 * Select __Next: Networking__ to fill out the Network options.
 * Provide a __DNS name label__ name.  This will allow you to access the workbench via a FQDN rather than an IP address.  Note:  This is a public DNS name scoped to the deployment region, so your FQDN will have to be unique.  The screenshot below should show an example of how this will look like. 
 <p align="center">
