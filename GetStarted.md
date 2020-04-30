@@ -58,7 +58,7 @@ This more advanced publishing option allows you to build the workbench source co
 * Open the solution using Visual Studio 2019, the NuGet packages should automatically restore.  Feel free to ensure the solution builds and you can run it locally.
 * __Right-click on the BaseballMachineLearningWorkbench Solution__ and select __Pulish__.  This will bring you to the Publish wizard.
 <p align="center">
-  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio1Publish.png">
+  <img width=650 height=370 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio1Publish.png">
 </p>
 
 * There are several publish targets available.  Select the __Azure App Service__ publish target.  Select __Create New__ if you don't have an existing instance. Select the __Create Profile__ button.
