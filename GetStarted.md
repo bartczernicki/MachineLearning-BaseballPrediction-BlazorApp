@@ -68,15 +68,15 @@ This more advanced publishing option allows you to build the workbench source co
 
 * Fill out the App Service details: __Subscription, Resource Group, Hosting Plan, Application Insights (optional)__. Finally select the __Create__ button.
 <p align="center">
-  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio3Profile.png">
+  <img width=700 height=517 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio3Profile.png">
 </p>
 
 * You will notice there is a yellow marker next to our Publish button providing a warning, that there are dependencies missing that could improve the performance application.  Scroll down and select the __+ Add__ button, this will bring up the Add dependency dialog.  Select the __Azure SignalR Service__ option and select __Next__.  In the next window you can create a new Azure SignalR Service instance or select an existing one to route messages from the workbench.  Note: Azure SignalR has a FREE tier that can be used.
 <p align="center">
-  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio4PublishDependency.png">
+  <img width=700 height=450 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio4PublishDependency.png">
 </p>
 
 * Note the variety of deployment options (target frameworks, Deployment modes that can be changed).  Click the __Publish__ button, this will start the process of building the solution and pushing it out to Azure. Once publishing has completed, you will see a successful message in the Output window.  It will also provide you with a web link for you to immediately test the workbench to ensure it is has been successfully deployed.
 <p align="center">
-  <img width=700 height=150 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio5Published.png">
+  <img width=700 height=120 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/VSStudio5Published.png">
 </p>
