@@ -36,7 +36,7 @@ Since the Baseball Machine Learning Workbench is containerized and published on 
 * Select the **Image Source: DockerHub or other registry** option.  The **Image** name is **bartczernicki/baseballmachinelearningworkbench:latest**.  The **OS Type** is **Linux**
 * You can change the size of the image if you like.   Below is a screenshot of how this should look like filled out.
 <p align="center">
-  <img width=500 height=250 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/CreateAzureContainerInstance.png">
+  <img width=700 height=650 src="https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/Images/CreateAzureContainerInstance.png">
 </p>  
 
 * Select __Next: Networking__ to fill out the Network options.
