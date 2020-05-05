@@ -24,5 +24,6 @@ is a web application that showcases performing decision analysis (decision thres
 * ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet
 * Blazor: https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor
 * Historical Baseball Statistics Database (used as the data set): http://www.seanlahman.com/baseball-archive/statistics/
-* Decision Management Systems (Amazon book): https://www.amazon.com/Decision-Management-Systems-Practical-Predictive/dp/0132884380
+* How to Measure Anything (Amazon book link): https://www.amazon.com/How-Measure-Anything-Intangibles-Business-ebook/dp/B00INUYS2U/ref=sr_1_1?dchild=1&keywords=how+to+measure+anything&qid=1588713606&sr=8-1
+* Decision Management Systems (Amazon book link): https://www.amazon.com/Decision-Management-Systems-Practical-Predictive/dp/0132884380
 
