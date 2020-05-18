@@ -551,7 +551,7 @@ ul {
     }
 
 
-    .section {
+    section {
         float: left;
         width: 100%;
         background: #43cea2; /* fallback for old browsers */
