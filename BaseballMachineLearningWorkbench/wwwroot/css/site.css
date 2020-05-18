@@ -42,7 +42,7 @@ app {
         }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #0366d6 70%);
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #1B4079 70%);
 }
 
     .sidebar .top-row {
@@ -332,7 +332,7 @@ span.sliderLabel {
 }
 
 .bg-c-red {
-    background: linear-gradient(45deg,#F05A73,#7E091D);
+    background: linear-gradient(45deg,#F05A73,#881025);
 }
 
 
@@ -551,7 +551,7 @@ ul {
     }
 
 
-    section {
+    .section {
         float: left;
         width: 100%;
         background: #43cea2; /* fallback for old browsers */
