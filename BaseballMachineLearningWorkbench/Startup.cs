@@ -26,13 +26,34 @@ namespace BaseballMachineLearningWorkbench
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddServerSideBlazor();
 
-            /* Custom Services */
+            // Configure Server Side Blazor
+            // Ref: https://docs.microsoft.com/en-us/aspnet/core/signalr/configuration?view=aspnetcore-3.1&tabs=dotnet
+            services.AddServerSideBlazor().AddHubOptions(config =>
+            {
+                config.EnableDetailedErrors = true;
+                config.ClientTimeoutInterval = new System.TimeSpan(0, 0, 0, 100, 0);
+                config.HandshakeTimeout = new System.TimeSpan(0, 0, 0, 15, 0);
+                config.KeepAliveInterval = new System.TimeSpan(0, 0, 0, 200, 0);
+            }
+            ).AddCircuitOptions(config =>
+            {
+                config.DetailedErrors = true;
+            });
+
+            // Note: Shown below as an example
+            // This can be added automatically, by the Azure Publish Profile
+            // with the SignalR configuration & connectionstring as environment variables.
+            // It can also be manually configured.
+            // services.AddSignalR().AddAzureSignalR();
+
+
+            /* CUSTOM SERVICES */
             
-            // Add data service (provides sample Baseball data to the application)
+            // Add data service (provides historical Baseball data to the application)
             services.AddSingleton<BaseballDataSampleService>();
 
+            // Add the ML.NET models and a prediction object pool to the service
             string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.ContentRootPath, "Models", "InductedToHallOfFame-GeneralizedAdditiveModel.mlnet");
             string modelPathOnHallOfFameBallotGeneralizedAdditiveModel = Path.Combine(Environment.ContentRootPath, "Models", "OnHallOfFameBallot-GeneralizedAdditiveModel.mlnet");
 
