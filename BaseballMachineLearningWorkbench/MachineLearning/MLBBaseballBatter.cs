@@ -116,12 +116,13 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
                     MidpointRounding.AwayFromZero),
                 MVPs = (this.MVPs / this.YearsPlayed) * numberOfSeasons,
                 TripleCrowns = (this.TripleCrowns / this.YearsPlayed) * numberOfSeasons,
-                GoldGloves = (float) Math.Round(
+                GoldGloves = (float)Math.Round(
                     ((this.GoldGloves / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero),
                 MajorLeaguePlayerOfTheYearAwards = (this.MajorLeaguePlayerOfTheYearAwards / this.YearsPlayed) * numberOfSeasons,
                 TB = (float)Math.Round(
                 ((this.TB / this.YearsPlayed) * numberOfSeasons), 0, MidpointRounding.AwayFromZero),
-                TotalPlayerAwards = (this.TotalPlayerAwards / this.YearsPlayed) * numberOfSeasons,
+                TotalPlayerAwards = (float)Math.Round(
+                (this.TotalPlayerAwards / this.YearsPlayed) * numberOfSeasons, 0, MidpointRounding.AwayFromZero),
                 SluggingPct = TB / AB
             };
 
@@ -173,7 +174,7 @@ namespace BaseballMachineLearningWorkbench.MachineLearning
             mlbBaseballBatter.TB = float.Parse(values[19], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.TotalPlayerAwards = float.Parse(values[20], System.Globalization.NumberStyles.Any);
             mlbBaseballBatter.LastYearPlayed = float.Parse(values[21], System.Globalization.NumberStyles.Any);
-            //mlbBaseballBatter.ID = float.Parse(values[21], System.Globalization.NumberStyles.Any);
+            mlbBaseballBatter.ID = float.Parse(values[22], System.Globalization.NumberStyles.Any);
 
             return mlbBaseballBatter;
         }
