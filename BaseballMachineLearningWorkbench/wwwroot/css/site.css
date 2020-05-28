@@ -200,6 +200,7 @@ input[type=range] {
         background: #0366d6;
         border-radius: 1.3px;
         border: 0.2px solid #010101;
+        outline: none;
     }
 
     input[type=range]::-moz-range-thumb {

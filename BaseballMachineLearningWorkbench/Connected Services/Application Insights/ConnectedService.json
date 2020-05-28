@@ -1,4 +1,4 @@
 ﻿{
   "ProviderId": "Microsoft.ApplicationInsights.ConnectedService.ConnectedServiceProvider",
-  "Version": "9.1.815.1"
+  "Version": "16.0.0.0"
 }
