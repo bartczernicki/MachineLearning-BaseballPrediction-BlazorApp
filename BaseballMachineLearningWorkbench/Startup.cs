@@ -34,7 +34,7 @@ namespace BaseballMachineLearningWorkbench
                 config.EnableDetailedErrors = true;
                 //config.ClientTimeoutInterval = new System.TimeSpan(0, 0, 0, 50, 0);
                 //config.HandshakeTimeout = new System.TimeSpan(0, 0, 0, 50, 0);
-                config.KeepAliveInterval = new System.TimeSpan(0, 0, 0, 10, 0);
+                config.KeepAliveInterval = new System.TimeSpan(0, 0, 0, 15, 0);
             }
             ).AddCircuitOptions(config =>
             {

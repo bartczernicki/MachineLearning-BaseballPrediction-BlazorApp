@@ -27,16 +27,20 @@
     <script src="_content/Blazored.Typeahead/blazored-typeahead.js"></script>
 
     @* Added for Blazor keep alive *@
-    @*<style>
+    <style>
             #components-reconnect-modal {
                 display: none !important;
             }
         </style>
         <script>
-            new MutationObserver(() => document.querySelector('#components-reconnect-modal') && location.reload())
-                .observe(document.body, { childList: true });
-        </script>*@
-    <script>
+            new MutationObserver(() => {
+                    console.log("Blazor client re-loaded."); 
+                    document.querySelector('#components-reconnect-modal') && location.reload()
+                    }
+                ).observe(document.body, { childList: true } 
+                );
+        </script>
+    @*<script>
         // Wait until a 'reload' button appears
         new MutationObserver((mutations, observer) => {
             if (document.querySelector('#components-reconnect-modal h5 a')) {
@@ -50,6 +54,6 @@
                 setInterval(attemptReload, 10000);
             }
         }).observe(document.body, { childList: true, subtree: true });
-    </script>
+    </script>*@
 </body>
 </html>
