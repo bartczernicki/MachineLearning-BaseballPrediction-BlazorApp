@@ -2,7 +2,8 @@
 is a web application that showcases performing decision analysis (decision thresholding, what-if analysis) using in-memory Machine Learning models with baseball data.
 
 **Live Demo Web Site:** https://aka.ms/BaseballMLWorkbench  
-**DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmlworkbench
+**DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmachinelearningworkbench  
+**Full Get Started Guide:** https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/GETSTARTED.md
 
 ![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/c45c8129aec7d88539687807fd614c17f719406a/BaseballMLWorkbenchDemo.gif)
 
