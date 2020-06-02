@@ -32,9 +32,9 @@ namespace BaseballMachineLearningWorkbench
             services.AddServerSideBlazor().AddHubOptions(config =>
             {
                 config.EnableDetailedErrors = true;
+                config.KeepAliveInterval = new System.TimeSpan(0, 0, 0, 15, 0);
                 //config.ClientTimeoutInterval = new System.TimeSpan(0, 0, 0, 50, 0);
                 //config.HandshakeTimeout = new System.TimeSpan(0, 0, 0, 50, 0);
-                config.KeepAliveInterval = new System.TimeSpan(0, 0, 0, 15, 0);
             }
             ).AddCircuitOptions(config =>
             {
