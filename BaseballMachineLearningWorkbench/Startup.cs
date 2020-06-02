@@ -43,10 +43,11 @@ namespace BaseballMachineLearningWorkbench
 
             // Note: Shown below as an example
             // This can be added automatically, by the Azure Publish Profile
-            // with the SignalR configuration & connectionstring as environment variables.
+            // With the SignalR configuration & connectionstring as environment variables.
             // It can also be manually configured for local development
             // Ref: https://github.com/aspnet/AzureSignalR-samples/tree/master/samples/ServerSideBlazor
             // services.AddSignalR().AddAzureSignalR();
+
 
 
             /* CUSTOM SERVICES */
