@@ -19,7 +19,7 @@ is a web application that showcases performing decision analysis (decision thres
 ![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
 
 **Project Structure (Tested):**
-* Visual Studio 2019 v4.0 for Windows or Visual Studio 2019 for Mac (8.6), .NET Core 3.1.x, Server-Side Blazor, ML.NET v1.4, Azure SignalR (optional for massively scaling message communication for Azure deployments)
+* Visual Studio 2019 v4.0 for Windows or Visual Studio 2019 for Mac (8.6), .NET Core 3.1.x, Server-Side Blazor, ML.NET v1.5, Azure SignalR (optional for massively scaling message communication for Azure deployments)
 
 **More Information:**
 * ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet
