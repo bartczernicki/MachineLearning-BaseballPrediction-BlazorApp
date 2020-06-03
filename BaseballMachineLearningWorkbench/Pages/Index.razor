@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
+@inject ILogger<Index> logger
 
 <h3>Welcome to the Baseball Machine Learning Workbench</h3>
 
@@ -58,20 +59,23 @@
     </div>
 </div>
 
-        @code {
+@code {
 
     private void NavigatePageToRulesEngine()
     {
+        logger.LogInformation("Navigate: To Rules Engine");
         NavigationManager.NavigateTo("/WhatIfAnalysisRulesEngine");
     }
 
     private void NavigatePageToSingleModel()
     {
+        logger.LogInformation("Navigate: To Single Model");
         NavigationManager.NavigateTo("/WhatIfAnalysisSingleModel");
     }
 
     private void NavigatePageToMultipleModels()
     {
+        logger.LogInformation("Navigate: To Multiple Models");
         NavigationManager.NavigateTo("/WhatIfAnalysisMultipleModels");
     }
-        }
+}

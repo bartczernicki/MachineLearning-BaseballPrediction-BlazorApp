@@ -1,4 +1,5 @@
-﻿
+﻿@inject ILogger<BaseballCard> logger
+
 <div class="containerFadeIn">
     <div class="card bg-c-@((Prediction is null) ? "blue" : GetCardColor(this.UseMachineLearningModel, Prediction.Probability, (int) this.BaseBallBatter.HR))  order-card">
         <div class="card-block">
@@ -33,7 +34,7 @@
     private string GetCardColor(bool useMachineLearningModel, float probability, int homeRuns)
     {
         string cardColor = "red";
-
+        logger.LogInformation($"GetCardColor| UseMachineLearningModel: {useMachineLearningModel} Probability: {probability}");
 
         if (useMachineLearningModel)
         {
@@ -58,6 +59,7 @@
             }
         }
 
+        logger.LogInformation($"GetCardColor| CardColor: {cardColor}");
         return cardColor;
     }
 
@@ -80,6 +82,7 @@
             predictionLabel = Prediction.Prediction.ToString();
         }
 
+        logger.LogInformation($"GetPredictionValue| PredictionLabel: {predictionLabel}");
         return predictionLabel;
     }
 }

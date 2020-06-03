@@ -1,5 +1,6 @@
 ﻿@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 @inject BaseballDataSampleService BaseballDataService
+@inject ILogger<BaseballCardParent> logger
 
 <div class="card">
     <h6 class="card-header"><b>@Title</b> - @SubTitle</h6>
@@ -7,7 +8,7 @@
         <form>
             <div class="form-group row" style="@(StaticPrediction ? "display: none;" : string.Empty)">
                 <div style="text-align: center; width: 100%;">
-                    <div 
+                    <div>
                         <label for="seasonsInput" class="">Seasons Played:</label>
                         <span class="sliderLabel">1 </span>
                         <input type="range" class="" style="width: 50%;" min="1" max="30" step="1" value="@numberOfSeasonsPlayed"
@@ -20,21 +21,21 @@
                 <div class="row">
                     @if (this.MultipleModels)
                     {
-                    <div class="col-md-6 col-xl-6">
-                        <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
-                                      BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
-                    </div>
-                    <div class="col-md-6 col-xl-6">
-                        <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
-                                      BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
-                    </div>
+                        <div class="col-md-6 col-xl-6">
+                            <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
+                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
+                        </div>
+                        <div class="col-md-6 col-xl-6">
+                            <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
+                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                        </div>
                     }
                     else
                     {
-                    <div class="col-md-12 col-xl-12">
-                        <BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
-                                      BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
-                    </div>
+                        <div class="col-md-12 col-xl-12">
+                            <BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
+                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                        </div>
                     }
                 </div>
                 <small class="form-text text-muted"><b>Notes: </b>@Notes</small>
@@ -105,6 +106,8 @@
 
     private Task MakeBaseballPredictions()
     {
+        logger.LogInformation($"MakeBaseballPredictions| StaticPrediction: {StaticPrediction} UseMachineLearningModel: {UseMachineLearningModel} MultipleModels: {MultipleModels}");
+
         if (!StaticPrediction)
         {
             // Calculate the adjusted statistics for the player
@@ -127,7 +130,7 @@
             {
                 // Make ML Model Prediction
                 PredictionParameterOnHallOfFameBallot = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(),
-                BaseBallBatterParameter);
+            BaseBallBatterParameter);
             }
         }
         else
@@ -137,9 +140,10 @@
         }
 
         #if DEBUG
-                System.Diagnostics.Debug.WriteLine(BaseBallBatterParameter);
+        System.Diagnostics.Debug.WriteLine(BaseBallBatterParameter);
         #endif
 
+        logger.LogInformation($"MakeBaseballPredictions| BaseBallBatterParameter: {BaseBallBatterParameter.FullPlayerName}, {BaseBallBatterParameter.LastYearPlayed}");
         return Task.CompletedTask;
     }
 

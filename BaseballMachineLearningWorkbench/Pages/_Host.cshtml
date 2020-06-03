@@ -28,32 +28,32 @@
 
     @* Added for Blazor keep alive *@
     <style>
-            #components-reconnect-modal {
-                display: none !important;
-            }
-        </style>
-        <script>
-            new MutationObserver(() => {
-                    console.log("Blazor connection from client re-established."); 
-                    document.querySelector('#components-reconnect-modal') && location.reload()
-                    }
-                ).observe(document.body, { childList: true } 
-                );
-        </script>
+        #components-reconnect-modal {
+            display: none !important;
+        }
+    </style>
+    <script>
+        new MutationObserver(() => {
+            console.log("Blazor connection from client re-established.");
+            document.querySelector('#components-reconnect-modal') && location.reload()
+        }
+        ).observe(document.body, { childList: true }
+        );
+    </script>
     @*<script>
-        // Wait until a 'reload' button appears
-        new MutationObserver((mutations, observer) => {
-            if (document.querySelector('#components-reconnect-modal h5 a')) {
-                // Now every 10 seconds, see if the server appears to be back, and if so, reload
-                async function attemptReload() {
-                    await fetch(''); // Check the server really is back
-                    location.reload();
+            // Wait until a 'reload' button appears
+            new MutationObserver((mutations, observer) => {
+                if (document.querySelector('#components-reconnect-modal h5 a')) {
+                    // Now every 10 seconds, see if the server appears to be back, and if so, reload
+                    async function attemptReload() {
+                        await fetch(''); // Check the server really is back
+                        location.reload();
+                    }
+                    observer.disconnect();
+                    attemptReload();
+                    setInterval(attemptReload, 10000);
                 }
-                observer.disconnect();
-                attemptReload();
-                setInterval(attemptReload, 10000);
-            }
-        }).observe(document.body, { childList: true, subtree: true });
-    </script>*@
+            }).observe(document.body, { childList: true, subtree: true });
+        </script>*@
 </body>
 </html>
