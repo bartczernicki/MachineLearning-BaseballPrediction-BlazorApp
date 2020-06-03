@@ -7,11 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ML;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace BaseballMachineLearningWorkbench
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -41,16 +43,15 @@ namespace BaseballMachineLearningWorkbench
                 config.DetailedErrors = true;
             });
 
+
+            /* CUSTOM OR OPTIONAL SERVICES */
+
             // Note: Shown below as an example
             // This can be added automatically, by the Azure Publish Profile
             // With the SignalR configuration & connectionstring as environment variables.
             // It can also be manually configured for local development
             // Ref: https://github.com/aspnet/AzureSignalR-samples/tree/master/samples/ServerSideBlazor
             // services.AddSignalR().AddAzureSignalR();
-
-
-
-            /* CUSTOM SERVICES */
 
             // Add data service (provides historical Baseball data to the application)
             services.AddSingleton<BaseballDataSampleService>();
@@ -65,14 +66,17 @@ namespace BaseballMachineLearningWorkbench
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            logger.LogInformation("Startup-Configure");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             else
             {
+                logger.LogInformation("Startup-Configure: In Production");
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
