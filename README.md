@@ -5,7 +5,7 @@ is a web application that showcases performing decision analysis (decision thres
 **DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmachinelearningworkbench  
 **Full Get Started Guide:** https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/GETSTARTED.md
 
-![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/c45c8129aec7d88539687807fd614c17f719406a/BaseballMLWorkbenchDemo.gif)
+![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
 
 **The application has the following features:**
 * Three different decision analysis mechanisms that perform what-if analysis
@@ -18,8 +18,8 @@ is a web application that showcases performing decision analysis (decision thres
 **Architecture - Cloud Deployment Diagram:**
 ![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
 
-**Project Structure (Tested):**
-* Visual Studio 2019 v4.0 for Windows or Visual Studio 2019 for Mac (8.6), .NET Core 3.1.x, Server-Side Blazor, ML.NET v1.4, Azure SignalR (optional for massively scaling message communication for Azure deployments)
+**Project Structure (Verified):**
+* Visual Studio 2019 v4.0 for Windows or Visual Studio 2019 for Mac (8.6), .NET Core 3.1.x, Server-Side Blazor, ML.NET v1.5, Azure SignalR (optional for massively scaling message communication for Azure deployments)
 
 **More Information:**
 * ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet
