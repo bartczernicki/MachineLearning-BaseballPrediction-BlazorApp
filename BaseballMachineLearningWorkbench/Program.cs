@@ -22,7 +22,7 @@ namespace BaseballMachineLearningWorkbench
                 {
                     logging.ClearProviders();
                     logging.AddConsole();
-                    logging.AddApplicationInsights();
+                    //logging.AddApplicationInsights();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
