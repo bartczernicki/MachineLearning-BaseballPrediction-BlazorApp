@@ -1,0 +1,43 @@
+﻿<div class="card" style="min-height: 0px;">
+    <div class="containerHeader">
+        <div class="fixedHeader">
+            <button class="showMeButton" @onclick="ChangeButtonAppearance">
+                Show Me  <i class="fa @chevronCircleStyle fa-lg" />
+            </button>
+        </div>
+        <div class="flex-itemHeader">
+            <b>@Title</b>
+        </div>
+    </div>
+    <div class="@cardDetailsStyle">
+        <img src="/Images/@gifImageName" height="600"/>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Type { get; set; }
+
+    // Variables
+    private string chevronCircleStyle = "fa-chevron-circle-up";
+    private string cardDetailsStyle = "card-details-hidden";
+    private string gifImageName = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        gifImageName = Type + ".gif";
+    }
+
+    private void ChangeButtonAppearance(MouseEventArgs e)
+    {
+        var eventArgs = e;
+
+        cardDetailsStyle = (cardDetailsStyle == "card-details-hidden") ? ("card-details-visible") : ("card-details-hidden");
+        chevronCircleStyle = (chevronCircleStyle == "fa-chevron-circle-up") ? ("fa-chevron-circle-down") : ("fa-chevron-circle-up");
+    }
+
+}

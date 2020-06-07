@@ -298,12 +298,6 @@ span.sliderLabel {
     font-weight: 300;
 }
 
-.card-body {
-    padding: 0.75rem;
-    background-color: #fbf7f5;
-}
-
-
 .form-group {
     margin-bottom: 0.1em;
 }
@@ -349,12 +343,18 @@ span.sliderLabel {
     min-height: 200px;
 }
 
+.card-body {
+    padding: 0.75rem;
+    background-color: #fbf7f5;
+}
+
 .blazored-typeahead {
     position: relative;
     width: 100%;
     box-shadow: 0px 0px 6px rgba(0,0,0,0.3);
     border-radius: 0px;
     color: #2f3233;
+    margin-top: 5px;
 }
 
 .card-header {
@@ -550,9 +550,10 @@ ul {
     100% {
         opacity: 1;
     }
+}
 
 
-    section {
+    .section {
         float: left;
         width: 100%;
         background: #43cea2; /* fallback for old browsers */
@@ -622,8 +623,68 @@ ul {
         -moz-box-flex: 1;
         flex: 1 1 auto;
         padding: 20px;
-        color: #232323;
+        /*color: #232323;*/
         box-shadow: inset 0px 4px 5px rgba(0,0,0,0.1);
         border-top: 1px soild #000;
         border-radius: 0;
     }
+
+    .showMore {
+        font-size: 14px;
+        display: block;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+.showMoreLabel {
+    display: block;
+    cursor: pointer;
+    color: #B4886B;
+    font-weight: bold;
+    display: block;
+    width: 150px;
+    float: left;
+    background-color: rgba(158, 148, 11, 1);
+    color: rgba(255, 255, 255, 1);
+}
+
+.showMeButton {
+    background-color: #007bff; /* Blue */
+    border-color: #007bff;
+    /*border: none;*/
+    color: white;
+    padding: 10px 5px 10px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.containerHeader {
+    display: flex;
+    padding: 8px 8px 8px 14px;
+    background-color: #fbf7f5;
+}
+
+.fixedHeader {
+    width: 120px;
+}
+
+.flex-itemHeader {
+    flex-grow: 1;
+    padding: 10px 5px 10px 5px;
+    text-align: left;
+}
+
+.card-details-hidden {
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
+    transition: height 0ms 800ms, opacity 800ms 0ms;
+}
+
+.card-details-visible {
+    height: auto;
+    opacity: 1;
+    transition: height 0ms 0ms, opacity 600ms 0ms;
+    padding: 10px 5px 10px 14px;
+}
