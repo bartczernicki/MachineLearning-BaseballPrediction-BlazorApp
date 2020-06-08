@@ -43,7 +43,7 @@
     <Content Update="wwwroot\Images\PredictionBreakdown-DerekJeter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\Images\ShowMeSearchAndSelect.gif">
+    <Content Update="wwwroot\Images\ShowMeSelectAndSearch.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\Images\ShowMeWhatIfMultipleMLModels.gif">
