@@ -68,6 +68,12 @@
             DirectionsBold = "The Baseball ML Workbench is a stateless application.  You can launch multiple browser windows side-by-side to compare players.";
             DirectionsDetails = "Note: This is not limited to two, you can launch as many windows as necessary.";
         }
+        else if (Type == "ShowMeModelUnderstanding")
+        {
+            DirectionsBold = "In the workbench, only single probabilities were returned from the machine learning models. Many more constructs can be returned giving deeper explanations of your models.";
+            DirectionsDetails = "Navigate to https://github.com/bartczernicki/BaseballHOFPredictionWithMlrAndDALEX for a further understanding on how you can breakdown Machine Leanring models.  Such as prediction breakdowns, most influential features, impact of features as data oscillates etc.";
+            gifImageName = "DALEXPyramid.png";
+        }
     }
 
     private void ChangeButtonAppearance(MouseEventArgs e)
