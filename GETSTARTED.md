@@ -13,7 +13,8 @@ Type | Azure Required | Description
 ### 1. <a name="LiveDemoSite"></a>Live Demo Site
 The easiest way without performing any technical tasks is to simply use the live demo application located here:  
 **Live Demo Web Site Address:** https://aka.ms/BaseballMLWorkbench  
-A getting started guide is provided inside the workbench.
+**Live Demo Web Site (Azure Container Instance):** http://baseballmachinelearningworkbench.eastus2.azurecontainer.io  
+Instructions (show me) guide is provided inside the workbench site.
 
 ### 2. <a name="RunDockerLocally"></a>Run the Docker Container locally in your own environment
 The complete Baseball Machine Learning Workbench is containerized using Docker.  This allows you to run the entire web application locally by using Docker.  Linux containers are used.  To get started:  
