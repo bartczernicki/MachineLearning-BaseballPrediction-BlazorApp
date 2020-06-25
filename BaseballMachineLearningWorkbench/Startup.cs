@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ML;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace BaseballMachineLearningWorkbench
 {
@@ -29,9 +30,21 @@ namespace BaseballMachineLearningWorkbench
         {
             services.AddRazorPages();
 
+            var test = Environment.IsDevelopment();
+
+            if (!Environment.IsDevelopment())
+            {
+                services.AddSignalR().AddAzureSignalR(options =>
+                {
+                    options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
+                });
+            }
+
+
             // Configure Server Side Blazor
             // Ref: https://docs.microsoft.com/en-us/aspnet/core/signalr/configuration?view=aspnetcore-3.1&tabs=dotnet
-            services.AddServerSideBlazor().AddHubOptions(config =>
+            services.AddServerSideBlazor(
+                ).AddHubOptions(config =>
             {
                 config.EnableDetailedErrors = true;
                 config.KeepAliveInterval = new System.TimeSpan(0, 0, 0, 15, 0);
