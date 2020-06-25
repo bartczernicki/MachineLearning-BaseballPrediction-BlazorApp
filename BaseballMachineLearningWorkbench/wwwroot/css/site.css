@@ -657,6 +657,7 @@ ul {
     text-align: center;
     text-decoration: none;
     display: inline-block;
+    min-width: 110px;
 }
 
 .containerHeader {
