@@ -30,16 +30,18 @@ namespace BaseballMachineLearningWorkbench
         {
             services.AddRazorPages();
 
-            var test = Environment.IsDevelopment();
+            var isDevelopment = Environment.IsDevelopment();
+            var isDeployedToAzureAppService = Configuration["IS_DEPLOYEDTO_AZUREAPPSERVICE"];
 
-            if (!Environment.IsDevelopment())
+            // If running in Azure App Service, ensure sticky mode is configured
+            // Publish Profile will set this environment variable to True
+            if (isDeployedToAzureAppService == "True")
             {
                 services.AddSignalR().AddAzureSignalR(options =>
                 {
                     options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
                 });
             }
-
 
             // Configure Server Side Blazor
             // Ref: https://docs.microsoft.com/en-us/aspnet/core/signalr/configuration?view=aspnetcore-3.1&tabs=dotnet
