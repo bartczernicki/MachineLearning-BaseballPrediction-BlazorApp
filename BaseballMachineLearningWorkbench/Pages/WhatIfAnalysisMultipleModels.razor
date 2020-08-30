@@ -1,4 +1,6 @@
 ﻿@page "/WhatIfAnalysisMultipleModels"
+@page "/WhatIfAnalysisMultipleModels/{LastYearPlayedandFullPlayerName}"
+@page "/WhatIfAnalysisMultipleModels/{LastYearPlayedandFullPlayerName}/YearsPlayed/{YearsPlayed:int}"
 
 @inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 @inject BaseballDataSampleService BaseballDataService
@@ -45,6 +47,13 @@ else
 }
 
 @code {
+
+    [Parameter]
+    public string LastYearPlayedandFullPlayerName { get; set; }
+
+    [Parameter]
+    public int YearsPlayed { get; set; }
+
     bool isLoaded = false;
 
     public List<MLBBaseballBatter> batters;
@@ -52,12 +61,39 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var lastYearPlayedandFullPlayerName = LastYearPlayedandFullPlayerName;
+        var yearsPlayed = YearsPlayed;
+
         // Build baseball batters list
         batters = await BaseballDataService.GetSampleBaseballData();
 
         // Select the initial batter, set UI state
-        // Set the initial batter to Andy Average
-        selectedBatter = batters.Where(a => a.FullPlayerName == MLBBaseballBatter.GetDefaultBatter()).FirstOrDefault();
+
+        // Main default route
+        if (string.IsNullOrEmpty(lastYearPlayedandFullPlayerName))
+        {
+            // Set the initial batter to default (Mike Trout)
+            selectedBatter = batters.Where(a => a.FullPlayerName == MLBBaseballBatter.GetDefaultBatter()).FirstOrDefault();
+        }
+        // Second route matching LastYearPlayedandFullPlayerName
+        else
+        {
+            float lastYearPlayedParameter = float.Parse(lastYearPlayedandFullPlayerName.Split('-')[0], System.Globalization.CultureInfo.InvariantCulture);
+            var fullPlayerName = lastYearPlayedandFullPlayerName.Split('-')[1];
+
+
+            // Set the initial batter to Mike Trout
+            selectedBatter = batters.Where(a => (Util.RemoveWhiteSpace(a.FullPlayerName) == fullPlayerName) &&
+                (a.LastYearPlayed == lastYearPlayedParameter)
+            ).FirstOrDefault();
+        }
+
+        // Third route (both custom player and custom years played are passed in)
+        // Set the Years Played
+        if (yearsPlayed > 1 && yearsPlayed < 30)
+        {
+            selectedBatter.YearsPlayed = yearsPlayed;
+        }
 
         // set the page to loaded
         isLoaded = true;
