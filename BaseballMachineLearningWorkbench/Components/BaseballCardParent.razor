@@ -85,6 +85,7 @@
 
     protected override void OnParametersSet()
     {
+
         if (!(BaseBallBatterParameter is null))
         {
             // Check if new parameter is newer than the current
@@ -100,7 +101,7 @@
     {
         numberOfSeasonsPlayed = (int)BaseBallBatter.YearsPlayed;
 
-        // Note: Only first page call is expensive
+        //// Note: Only first page call is expensive
         await this.MakeBaseballPredictions();
     }
 
@@ -139,9 +140,9 @@
             PredictionParameterHallOfFameInduction = BaseBallBatterParameter.GetHallOfFameInductionPredictionBasedOn500HrRule();
         }
 
-        #if DEBUG
+#if DEBUG
         System.Diagnostics.Debug.WriteLine(BaseBallBatterParameter);
-        #endif
+#endif
 
         logger.LogInformation($"MakeBaseballPredictions| BaseBallBatterParameter: {BaseBallBatterParameter.FullPlayerName}, {BaseBallBatterParameter.LastYearPlayed}");
         return Task.CompletedTask;

@@ -36,14 +36,14 @@
             display: none !important;
         }
     </style>
-    <script>
+    @*<script>
         new MutationObserver(() => {
             console.log("Blazor connection from client re-established.");
             document.querySelector('#components-reconnect-modal') && location.reload()
         }
         ).observe(document.body, { childList: true }
         );
-    </script>
+    </script>*@
     @*<script>
             // Wait until a 'reload' button appears
             new MutationObserver((mutations, observer) => {
