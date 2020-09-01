@@ -27,18 +27,20 @@
 
     <p />
     <BaseballMachineLearningWorkbench.Components.BaseballCardParent MultipleModels=true
-                                                                    Title="Static Prediction" SubTitle="Based on player's actual career statistics"
-                                                                    Notes="Single prediction of probability of the player being on Hall Of Fame Ballot and probability of being Inducted to Hall Of Fame."
-                                                                    StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
-                                                                    UseMachineLearningModel=true
-                                                                    BaseBallBatter=selectedBatter />
+                        Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+                        Notes="Single prediction of probability of the player being on Hall Of Fame Ballot and probability of being Inducted to Hall Of Fame."
+                        StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
+                        UseMachineLearningModel=true
+                        BaseBallBatter=selectedBatter 
+                        NumberOfSeasonsPlayed=numberOfSeasonsPlayed/>
     <p />
     <BaseballMachineLearningWorkbench.Components.BaseballCardParent MultipleModels=true
-                                                                    Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
-                                                                    Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
-                                                                    StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
-                                                                    UseMachineLearningModel=true
-                                                                    BaseBallBatter=selectedBatter />
+                        Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
+                        Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
+                        StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
+                        UseMachineLearningModel=true
+                        BaseBallBatter=selectedBatter 
+                        NumberOfSeasonsPlayed=numberOfSeasonsPlayed/>
 
 }
 else
@@ -58,6 +60,7 @@ else
 
     public List<MLBBaseballBatter> batters;
     MLBBaseballBatter selectedBatter;
+    int numberOfSeasonsPlayed = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,7 +94,11 @@ else
         // Set the Years Played
         if (yearsPlayed > 1 && yearsPlayed < 30)
         {
-            selectedBatter.YearsPlayed = yearsPlayed;
+            numberOfSeasonsPlayed = yearsPlayed;
+        }
+        else
+        {
+            numberOfSeasonsPlayed = (int)selectedBatter.YearsPlayed;
         }
 
         // set the page to loaded

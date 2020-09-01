@@ -73,6 +73,8 @@
     [Parameter]
     public MLBBaseballBatter BaseBallBatter { get; set; }
 
+    [Parameter]
+    public int NumberOfSeasonsPlayed { get; set; }
 
     /* Variables */
     private int numberOfSeasonsPlayed = 1;
@@ -85,13 +87,12 @@
 
     protected override void OnParametersSet()
     {
-
         if (!(BaseBallBatterParameter is null))
         {
             // Check if new parameter is newer than the current
             if (BaseBallBatter != BaseBallBatterParameter)
             {
-                numberOfSeasonsPlayed = (int)BaseBallBatter.YearsPlayed;
+                numberOfSeasonsPlayed = this.NumberOfSeasonsPlayed;
                 MakeBaseballPredictions();
             }
         }
@@ -99,7 +100,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        numberOfSeasonsPlayed = (int)BaseBallBatter.YearsPlayed;
+        numberOfSeasonsPlayed = this.NumberOfSeasonsPlayed;
 
         //// Note: Only first page call is expensive
         await this.MakeBaseballPredictions();
