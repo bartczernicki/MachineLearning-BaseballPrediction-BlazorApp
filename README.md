@@ -10,10 +10,10 @@ is a web application that showcases performing decision analysis (decision thres
 ![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
 
 **The application has the following features:**
-* Three different decision analysis mechanisms that perform what-if analysis
-* A simple "expert" rules engine to predict baseball hall of fame induction, contrasted with Machine Intelligence
-* Single and multiple machine learning models working together to predict baseball hall of fame ballot and induction metrics
-* Machine Learning models are surfaced via ML.NET in-memory for very quick inference (predictions)
+* Three different decision analysis mechanisms to perform what-if analysis
+* A simple "expert" rules engine to predict baseball hall of fame induction, contrasted with a Machine Intelligence solution
+* Single and multiple machine learning models working together to predict baseball hall of fame ballot and induction probabilities
+* Machine Learning models are surfaced via ML.NET in-memory for rapid inference (predictions)
 * Surfaced via the Server-Side Blazor .NET Core web application framework using SignalR to deliver the predictions from the server to the web client at scale
 * Self-contained application in a Docker container on DockerHub, allowing you to run it completely offline or locally
 
