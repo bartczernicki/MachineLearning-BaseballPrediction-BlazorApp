@@ -89,10 +89,15 @@
     {
         if (!(BaseBallBatterParameter is null))
         {
+            // If NumberOfSeasonsPlayed parameter is not zero, then it was passed in via parent page and/or URL
+            if (this.NumberOfSeasonsPlayed == 0)
+            {
+                numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
+            }
+
             // Check if new parameter is newer than the current
             if (BaseBallBatter != BaseBallBatterParameter)
             {
-                numberOfSeasonsPlayed = this.NumberOfSeasonsPlayed;
                 MakeBaseballPredictions();
             }
         }

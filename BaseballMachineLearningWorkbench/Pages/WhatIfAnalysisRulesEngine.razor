@@ -31,16 +31,16 @@
                         MultipleModels=false
                         StaticPrediction=true MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
                         UseMachineLearningModel=false
-                        BaseBallBatter=selectedBatter 
-                        NumberOfSeasonsPlayed=numberOfSeasonsPlayed/>
+                        BaseBallBatter=@selectedBatter 
+                        NumberOfSeasonsPlayed=@numberOfSeasonsPlayed/>
     <p />
     <BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
                         Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
                         MultipleModels=false
                         StaticPrediction=false MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
                         UseMachineLearningModel=false
-                        BaseBallBatter=selectedBatter 
-                        NumberOfSeasonsPlayed=numberOfSeasonsPlayed/>
+                        BaseBallBatter=@selectedBatter 
+                        NumberOfSeasonsPlayed=@numberOfSeasonsPlayed/>
 
 }
 else
@@ -95,10 +95,6 @@ else
         if (yearsPlayed > 1 && yearsPlayed < 30)
         {
             numberOfSeasonsPlayed = yearsPlayed;
-        }
-        else
-        {
-            numberOfSeasonsPlayed = (int) selectedBatter.YearsPlayed;
         }
 
         // set the page to loaded
