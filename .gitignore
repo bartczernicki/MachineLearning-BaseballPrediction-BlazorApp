@@ -338,3 +338,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/BaseballMachineLearningWorkbench/Properties/ServiceDependencies/baseballmlworkbench-v1 - Web Deploy

@@ -1,15 +1,15 @@
 {
   "dependencies": {
-    "signalr1": {
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.SignalRService/SignalR/BaseballMLWorkbench",
-      "type": "signalr.azure",
-      "connectionId": "Azure__SignalR__ConnectionString",
+    "appInsights1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/microsoft.insights/components/BaseballMLWorkbenchAppInsights",
+      "type": "appInsights.azure",
+      "connectionId": "APPINSIGHTS_CONNECTIONSTRING",
       "secretStore": "AzureAppSettings"
     },
-    "appInsights1": {
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/microsoft.insights/components/BaseballMLWorkbenchAppInsights",
-      "type": "appInsights.azure",
-      "connectionId": "APPINSIGHTS_INSTRUMENTATIONKEY",
+    "signalr1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.SignalRService/SignalR/BaseballMLWorkbench",
+      "type": "signalr.azure",
+      "connectionId": "Azure__SignalR__ConnectionString",
       "secretStore": "AzureAppSettings"
     }
   }
