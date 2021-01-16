@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazored.Typeahead" Version="4.5.0" />
+    <PackageReference Include="Blazored.Typeahead" Version="4.5.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.6.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
