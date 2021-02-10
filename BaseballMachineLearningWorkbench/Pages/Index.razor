@@ -63,22 +63,25 @@
 <div class="containerFadeIn">
     <div class="my-3 p-3 bg-white rounded box-shadow">
         <h6 class="border-bottom border-gray pb-2 mb-0"><b>Machine Learning Probability Statement characterstics:</b></h6>
-        <ul>
-            <li>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item list-group-item-light">
+                <b>Baseball data used:</b> MLB batter data aggregated at the season level from 1876 to 2019.
+            </li>
+            <li class="list-group-item list-group-item-light">
                 The prediction of Hall of Fame Ballot or Induction is <b>surfaced as a probability percentage</b> between 0% and 100%.
             </li>
-            <li>
-                <b>Hall of Fame Ballot</b> defined as the presence on the any of the yearly vote total for the Hall of Fame.
+            <li class="list-group-item list-group-item-light">
+                <b>Hall of Fame Ballot</b> defined as the presence of the candidate batter on any of the yearly vote total for the Hall of Fame.
             </li>
-            <li>
+            <li class="list-group-item list-group-item-light">
                 <b>Hall of Fame Induction</b> defined as the candidate achieving 75% of the necessary vote by the BWAA electors or special BWAA sessions.
-                Note: This explicitly excludes candidates in the Hall of Fame sent in by other means (i.e. veteran's comittee).
+                Note: This explicitly excludes candidates in the Hall of Fame sent in by other means (i.e. veteran's comittee). More info: https://baseballhall.org/hall-of-famers/rules/bbwaa-rules-for-election
             </li>
-            <li>
-                The machine learning models have been built using the Generalized Additive Models (GAM) algorithm with MLB batting data from 1876 to 2019.
+            <li class="list-group-item list-group-item-light">
+                The machine learning models have been built using the <b>Generalized Additive Models (GAM)</b> algorithm using ML.NET.
             </li>
-            <li>
-                The following features were used to build the ML models: Years Played, At Bats, Runs, Hits, Doubles, Triples, Home Runs, RBIs, Stolen Bases,
+            <li class="list-group-item list-group-item-light">
+                The following batting features were used to build the ML models: Years Played, At Bats, Runs, Hits, Doubles, Triples, Home Runs, RBIs, Stolen Bases,
                 Batting Average, Slugging Percentage, All-Star Appearances, MVPs, Triple Crowns, Gold Gloves, Total Bases, Total Player Awards.
             </li>
         </ul>
