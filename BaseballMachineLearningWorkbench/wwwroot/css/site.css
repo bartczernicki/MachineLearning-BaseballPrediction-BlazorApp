@@ -689,3 +689,8 @@ ul {
     transition: height 0ms 0ms, opacity 1s 0ms;
     padding: 10px 5px 10px 14px;
 }
+
+.iconic * {
+    fill: pink;
+    stroke: pink;
+}
