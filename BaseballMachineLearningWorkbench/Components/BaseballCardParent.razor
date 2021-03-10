@@ -90,8 +90,7 @@
     {
         get
         {
-            return
-                "/WhatIfAnalysisRulesEngine/" + BaseBallBatter.LastYearPlayed + "-" + @Util.RemoveWhiteSpace(BaseBallBatter.FullPlayerName) + "/YearsPlayed/" + this.numberOfSeasonsPlayed;
+            return Util.GetWhatIfUrl(UseMachineLearningModel, MultipleModels, BaseBallBatter, numberOfSeasonsPlayed);
         }
     }
 
