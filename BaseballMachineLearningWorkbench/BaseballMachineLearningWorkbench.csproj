@@ -25,7 +25,7 @@
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.6.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.17.0" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.8.0" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.8.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="1.5.5" />
     <PackageReference Include="Microsoft.ML" Version="1.5.5" />
@@ -74,23 +74,11 @@
     <None Update="Data\MLBBaseballBatters.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Models\InductedToHallOfFame-FastTree.mlnet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Models\InductedToHoF-GeneralizedAdditiveModels.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Models\InductedToHallOfFame-GeneralizedAdditiveModel.mlnet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\InductedToHallOfFame-LogisticRegression.mlnet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\OnHallOfFameBallot-FastTree.mlnet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\OnHallOfFameBallot-GeneralizedAdditiveModel.mlnet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Models\OnHallOfFameBallot-LogisticRegression.mlnet">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Models\OnHoFBallot-GeneralizedAdditiveModels.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="robots.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
