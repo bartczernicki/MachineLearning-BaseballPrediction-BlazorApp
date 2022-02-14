@@ -19,9 +19,9 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "IS_DEPLOYEDTO_AZUREAPPSERVICE": "False",
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "Key": "Value",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "IS_DEPLOYEDTO_AZUREAPPSERVICE": "False"
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     },
@@ -31,6 +31,18 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true,
       "useSSL": true
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:5001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Key": "Value",
+        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000",
+        "IS_DEPLOYEDTO_AZUREAPPSERVICE": "False"
+      },
+      "distributionName": ""
     }
   }
 }

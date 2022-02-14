@@ -2,7 +2,7 @@
   "dependencies": {
     "appInsights1": {
       "type": "appInsights",
-      "connectionId": "APPINSIGHTS_CONNECTIONSTRING"
+      "connectionId": "APPLICATIONINSIGHTS_CONNECTION_STRING"
     },
     "signalr1": {
       "type": "signalr",
