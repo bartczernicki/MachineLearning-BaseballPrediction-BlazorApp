@@ -3,8 +3,7 @@ is a web application that showcases performing decision analysis (decision thres
 
 **Live Demo Web Site:** https://baseballmlworkbench.azurefd.net/  
 **AI Architecture Details:** https://docs.microsoft.com/en-us/azure/architecture/data-guide/big-data/baseball-ml-workload  
-**DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmachinelearningworkbench  
-**Live Demo (Docker container hosted on Azure Container Instances):** http://baseballmachinelearningworkbench.eastus2.azurecontainer.io  
+**DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmachinelearningworkbench   
 **Full Get Started Guide:** https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/GETSTARTED.md  
 
 ![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
