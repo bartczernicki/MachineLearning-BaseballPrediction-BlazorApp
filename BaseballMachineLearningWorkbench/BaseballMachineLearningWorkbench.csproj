@@ -70,11 +70,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\MLBBaseballBattersPositionPlayers.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Models\InductedToHoF-GeneralizedAdditiveModels.mlnet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Models\OnHoFBallot-GeneralizedAdditiveModels.mlnet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="robots.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
