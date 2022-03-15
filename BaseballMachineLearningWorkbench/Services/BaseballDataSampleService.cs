@@ -18,7 +18,7 @@ namespace BaseballMachineLearningWorkbench.Services
             // a relational database etc.
 
             // Load MLB baseball batters from local CSV file
-            string filePathMLBBaseballBatters = "Data/MLBBaseballBatters.csv";
+            string filePathMLBBaseballBatters = "Data/MLBBaseballBattersPositionPlayers.csv";
 
             var batters = File.ReadAllLines(filePathMLBBaseballBatters)
                         .Skip(1)

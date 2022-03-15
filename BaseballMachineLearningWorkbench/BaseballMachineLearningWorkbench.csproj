@@ -70,9 +70,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\MLBBaseballBatters.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Models\InductedToHoF-GeneralizedAdditiveModels.mlnet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
