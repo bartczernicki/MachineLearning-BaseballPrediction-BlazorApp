@@ -29,7 +29,7 @@ namespace BaseballMachineLearningWorkbench
             }
 
             string whatIfUrl = string.Format(
-                "/{0}/{1}-{2}/YearsPlayed/{3}", basePage, baseballBatter.LastYearPlayed,
+                "/{0}/{1}-{2}/YearsPlayed/{3}", basePage, baseballBatter.ID,
                     Util.RemoveWhiteSpace(baseballBatter.FullPlayerName), numberOfSeasonsPlayed);
 
             return whatIfUrl;

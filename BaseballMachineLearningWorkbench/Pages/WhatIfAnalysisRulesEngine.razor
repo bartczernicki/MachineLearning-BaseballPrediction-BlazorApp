@@ -1,6 +1,6 @@
 ﻿@page "/WhatIfAnalysisRulesEngine"
-@page "/WhatIfAnalysisRulesEngine/{LastYearPlayedandFullPlayerName}"
-@page "/WhatIfAnalysisRulesEngine/{LastYearPlayedandFullPlayerName}/YearsPlayed/{YearsPlayed:int}"
+@page "/WhatIfAnalysisRulesEngine/{IDandFullPlayerName}"
+@page "/WhatIfAnalysisRulesEngine/{IDandFullPlayerName}/YearsPlayed/{YearsPlayed:int}"
 
 @inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 @inject BaseballDataSampleService BaseballDataService
@@ -51,7 +51,7 @@ else
 @code {
 
     [Parameter]
-    public string LastYearPlayedandFullPlayerName { get; set; }
+    public string IDandFullPlayerName { get; set; }
 
     [Parameter]
     public int YearsPlayed { get; set; }
@@ -64,7 +64,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var lastYearPlayedandFullPlayerName = LastYearPlayedandFullPlayerName;
+        var iDandFullPlayerName = IDandFullPlayerName;
         var yearsPlayed = YearsPlayed;
 
         // Build baseball batters list
@@ -73,7 +73,7 @@ else
         // Select the initial batter, set UI state
 
         // Main default route
-        if (string.IsNullOrEmpty(lastYearPlayedandFullPlayerName))
+        if (string.IsNullOrEmpty(iDandFullPlayerName))
         {
             // Set the initial batter to default (Mike Trout)
             selectedBatter = batters.Where(a => a.FullPlayerName == MLBBaseballBatter.GetDefaultBatter()).FirstOrDefault();
@@ -81,13 +81,10 @@ else
         // Second route matching LastYearPlayedandFullPlayerName
         else
         {
-            float lastYearPlayedParameter = float.Parse(lastYearPlayedandFullPlayerName.Split('-')[0], System.Globalization.CultureInfo.InvariantCulture);
-            var fullPlayerName = lastYearPlayedandFullPlayerName.Split('-')[1];
+            var playerID = iDandFullPlayerName.Split('-')[0];
 
             // Set the initial batter to the parameters passed in
-            selectedBatter = batters.Where(a => (Util.RemoveWhiteSpace(a.FullPlayerName) == fullPlayerName) &&
-                (a.LastYearPlayed == lastYearPlayedParameter)
-            ).FirstOrDefault();
+            selectedBatter = batters.Where(a => (Util.RemoveWhiteSpace(a.ID) == playerID)).FirstOrDefault();
         }
 
         // Third route (both custom player and custom years played are passed in)
