@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ApplicationInsightsResourceId>/subscriptions/79dd471a-fd2a-4ce7-82a0-b8e7c6eecfc7/resourcegroups/MachineIntelligence-BaseballMLWorkbench/providers/microsoft.insights/components/BaseballMLWorkbenchAppInsights</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/79dd471a-fd2a-4ce7-82a0-b8e7c6eecfc7/resourceGroups/MachineIntelligence-BaseballMLWorkbench/providers/microsoft.insights/components/BaseballMLWorkbenchAppInsights</ApplicationInsightsAnnotationResourceId>
     <Configurations>Debug;Release;test</Configurations>
