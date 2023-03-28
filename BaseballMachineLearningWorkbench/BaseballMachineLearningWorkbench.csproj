@@ -25,12 +25,12 @@
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.19.0" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.21.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.ML" Version="2.0.0" />
-    <PackageReference Include="Microsoft.ML" Version="2.0.0" />
-    <PackageReference Include="Microsoft.ML.FastTree" Version="2.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="Microsoft.Extensions.ML" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="2.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
   </ItemGroup>
 
   <ItemGroup>
