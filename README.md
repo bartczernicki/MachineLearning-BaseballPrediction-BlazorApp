@@ -9,6 +9,7 @@ is a web application that showcases performing decision analysis (decision thres
 ![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
 
 **The application has the following features:**
+* Historical position player (batters) up to the end of the 2023 season 
 * Three different decision analysis mechanisms to perform what-if analysis
 * A simple "expert" rules engine to predict baseball hall of fame induction, contrasted with a Machine Intelligence solution
 * Single and multiple machine learning models working together to predict baseball hall of fame ballot and induction probabilities
@@ -20,7 +21,7 @@ is a web application that showcases performing decision analysis (decision thres
 ![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
 
 **Project Structure (Verified):**
-* Visual Studio 2019 v4.0 for Windows/Mac - Visual Studio 2022, .NET Core 3.x - .NET 6, Server-Side Blazor, ML.NET v1.5 - v1.7, Azure SignalR (optional for massively scaling message communication for Azure deployments)
+* Visual Studio 2019 v4.0 for Windows/Mac - Visual Studio 2022, .NET Core 3.x - .NET 8, Server-Side Blazor, ML.NET v1.5 - v3.0.1, Azure SignalR (optional for massively scaling message communication for Azure deployments)
 * Note: Updated Azure service versions or NuGet package references could work
 
 **More Information:**
