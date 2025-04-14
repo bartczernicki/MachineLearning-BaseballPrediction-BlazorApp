@@ -1,0 +1,55 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Baseball ML Workbench</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+
+@*Open Iconic https://useiconic.com/open*@
+@* https://useiconic.com/icons/ *@
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="WhatIfAnalysisRulesEngine">
+                <span class="oi oi-list-rich" title="connections" aria-hidden="true"></span>What-If (Rules Engine)
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="WhatIfAnalysisSingleModel">
+                <span class="oi oi-puzzle-piece" aria-hidden="true"></span>What-If (Single Model)
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="WhatIfAnalysisMultipleModels">
+                <span class="oi oi-puzzle-piece" aria-hidden="true"></span>What-If (Multiple Models)
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="ShowMeGetStarted">
+                <span class="oi oi-magnifying-glass" aria-hidden="true"></span>Show Me (Get Started)
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="InfoAndResources">
+                <span class="oi oi-info" title="info" aria-hidden="true"></span>Info & Resources
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    bool collapseNavMenu = true;
+
+    string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

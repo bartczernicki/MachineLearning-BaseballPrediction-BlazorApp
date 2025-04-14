@@ -1,0 +1,87 @@
+﻿<div class="card" style="min-height: 0px;">
+    <div class="containerHeader">
+        <div class="fixedHeader">
+            <button class="showMeButton" @onclick="ChangeButtonAppearance">
+                Show Me  <i class="fa @chevronCircleStyle fa-lg" />
+            </button>
+        </div>
+        <div class="flex-itemHeader">
+            <b>@Title</b>
+        </div>
+    </div>
+    <div class="@cardDetailsStyle">
+        <small class="form-text text-muted"><b>@DirectionsBold&nbsp;&nbsp;</b></small>
+        <small class="form-text text-muted">@DirectionsDetails</small>
+        <br/>
+        <img src="/Images/@gifImageName" height="450" />
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Type { get; set; }
+
+    [Parameter]
+    public string DirectionsBold { get; set; }
+
+    [Parameter]
+    public string DirectionsDetails { get; set; }
+
+    // Variables
+    private string chevronCircleStyle = "fa-chevron-circle-up";
+    private string cardDetailsStyle = "card-details-hidden";
+    private string gifImageName = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(Type))
+        {
+            gifImageName = Type + ".gif";
+        }
+
+        if (Type == "ShowMeSelectAndSearch")
+        {
+            DirectionsBold = "You may select a player using the dropdown or click-into the control and type in your desired player.";
+            DirectionsDetails = "Note: Players are sorted by years played.  Therefore, players with longer careers will appear higher in the results.";
+        }
+        else if (Type == "ShowMeWhatIfRules")
+        {
+            DirectionsBold = "Navigate to the What-If Analysis (Rules) area. Move the slider left or right to change the number of seasons played. Compare this to the actual player's stats & categorization (static categorization above).";
+            DirectionsDetails = "Note: Any player with less than 500 HRs will be categorized as not making the HOF. Conversely, any player over 500HRs will be categorized as a HOF inductee.";
+        }
+        else if (Type == "ShowMeWhatIfSingleMLModel")
+        {
+            DirectionsBold = "Navigate to the What-If Analysis (Single Model) area. Move the slider left or right to change the number of seasons played. Compare this to the actual player's stats & prediction (static prediction above)";
+            DirectionsDetails = "Note: As you move the slider, you are rceiving a probability rather than a binary categorization. This allows you to quantify the uncertainty of the selected player's HOF induction by picking a 'decision threshhold'";
+        }
+        else if (Type == "ShowMeWhatIfMultipleMLModels")
+        {
+            DirectionsBold = "Navigate to the What-If Analysis (Multiple Models) area. Move the slider left or right to change the number of seasons played. Compare this to the actual player's stats & prediction (static prediction above)";
+            DirectionsDetails = "Note: There are two models surfaced returning probabilities. As you move the slider left to right, the probablity of being on the ballot should light up green first.";
+        }
+        else if (Type == "ShowMeComparingMultipleBaseballPlayers")
+        {
+            DirectionsBold = "The Baseball ML Workbench is a stateless application.  You can launch multiple browser windows side-by-side to compare players.";
+            DirectionsDetails = "Note: This is not limited to two, you can launch as many windows as necessary.";
+        }
+        else if (Type == "ShowMeModelUnderstanding")
+        {
+            DirectionsBold = "In the workbench, only single probabilities were returned from the machine learning models. Many more constructs can be returned giving deeper explanations of your models.";
+            DirectionsDetails = "Navigate to https://github.com/bartczernicki/BaseballHOFPredictionWithMlrAndDALEX for a further understanding on how you can breakdown Machine Leanring models.  Such as prediction breakdowns, most influential features, impact of features as data oscillates etc.";
+            gifImageName = "DALEXPyramid.png";
+        }
+    }
+
+    private void ChangeButtonAppearance(MouseEventArgs e)
+    {
+        var eventArgs = e;
+
+        cardDetailsStyle = (cardDetailsStyle == "card-details-hidden") ? ("card-details-visible") : ("card-details-hidden");
+        chevronCircleStyle = (chevronCircleStyle == "fa-chevron-circle-up") ? ("fa-chevron-circle-down") : ("fa-chevron-circle-up");
+    }
+
+}

@@ -1,0 +1,105 @@
+﻿@page "/WhatIfAnalysisRulesEngine"
+@page "/WhatIfAnalysisRulesEngine/{IDandFullPlayerName}"
+@page "/WhatIfAnalysisRulesEngine/{IDandFullPlayerName}/YearsPlayed/{YearsPlayed:int}"
+
+@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
+@inject BaseballDataSampleService BaseballDataService
+
+<h3>What-If Analysis (Rules Engine)</h3>
+
+@if (isLoaded)
+{
+    <small class="form-text text-muted"><b>Select or Search</b> any MLB Batter to perform what-if analysis:</small>
+    <BlazoredTypeahead SearchMethod="@SearchBaseballPlayers"
+                       @bind-Value="@selectedBatter"
+                       Debounce="150" MaximumSuggestions="25"
+                       EnableDropDown="true" ShowDropDownOnFocus="true">
+        <SelectedTemplate>
+            <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Season Played: @context.LastYearPlayed)
+        </SelectedTemplate>
+        <ResultTemplate>
+            <b>@context.FullPlayerName - &nbsp;</b> (Years Played: @context.YearsPlayed, Last Season Played: @context.LastYearPlayed)
+        </ResultTemplate>
+        <NotFoundTemplate>
+            Sorry, there weren't any baseball players found.
+        </NotFoundTemplate>
+    </BlazoredTypeahead>
+
+    <p />
+    <BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
+                        Notes="Single rules-based prediction of the player being Inducted to Hall Of Fame based on the rule: HR >= 500."
+                        MultipleModels=false
+                        StaticPrediction=true MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
+                        UseMachineLearningModel=false
+                        BaseBallBatter=@selectedBatter 
+                        NumberOfSeasonsPlayed=@numberOfSeasonsPlayed/>
+    <p />
+    <BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
+                        Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
+                        MultipleModels=false
+                        StaticPrediction=false MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
+                        UseMachineLearningModel=false
+                        BaseBallBatter=@selectedBatter 
+                        NumberOfSeasonsPlayed=@numberOfSeasonsPlayed/>
+
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+
+    [Parameter]
+    public string IDandFullPlayerName { get; set; }
+
+    [Parameter]
+    public int YearsPlayed { get; set; }
+
+    bool isLoaded = false;
+
+    public List<MLBBaseballBatter> batters;
+    MLBBaseballBatter selectedBatter;
+    int numberOfSeasonsPlayed = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var iDandFullPlayerName = IDandFullPlayerName;
+        var yearsPlayed = YearsPlayed;
+
+        // Build baseball batters list
+        batters = await BaseballDataService.GetSampleBaseballData();
+
+        // Select the initial batter, set UI state
+
+        // Main default route
+        if (string.IsNullOrEmpty(iDandFullPlayerName))
+        {
+            // Set the initial batter to default (Mike Trout)
+            selectedBatter = batters.Where(a => a.FullPlayerName == MLBBaseballBatter.GetDefaultBatter()).FirstOrDefault();
+        }
+        // Second route matching LastYearPlayedandFullPlayerName
+        else
+        {
+            var playerID = iDandFullPlayerName.Split('-')[0];
+
+            // Set the initial batter to the parameters passed in
+            selectedBatter = batters.Where(a => (Util.RemoveWhiteSpace(a.ID) == playerID)).FirstOrDefault();
+        }
+
+        // Third route (both custom player and custom years played are passed in)
+        // Set the Years Played
+        if (yearsPlayed > 1 && yearsPlayed < 30)
+        {
+            numberOfSeasonsPlayed = yearsPlayed;
+        }
+
+        // set the page to loaded
+        isLoaded = true;
+    }
+
+    private async Task<IEnumerable<MLBBaseballBatter>> SearchBaseballPlayers(string searchText)
+    {
+        return await Task.FromResult(batters.Where(x => x.FullPlayerName.ToLower().Contains(searchText.ToLower())).ToList());
+    }
+}
