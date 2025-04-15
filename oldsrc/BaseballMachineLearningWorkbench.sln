@@ -1,9 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29230.61
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35507.96 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseballMachineLearningWorkbench", "BaseballMachineLearningWorkbench\BaseballMachineLearningWorkbench.csproj", "{62A6B2B6-D028-4D54-A364-72C8FC5EA7AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseballMachineLearningWorkbench.AppHost", "..\src\BaseballMachineLearningWorkbench\BaseballMachineLearningWorkbench.AppHost\BaseballMachineLearningWorkbench.AppHost.csproj", "{D8CCF979-3CCA-4004-8A3B-AB9D90AC7168}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseballMachineLearningWorkbench.ServiceDefaults", "..\src\BaseballMachineLearningWorkbench\BaseballMachineLearningWorkbench.ServiceDefaults\BaseballMachineLearningWorkbench.ServiceDefaults.csproj", "{31C4E510-370F-AA35-E52E-0295DA06E4F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseballMachineLearningWorkbench.ApiService", "..\src\BaseballMachineLearningWorkbench\BaseballMachineLearningWorkbench.ApiService\BaseballMachineLearningWorkbench.ApiService.csproj", "{5792CD76-6E14-3A68-A8E5-56439661B013}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseballMachineLearningWorkbench.Web", "..\src\BaseballMachineLearningWorkbench\BaseballMachineLearningWorkbench.Web\BaseballMachineLearningWorkbench.Web.csproj", "{6B288B80-A60A-DBFE-A444-E0AE684E8358}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,22 @@ Global
 		{62A6B2B6-D028-4D54-A364-72C8FC5EA7AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62A6B2B6-D028-4D54-A364-72C8FC5EA7AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62A6B2B6-D028-4D54-A364-72C8FC5EA7AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8CCF979-3CCA-4004-8A3B-AB9D90AC7168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8CCF979-3CCA-4004-8A3B-AB9D90AC7168}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8CCF979-3CCA-4004-8A3B-AB9D90AC7168}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8CCF979-3CCA-4004-8A3B-AB9D90AC7168}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31C4E510-370F-AA35-E52E-0295DA06E4F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31C4E510-370F-AA35-E52E-0295DA06E4F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31C4E510-370F-AA35-E52E-0295DA06E4F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31C4E510-370F-AA35-E52E-0295DA06E4F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5792CD76-6E14-3A68-A8E5-56439661B013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5792CD76-6E14-3A68-A8E5-56439661B013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5792CD76-6E14-3A68-A8E5-56439661B013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5792CD76-6E14-3A68-A8E5-56439661B013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B288B80-A60A-DBFE-A444-E0AE684E8358}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B288B80-A60A-DBFE-A444-E0AE684E8358}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B288B80-A60A-DBFE-A444-E0AE684E8358}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B288B80-A60A-DBFE-A444-E0AE684E8358}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
