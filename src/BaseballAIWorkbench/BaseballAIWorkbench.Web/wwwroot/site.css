@@ -694,3 +694,8 @@ ul {
     fill: pink;
     stroke: pink;
 }
+
+.fa-solid {
+    color: lightgray;
+    margin-right: 3px;
+}

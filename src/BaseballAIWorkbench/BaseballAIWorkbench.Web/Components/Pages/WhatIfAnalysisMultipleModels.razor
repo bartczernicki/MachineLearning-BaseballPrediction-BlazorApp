@@ -53,15 +53,15 @@ else
 @code {
 
     [Parameter]
-    public string IDandFullPlayerName { get; set; }
+    public required string IDandFullPlayerName { get; set; }
 
     [Parameter]
     public int YearsPlayed { get; set; }
 
     bool isLoaded = false;
 
-    public List<MLBBaseballBatter> batters;
-    MLBBaseballBatter selectedBatter;
+    public List<MLBBaseballBatter> batters = new ();
+    MLBBaseballBatter selectedBatter = new ();
     int numberOfSeasonsPlayed = 0;
 
     protected override async Task OnInitializedAsync()
