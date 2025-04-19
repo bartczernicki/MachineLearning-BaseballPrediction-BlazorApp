@@ -4,10 +4,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baseball AI Workbench</title>
+    <meta name="description" content="The Baseball AI Workbench is an interactive web application. Explore various analytics, decision intelligence & Machine Intelligence techniques using historical baseball data.">
+    <meta name="keywords" content="Generative AI, Machine Learning, Baseball, Machine Intelligence, Baseball Anlaytics, Analytics, Decision Analysis, Decision Intelligence">
     <base href="/" />
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
-    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["site.css"]" />
     <link rel="stylesheet" href="@Assets["BaseballAIWorkbench.Web.styles.css"]" />
+    <!-- Added for Blazored -->
+    <link rel="stylesheet" href="_content/Blazored.Typeahead/blazored-typeahead.css" media="print" onload="this.media='all'" />
+    <!-- Added for FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" media="print" onload="this.media='all'" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.ico" />
     <HeadOutlet />
@@ -16,6 +23,8 @@
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    @* Added for Blazored TypeAhead *@
+    <script src="_content/Blazored.Typeahead/blazored-typeahead.js"></script>
 </body>
 
 </html>

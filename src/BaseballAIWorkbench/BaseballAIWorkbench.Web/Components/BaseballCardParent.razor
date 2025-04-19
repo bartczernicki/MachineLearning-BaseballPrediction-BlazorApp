@@ -1,0 +1,183 @@
+﻿@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
+@inject BaseballDataSampleService BaseballDataService
+@inject ILogger<BaseballCardParent> logger
+
+<div class="card">
+    <div style="display: flex;background-color: #f7f7f9" class="px-1 pt-2">
+        <div style="width: 24px; background-color: #f7f7f9;">
+            <a target="_blank" href="@WhatIfUrl" style="background-color: #f7f7f9">
+                <i class="fa-solid fa-link"></i>
+            </a>
+        </div>
+        <div style="flex-grow:1;">
+            <b>@Title</b> - @SubTitle
+        </div>
+    </div>
+    <div class="card-body">
+        <form>
+            <div class="form-group row" style="@(StaticPrediction ? "display: none;" : string.Empty)">
+                <div style="text-align: center; width: 100%;">
+                    <div>
+                        <label for="seasonsInput" class="">Seasons Played:</label>
+                        <span class="sliderLabel">1 </span>
+                        <input type="range" class="" style="width: 50%;" min="1" max="30" step="1" value="@numberOfSeasonsPlayed"
+                               @oninput="@SliderMoved" />
+                        <span class="sliderLabel"> 30</span>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    @if (this.MultipleModels)
+                    {
+                        <div class="col-md-6 col-xl-6">
+                            <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
+                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
+                        </div>
+                        <div class="col-md-6 col-xl-6">
+                            <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
+                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-12 col-xl-12">
+                            <BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
+                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                        </div>
+                    }
+                </div>
+                <small class="form-text text-muted"><b>Notes: </b>@Notes</small>
+            </div>
+        </form>
+    </div>
+</div>
+<p />
+
+@code {
+
+    /* Parameters */
+
+    [Parameter]
+    public bool MultipleModels { get; set; } = false;
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string SubTitle { get; set; }
+
+    [Parameter]
+    public string Notes { get; set; } = string.Empty;
+
+    [Parameter]
+    public MLModelPredictionType MLModelPredictionType { get; set; } = MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel;
+
+    [Parameter]
+    public bool UseMachineLearningModel { get; set; } = true;
+
+    [Parameter]
+    public bool StaticPrediction { get; set; } = true;
+
+    [Parameter]
+    public MLBBaseballBatter BaseBallBatter { get; set; }
+
+    [Parameter]
+    public int NumberOfSeasonsPlayed { get; set; }
+
+    public string WhatIfUrl
+    {
+        get
+        {
+            return Util.GetWhatIfUrl(UseMachineLearningModel, MultipleModels, BaseBallBatter, numberOfSeasonsPlayed);
+        }
+    }
+
+    /* Variables */
+    private int numberOfSeasonsPlayed = 1;
+    MLBBaseballBatter baseBallBatterCalculated;
+
+    // parameters to send in
+    MLBBaseballBatter BaseBallBatterParameter = null;
+    MLBHOFPrediction PredictionParameterHallOfFameInduction = null;
+    MLBHOFPrediction PredictionParameterOnHallOfFameBallot = null;
+
+    protected override void OnParametersSet()
+    {
+        if (!(BaseBallBatterParameter is null))
+        {
+            // If NumberOfSeasonsPlayed parameter is not zero, then it was passed in via parent page and/or URL
+            if (this.NumberOfSeasonsPlayed == 0)
+            {
+                numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
+            }
+
+            // Check if new parameter is newer than the current
+            if (BaseBallBatter != BaseBallBatterParameter)
+            {
+                MakeBaseballPredictions();
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        numberOfSeasonsPlayed = this.NumberOfSeasonsPlayed;
+
+        //// Note: Only first page call is expensive
+        await this.MakeBaseballPredictions();
+    }
+
+    private Task MakeBaseballPredictions()
+    {
+        logger.LogInformation($"MakeBaseballPredictions| StaticPrediction: {StaticPrediction} UseMachineLearningModel: {UseMachineLearningModel} MultipleModels: {MultipleModels}");
+
+        if (!StaticPrediction)
+        {
+            // Calculate the adjusted statistics for the player
+            baseBallBatterCalculated = BaseBallBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+            BaseBallBatterParameter = baseBallBatterCalculated;
+        }
+        else
+        {
+            BaseBallBatterParameter = this.BaseBallBatter;
+        }
+
+        if (UseMachineLearningModel)
+        {
+            // Make ML Model Prediction
+            PredictionParameterHallOfFameInduction = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(),
+                BaseBallBatterParameter);
+
+            // If surfacing multiple models include the prediction for On Hall of Fame Ballot
+            if (MultipleModels)
+            {
+                // Make ML Model Prediction
+                PredictionParameterOnHallOfFameBallot = _predictionEnginePool.Predict(MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(),
+            BaseBallBatterParameter);
+            }
+        }
+        else
+        {
+            // Make Rules based Prediction
+            PredictionParameterHallOfFameInduction = BaseBallBatterParameter.GetHallOfFameInductionPredictionBasedOn500HrRule();
+        }
+
+#if DEBUG
+        System.Diagnostics.Debug.WriteLine(BaseBallBatterParameter);
+#endif
+
+        logger.LogInformation($"MakeBaseballPredictions| BaseBallBatterParameter: {BaseBallBatterParameter.FullPlayerName}, {BaseBallBatterParameter.LastYearPlayed}");
+        return Task.CompletedTask;
+    }
+
+    private void SliderMoved(ChangeEventArgs e)
+    {
+        if (int.TryParse((string)e.Value, out var index) && index >= 0)
+        {
+            numberOfSeasonsPlayed = index;
+
+            MakeBaseballPredictions();
+        }
+    }
+}
