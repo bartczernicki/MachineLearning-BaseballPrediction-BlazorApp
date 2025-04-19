@@ -1,7 +1,14 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
+
+builder.Configuration.AddAzureKeyVaultSecrets(connectionName: "AOAIEastUS2Gpt41");
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
@@ -23,6 +30,10 @@ string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "
 
 app.MapGet("/weatherforecast", () =>
 {
+    var client = new SecretClient(kvUri, new DefaultAzureCredential());
+    var secret = client.GetSecret("AOAIEastUS2Gpt41");
+    var test = app.Configuration["AOAIEastUS2Gpt41"];
+    Console.WriteLine($"Secret: {test}");
     var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
