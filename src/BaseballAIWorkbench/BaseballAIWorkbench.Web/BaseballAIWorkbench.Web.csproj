@@ -7,7 +7,57 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.30.2" />
+    <PackageReference Include="Microsoft.Extensions.ML" Version="4.0.2" />
+    <PackageReference Include="Microsoft.ML" Version="4.0.2" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BaseballAIWorkbench.ServiceDefaults\BaseballAIWorkbench.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\Images\DALEXPyramid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\LearnerPredictionXgBoost.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\PredictionBreakdown-DerekJeter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\ShowMeComparingMultipleBaseballPlayers.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\ShowMeSelectAndSearch.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\ShowMeWhatIfMultipleMLModels.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\ShowMeWhatIfRules.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\ShowMeWhatIfSingleMLModel.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Images\VariableResponse-AllStarAppearances.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\MLBBaseballBattersPositionPlayers.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Models\InductedToHoF-GeneralizedAdditiveModels.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Models\OnHoFBallot-GeneralizedAdditiveModels.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

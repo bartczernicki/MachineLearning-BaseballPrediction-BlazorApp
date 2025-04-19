@@ -1,5 +1,9 @@
 using BaseballAIWorkbench.Web;
 using BaseballAIWorkbench.Web.Components;
+using BaseballAIWorkbench.Web.MachineLearning;
+using BaseballAIWorkbench.Web.Services;
+using Microsoft.Extensions.ML;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,24 @@ builder.Services.AddHttpClient<WeatherApiClient>(client =>
         // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
         client.BaseAddress = new("https+http://apiservice");
     });
+
+// -- Custom
+
+// TODO:
+// Add SignalR service (for real-time updates to the application)
+
+// Add Data service (provides historical Baseball data to the application)
+builder.Services.AddSingleton<BaseballDataSampleService>();
+
+// Add the ML.NET models and a prediction object pool to the service
+string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-GeneralizedAdditiveModels.mlnet");
+string modelPathOnHallOfFameBallotGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "OnHoFBallot-GeneralizedAdditiveModels.mlnet");
+
+builder.Services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
+    .FromFile("InductedToHallOfFameGeneralizedAdditiveModel", modelPathInductedToHallOfFameGeneralizedAdditiveModel)
+    .FromFile("OnHallOfFameBallotGeneralizedAdditiveModel", modelPathOnHallOfFameBallotGeneralizedAdditiveModel);
+
+// TODO: Add App Insights Telemetry
 
 var app = builder.Build();
 
