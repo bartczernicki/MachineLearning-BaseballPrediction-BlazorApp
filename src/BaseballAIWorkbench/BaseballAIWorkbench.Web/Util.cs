@@ -8,11 +8,15 @@ namespace BaseballAIWorkbench
 {
     public static class Util
     {
-        public static string GetWhatIfUrl(bool useMachineLearningModel, bool MultipleModels, MLBBaseballBatter baseballBatter, int numberOfSeasonsPlayed)
+        public static string GetWhatIfUrl(bool isAgenticAnalysis, bool useMachineLearningModel, bool MultipleModels, MLBBaseballBatter baseballBatter, int numberOfSeasonsPlayed)
         {
             var basePage = string.Empty;
 
-            if (!useMachineLearningModel)
+            if (isAgenticAnalysis)
+            {
+                basePage = "WhatIfAnalysisAgentic";
+            }
+            else if (!useMachineLearningModel)
             {
                 basePage = "WhatIfAnalysisRulesEngine";
             }

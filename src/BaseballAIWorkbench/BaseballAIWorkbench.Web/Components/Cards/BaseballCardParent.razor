@@ -21,7 +21,7 @@
                         <label for="seasonsInput" class="">Seasons Played:</label>
                         <span class="sliderLabel">1 </span>
                         <input type="range" class="" style="width: 50%;" min="1" max="30" step="1" value="@numberOfSeasonsPlayed"
-                               @oninput="@SliderMoved" />
+                        @oninput="@SliderMoved" />
                         <span class="sliderLabel"> 30</span>
                     </div>
                 </div>
@@ -32,22 +32,31 @@
                     {
                         <div class="col-md-6 col-xl-6">
                             <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
-                                          BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
+                            BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
                         </div>
                         <div class="col-md-6 col-xl-6">
                             <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
-                                          BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                            BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
                         </div>
                     }
                     else
                     {
                         <div class="col-md-12 col-xl-12">
                             <BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
-                                          BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                            BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
                         </div>
                     }
                 </div>
                 <small class="form-text text-muted"><b>Notes: </b>@Notes</small>
+                <div class="row">
+                    @if (this.IsAgenticAnalysis)
+                    {
+                        <p/>
+                        <div class="col-md-12 col-xl-12">
+                            <AgentsCard />
+                        </div>
+                    }
+                </div>
             </div>
         </form>
     </div>
@@ -62,7 +71,7 @@
     public bool MultipleModels { get; set; } = false;
 
     [Parameter]
-    public bool AgenticAnalysis { get; set; } = false;
+    public bool IsAgenticAnalysis { get; set; } = false;
 
     [Parameter]
     public string Title { get; set; }
@@ -92,7 +101,7 @@
     {
         get
         {
-            return Util.GetWhatIfUrl(UseMachineLearningModel, MultipleModels, BaseballBatter, numberOfSeasonsPlayed);
+            return Util.GetWhatIfUrl(IsAgenticAnalysis, UseMachineLearningModel, MultipleModels, BaseballBatter, numberOfSeasonsPlayed);
         }
     }
 
@@ -176,7 +185,7 @@
 
     private void SliderMoved(ChangeEventArgs e)
     {
-        if (int.TryParse((string)e.Value, out var index) && index >= 0)
+        if (int.TryParse((string) e.Value!, out var index) && index >= 0)
         {
             numberOfSeasonsPlayed = index;
 

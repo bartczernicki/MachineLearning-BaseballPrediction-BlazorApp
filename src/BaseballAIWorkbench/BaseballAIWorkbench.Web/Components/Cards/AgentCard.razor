@@ -1,0 +1,43 @@
+﻿<div class="col-md-4 col-xl-4">
+    <div class="row">
+    </div>
+    <div class="card bg-c-lightgray @(this.IsSelected ? "agent-card-selected" : "agent-card")" @onclick="changeSelected">
+        <div class="card-block" style="min-height: 275px;">
+            <div style="display: flex;" class="px-1 pt-2">
+                <div style="width: 36px;">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div style="flex-grow:1;">
+                    <h6 class="form-text"><span><b>@Agents.GetAgentName(this.AgentType)</b></span></h6>
+                </div>
+            </div>
+            <small class="form-text text-muted">@Agents.GetAgentDescription(this.AgentType)</small>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string AgentType { get; set; }
+
+    [Parameter]
+    public bool IsSelected { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<Agent> OnIsSelectedValueChanged { get; set; }
+
+    private void changeSelected()
+    {
+        this.IsSelected = !this.IsSelected;
+
+        var agent = new Agent
+            {
+                AgentType = this.AgentType,
+                IsSelected = this.IsSelected
+            };
+
+        this.OnIsSelectedValueChanged.InvokeAsync(agent).Wait();
+
+        this.StateHasChanged();
+    }
+}

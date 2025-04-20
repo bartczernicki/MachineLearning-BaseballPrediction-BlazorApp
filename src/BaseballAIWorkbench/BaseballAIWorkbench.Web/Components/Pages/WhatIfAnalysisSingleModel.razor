@@ -28,7 +28,7 @@
     </BlazoredTypeahead>
 
     <p />
-    <BaseballCardParent MultipleModels=false
+    <BaseballCardParent MultipleModels=false IsAgenticAnalysis=false
                         Title="Static Prediction" SubTitle="Based on player's actual career statistics"
                         Notes="Single prediction of probability of the player being Inducted to Hall Of Fame."
                         StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
@@ -36,7 +36,7 @@
                         BaseBallBatter=selectedBatter 
                         NumberOfSeasonsPlayed=numberOfSeasonsPlayed/>
     <p />
-    <BaseballCardParent MultipleModels=false
+    <BaseballCardParent MultipleModels=false IsAgenticAnalysis=false
                         Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
                         Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
                         StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel

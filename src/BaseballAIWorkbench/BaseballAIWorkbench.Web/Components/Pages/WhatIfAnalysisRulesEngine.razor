@@ -30,7 +30,7 @@
     <p />
     <BaseballCardParent Title="Static Prediction" SubTitle="Based on player's actual career statistics"
                         Notes="Single rules-based prediction of the player being Inducted to Hall Of Fame based on the rule: HR >= 500."
-                        MultipleModels=false AgenticAnalysis=false
+                        MultipleModels=false IsAgenticAnalysis=false
                         StaticPrediction=true MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
                         UseMachineLearningModel=false
                         BaseballBatter=@selectedBatter 
@@ -38,7 +38,7 @@
     <p />
     <BaseballCardParent Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
                         Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
-                        MultipleModels=false AgenticAnalysis=false
+                        MultipleModels=false IsAgenticAnalysis=false
                         StaticPrediction=false MLModelPredictionType=@MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
                         UseMachineLearningModel=false
                         BaseballBatter=@selectedBatter 

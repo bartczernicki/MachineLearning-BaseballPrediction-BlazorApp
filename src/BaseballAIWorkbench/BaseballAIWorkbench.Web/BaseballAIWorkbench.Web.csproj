@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -8,10 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.4" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.30.2" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="4.0.2" />
     <PackageReference Include="Microsoft.ML" Version="4.0.2" />
     <PackageReference Include="Microsoft.ML.FastTree" Version="4.0.2" />
+    <PackageReference Include="System.CodeDom" Version="9.0.4" />
+    <PackageReference Include="System.Threading.Channels" Version="9.0.4" />
+    <PackageReference Include="System.Threading.RateLimiting" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,49 @@
+﻿@inject ILogger<BaseballCard> logger
+
+<div class="containerFadeIn">
+    <div class="card bg-c-lightgray order-card">
+        <div class="card-block">
+            <h6 class="form-text"><span><b>Agentic Research & Analysis with Artificial Intelligence</b></span></h6>
+            <small class="form-text text-muted">Select the Agents to include in the Hall of Fame analysis report. Selected agents: @(this.GetSelectedAgents()) </small>
+            <div class="m-b-0">...<span class="f-right"></span></div>
+            <div class="row">
+                <AgentCard @ref="agent1" AgentType="BaseballStatistician"
+                OnIsSelectedValueChanged="HandleChildValueChanged">
+                </AgentCard>
+                <AgentCard @ref="agent2" AgentType="MachineLearningExpert"
+                OnIsSelectedValueChanged="HandleChildValueChanged">
+                </AgentCard>
+                <AgentCard @ref="agent3" AgentType="BaseballEncyclopedia"
+                OnIsSelectedValueChanged="HandleChildValueChanged">
+                </AgentCard>
+            </div> 
+        </div>
+    </div>
+</div>
+
+@code {
+    private AgentCard agent1;
+    private AgentCard agent2;
+    private AgentCard agent3;
+    private List<AgentCard> agentCards = new ();
+    private List<string> selectedAgents = new();
+
+    private void HandleChildValueChanged(Agent agent)
+    {
+        if (agent.IsSelected)
+        {
+            selectedAgents.Add(Agents.GetAgentName(agent.AgentType));
+        }
+        else
+        {
+            selectedAgents.Remove(Agents.GetAgentName(agent.AgentType));
+        }
+
+        this.StateHasChanged();
+    }
+
+    private string GetSelectedAgents()
+    {
+        return string.Join(", ", selectedAgents);
+    }
+}

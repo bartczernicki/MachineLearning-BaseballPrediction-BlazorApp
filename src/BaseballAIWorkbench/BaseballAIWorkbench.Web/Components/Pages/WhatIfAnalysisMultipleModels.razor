@@ -28,7 +28,7 @@
     </BlazoredTypeahead>
 
     <p />
-    <BaseballCardParent MultipleModels=true
+    <BaseballCardParent MultipleModels=true IsAgenticAnalysis=false
                         Title="Static Prediction" SubTitle="Based on player's actual career statistics"
                         Notes="Single prediction of probability of the player being on Hall Of Fame Ballot and probability of being Inducted to Hall Of Fame."
                         StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
@@ -36,7 +36,7 @@
                         BaseballBatter=selectedBatter 
                         NumberOfSeasonsPlayed=numberOfSeasonsPlayed/>
     <p />
-    <BaseballCardParent MultipleModels=true
+    <BaseballCardParent MultipleModels=true IsAgenticAnalysis=false
                         Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
                         Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
                         StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
@@ -78,7 +78,7 @@ else
         if (string.IsNullOrEmpty(IDandFullPlayerName))
         {
             // Set the initial batter to default (Mike Trout)
-            selectedBatter = batters.Where(a => a.FullPlayerName == MLBBaseballBatter.GetDefaultBatter()).FirstOrDefault();
+            selectedBatter = batters.Where(a => a.FullPlayerName == MLBBaseballBatter.GetDefaultBatter()).FirstOrDefault()!;
         }
         // Second route matching LastYearPlayedandFullPlayerName
         else
@@ -86,7 +86,7 @@ else
             var playerID = iDandFullPlayerName.Split('-')[0];
 
             // Set the initial batter to the parameters passed in
-            selectedBatter = batters.Where(a => (Util.RemoveWhiteSpace(a.ID) == playerID)).FirstOrDefault();
+            selectedBatter = batters.Where(a => (Util.RemoveWhiteSpace(a.ID) == playerID)).FirstOrDefault()!;
         }
 
         // Third route (both custom player and custom years played are passed in)

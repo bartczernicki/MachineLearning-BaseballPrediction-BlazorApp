@@ -306,6 +306,26 @@ span.sliderLabel {
     color: #fff;
 }
 
+.agent-card {
+    transition: background-color 0.75s ease-in-out;
+    cursor: pointer;
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.agent-card-selected {
+    background-image: linear-gradient(45deg, rgb(36, 167, 140), rgb(10, 186, 151));
+    transition: background-color 0.75s ease-in-out;
+    opacity: 1;
+    cursor: pointer;
+    color: white;
+}
+
+.agent-card:hover {
+    background-image: linear-gradient(45deg, rgb(36, 167, 140), rgb(10, 186, 151));
+    opacity: 1.0;
+}
+
 .bg-c-blue {
     background: linear-gradient(45deg,#4099ff,#73b4ff);
 }
