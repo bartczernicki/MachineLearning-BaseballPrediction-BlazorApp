@@ -1,13 +1,13 @@
-﻿@page "/WhatIfAnalysisMultipleModels"
-@page "/WhatIfAnalysisMultipleModels/{IDandFullPlayerName}"
-@page "/WhatIfAnalysisMultipleModels/{IDandFullPlayerName}/YearsPlayed/{YearsPlayed:int}"
+﻿@page "/WhatIfAnalysisAgentic"
+@page "/WhatIfAnalysisAgentic/{IDandFullPlayerName}"
+@page "/WhatIfAnalysisAgentic/{IDandFullPlayerName}/YearsPlayed/{YearsPlayed:int}"
 
 @rendermode InteractiveServer
 
 @inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 @inject BaseballDataSampleService BaseballDataService
 
-<h3>What-If Analysis (Multiple Machine Learning Models)</h3>
+<h3>What-If Analysis (Agentic Analysis)</h3>
 
 @if (isLoaded)
 {
@@ -28,7 +28,7 @@
     </BlazoredTypeahead>
 
     <p />
-    <BaseballCardParent MultipleModels=true
+    <BaseballCardParent MultipleModels=true AgenticAnalysis=true
                         Title="Static Prediction" SubTitle="Based on player's actual career statistics"
                         Notes="Single prediction of probability of the player being on Hall Of Fame Ballot and probability of being Inducted to Hall Of Fame."
                         StaticPrediction=true MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel
@@ -36,7 +36,7 @@
                         BaseballBatter=selectedBatter 
                         NumberOfSeasonsPlayed=numberOfSeasonsPlayed/>
     <p />
-    <BaseballCardParent MultipleModels=true
+    <BaseballCardParent MultipleModels=true AgenticAnalysis=true
                         Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
                         Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
                         StaticPrediction=false MLModelPredictionType=MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel

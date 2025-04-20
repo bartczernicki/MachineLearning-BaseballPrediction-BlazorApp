@@ -32,18 +32,18 @@
                     {
                         <div class="col-md-6 col-xl-6">
                             <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
-                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
+                                          BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterOnHallOfFameBallot />
                         </div>
                         <div class="col-md-6 col-xl-6">
                             <BaseballCard MLModelPredictionType=@MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel UseMachineLearningModel=this.UseMachineLearningModel
-                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                                          BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
                         </div>
                     }
                     else
                     {
                         <div class="col-md-12 col-xl-12">
                             <BaseballCard MLModelPredictionType=this.MLModelPredictionType UseMachineLearningModel=this.UseMachineLearningModel
-                                          BaseBallBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
+                                          BaseballBatter=BaseBallBatterParameter Prediction=PredictionParameterHallOfFameInduction />
                         </div>
                     }
                 </div>
@@ -60,6 +60,9 @@
 
     [Parameter]
     public bool MultipleModels { get; set; } = false;
+
+    [Parameter]
+    public bool AgenticAnalysis { get; set; } = false;
 
     [Parameter]
     public string Title { get; set; }
@@ -80,7 +83,7 @@
     public bool StaticPrediction { get; set; } = true;
 
     [Parameter]
-    public MLBBaseballBatter BaseBallBatter { get; set; }
+    public MLBBaseballBatter BaseballBatter { get; set; }
 
     [Parameter]
     public int NumberOfSeasonsPlayed { get; set; }
@@ -89,7 +92,7 @@
     {
         get
         {
-            return Util.GetWhatIfUrl(UseMachineLearningModel, MultipleModels, BaseBallBatter, numberOfSeasonsPlayed);
+            return Util.GetWhatIfUrl(UseMachineLearningModel, MultipleModels, BaseballBatter, numberOfSeasonsPlayed);
         }
     }
 
@@ -109,11 +112,11 @@
             // If NumberOfSeasonsPlayed parameter is not zero, then it was passed in via parent page and/or URL
             if (this.NumberOfSeasonsPlayed == 0)
             {
-                numberOfSeasonsPlayed = (int) BaseBallBatter.YearsPlayed;
+                numberOfSeasonsPlayed = (int) BaseballBatter.YearsPlayed;
             }
 
             // Check if new parameter is newer than the current
-            if (BaseBallBatter != BaseBallBatterParameter)
+            if (BaseballBatter != BaseBallBatterParameter)
             {
                 MakeBaseballPredictions();
             }
@@ -135,12 +138,12 @@
         if (!StaticPrediction)
         {
             // Calculate the adjusted statistics for the player
-            baseBallBatterCalculated = BaseBallBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
+            baseBallBatterCalculated = BaseballBatter.CalculateStatisticsProratedBySeason(numberOfSeasonsPlayed);
             BaseBallBatterParameter = baseBallBatterCalculated;
         }
         else
         {
-            BaseBallBatterParameter = this.BaseBallBatter;
+            BaseBallBatterParameter = this.BaseballBatter;
         }
 
         if (UseMachineLearningModel)
