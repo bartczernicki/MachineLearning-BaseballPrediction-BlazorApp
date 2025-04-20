@@ -1,9 +1,9 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using System;
+using static BaseballAIWorkbench.ApiService.Util;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
@@ -26,7 +26,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
+// Define the API Endpoints
 
 app.MapGet("/weatherforecast", () =>
 {
@@ -41,18 +41,14 @@ app.MapGet("/weatherforecast", () =>
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
             Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
+            Summaries[Random.Shared.Next(Summaries.Length)]
         ))
         .ToArray();
     return forecast;
 })
 .WithName("GetWeatherForecast");
 
+
+// Map the default API routes
 app.MapDefaultEndpoints();
-
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
