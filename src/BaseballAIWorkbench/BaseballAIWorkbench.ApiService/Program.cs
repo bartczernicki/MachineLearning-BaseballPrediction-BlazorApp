@@ -30,10 +30,12 @@ string[] summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "
 
 app.MapGet("/weatherforecast", () =>
 {
-    var client = new SecretClient(kvUri, new DefaultAzureCredential());
-    var secret = client.GetSecret("AOAIEastUS2Gpt41");
-    var test = app.Configuration["AOAIEastUS2Gpt41"];
-    Console.WriteLine($"Secret: {test}");
+    var connStringKV = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEastUS2Gpt41");
+    Console.WriteLine(connStringKV);
+    var kvUri = new Uri(connStringKV!);
+    var kvClient = new SecretClient(kvUri, new DefaultAzureCredential());
+    var secretGpt41ConnString = kvClient.GetSecret("AOAIEastUS2Gpt41");
+
     var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
