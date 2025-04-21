@@ -16,11 +16,11 @@ namespace BaseballAIWorkbench.Web
 
         public async Task<string> GetBaseballPlayerAnalysis(MLBBaseballBatter baseballPlayer, CancellationToken cancellationToken = default)
         {
-            var playerAnalysis = await httpClient.PostAsJsonAsync<MLBBaseballBatter>("/BaseballPlayerAnalysis", baseballPlayer, cancellationToken);
+            var playerAnalysis = await httpClient.PostAsJsonAsync<MLBBaseballBatter>("/BaseballPlayerAnalysisML", baseballPlayer, cancellationToken);
 
             playerAnalysis.EnsureSuccessStatusCode();
 
-            var playerAnalysisString = await playerAnalysis.Content.ReadAsStringAsync();
+            var playerAnalysisString = await playerAnalysis.Content.ReadAsStringAsync(cancellationToken);
 
             var cleanString = playerAnalysisString
                 .Replace("\r\n", " ")

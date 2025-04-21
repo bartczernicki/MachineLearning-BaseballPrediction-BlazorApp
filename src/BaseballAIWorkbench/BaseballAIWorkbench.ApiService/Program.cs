@@ -29,10 +29,18 @@ builder.Services.AddSingleton<BaseballDataService>();
 // Add the ML.NET models and a prediction object pool to the service
 string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-GeneralizedAdditiveModels.mlnet");
 string modelPathOnHallOfFameBallotGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "OnHoFBallot-GeneralizedAdditiveModels.mlnet");
+string modelPathInductedToHallOfFameFastTreeModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-FastTree.mlnet");
+string modelPathOnHallOfFameBallotFastTreeModel = Path.Combine(Environment.CurrentDirectory, "Models", "OnHoFBallot-FastTree.mlnet");
+string modelPathInductedToHallOfFameLightGBMModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-LightGBM.mlnet");
+string modelPathOnHallOfFameBallotLightGBMModel = Path.Combine(Environment.CurrentDirectory, "Models", "OnHoFBallot-LightGBM.mlnet");
 
 builder.Services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
     .FromFile("InductedToHallOfFameGeneralizedAdditiveModel", modelPathInductedToHallOfFameGeneralizedAdditiveModel)
-    .FromFile("OnHallOfFameBallotGeneralizedAdditiveModel", modelPathOnHallOfFameBallotGeneralizedAdditiveModel);
+    .FromFile("OnHallOfFameBallotGeneralizedAdditiveModel", modelPathOnHallOfFameBallotGeneralizedAdditiveModel)
+    .FromFile("InductedToHallOfFameFastTreeModel", modelPathInductedToHallOfFameFastTreeModel)
+    .FromFile("OnHallOfFameBallotFastTreeModel", modelPathOnHallOfFameBallotFastTreeModel)
+    .FromFile("InductedToHallOfFameLightGbmModel", modelPathInductedToHallOfFameLightGBMModel)
+    .FromFile("OnHallOfFameBallotLightGbmModel", modelPathOnHallOfFameBallotLightGBMModel);
 
 var aoaiEndPoint = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEndpoint");
 var aoaiApiKey = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIApiKey");
@@ -60,7 +68,8 @@ if (app.Environment.IsDevelopment())
 
 var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
 var semanticKernelService = app.Services.GetRequiredService<Kernel>();
-var aiAgents = new AIAgents(semanticKernelService, baseballDataSampleService);
+var machineLearningService = app.Services.GetRequiredService<PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>>();
+var aiAgents = new AIAgents(machineLearningService, semanticKernelService, baseballDataSampleService);
 
 
 // Define the API Endpoints
@@ -92,20 +101,22 @@ app.MapGet("/Players", aiAgents.GetPlayers)
     .WithName("GetPlayers");
 app.MapPost("/BaseballPlayerAnalysis", aiAgents.PerformBaseballPlayerAnalysis)
     .WithName("BaseballPlayerAnalysis");
+app.MapPost("/BaseballPlayerAnalysisML", aiAgents.PerformBaseballPlayerAnalysisML)
+    .WithName("BaseballPlayerAnalysisML");
 
 // Map the default API routes
 app.MapDefaultEndpoints();
 app.Run();
 
-static async Task<IResult> GetPlayers(BaseballDataService service)
-{
-    var players = await service.GetBaseballData();
-    var count = players.Count;
-    return TypedResults.Ok(count);
-}
+//static async Task<IResult> GetPlayers(BaseballDataService service)
+//{
+//    var players = await service.GetBaseballData();
+//    var count = players.Count;
+//    return TypedResults.Ok(count);
+//}
 
-static async Task<IResult> PerformBaseballPlayerAnalysis(MLBBaseballBatter batter, BaseballDataService service)
-{
-    var test = batter.FullPlayerName + batter.H;
-    return TypedResults.Ok(test);
-}
+//static async Task<IResult> PerformBaseballPlayerAnalysis(MLBBaseballBatter batter, BaseballDataService service)
+//{
+//    var test = batter.FullPlayerName + batter.H;
+//    return TypedResults.Ok(test);
+//}

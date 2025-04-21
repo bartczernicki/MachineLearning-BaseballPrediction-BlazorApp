@@ -12,6 +12,12 @@ namespace BaseballAIWorkbench.Common.MachineLearning
         /// <summary>
         /// Predict the probability of the baseball player being INDUCTED to the Hall of Fame.
         /// </summary>
-        InductedToHallOfFameGeneralizedAdditiveModel = 1
+        InductedToHallOfFameGeneralizedAdditiveModel = 1,
+
+        OnHallOfFameBallotLightGbmModel = 2,
+        InductedToHallOfFameLightGbmModel = 3,
+
+        OnHallOfFameBallotFastTreeModel = 4,
+        InductedToHallOfFameFastTreeModel = 5
     };
 }

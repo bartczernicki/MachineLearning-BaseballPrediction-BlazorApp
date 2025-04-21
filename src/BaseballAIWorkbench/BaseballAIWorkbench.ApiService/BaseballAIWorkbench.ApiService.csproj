@@ -19,6 +19,8 @@
     <PackageReference Include="Aspire.Azure.Security.KeyVault" Version="9.2.0" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="4.0.2" />
     <PackageReference Include="Microsoft.ML" Version="4.0.2" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="4.0.2" />
+    <PackageReference Include="Microsoft.ML.LightGbm" Version="4.0.2" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.47.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.47.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" Version="1.47.0" />
@@ -28,10 +30,19 @@
     <None Update="Data\MLBBaseballBattersPositionPlayers.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Models\InductedToHoF-FastTree.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Models\InductedToHoF-GeneralizedAdditiveModels.mlnet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Models\InductedToHoF-LightGbm.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Models\OnHoFBallot-GeneralizedAdditiveModels.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Models\OnHoFBallot-LightGbm.mlnet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

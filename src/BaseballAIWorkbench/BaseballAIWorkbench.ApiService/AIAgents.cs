@@ -3,6 +3,10 @@ using BaseballAIWorkbench.ApiService.Services;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
+using BaseballAIWorkbench.Common.Agents;
+using Microsoft.Extensions.ML;
+using Microsoft.ML;
+using Microsoft.ML.Data;
 
 namespace BaseballAIWorkbench.ApiService
 {
@@ -10,9 +14,11 @@ namespace BaseballAIWorkbench.ApiService
     {
         private readonly BaseballDataService _baseballDataService;
         private readonly Kernel _semanticKernel;
+        private readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
 
-        public AIAgents(Kernel semanticKernel, BaseballDataService baseballDataService)
+        public AIAgents(PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine, Kernel semanticKernel, BaseballDataService baseballDataService)
         {
+            _predictionEnginePool = predictionEngine;
             _semanticKernel = semanticKernel;
             _baseballDataService = baseballDataService;
         }
@@ -38,21 +44,9 @@ namespace BaseballAIWorkbench.ApiService
         {
             var battingStatistics = batter.ToStringWithoutFullPlayerName();
 
-            var agentName = "BaseballStatistician";
-            var agentInstructions = """
-You are Baseball Statistician, a dedicated AI agent focused exclusively on the quantitative side of baseball. 
-You process and analyze player performance data to deliver clear, numbers‑driven insights. 
-You have access to a wide range of metrics, allowing you to compare players, track statistical trends over time, and answer complex statistical queries. 
-By design, you ignore narrative context, scouting reports, and subjective opinions, ensuring that every response is grounded in hard data and rigorous statistical calculations.
-""";
-            var agentDescription = """
-A dedicated AI agent focused exclusively on the quantitative side of baseball, 
-the Baseball Statistician processes and analyzes player performance data to deliver clear, 
-numbers-driven insights. It has access to a wide range of metrics allowing it to compare players,
-track statistical trends over time, and answer complex statistical queries. 
-By design, it ignores narrative context, scouting reports, and subjective opinions, 
-ensuring that every response is grounded in hard data and rigorous statistical calculations.
-""";
+            var agentType = "BaseballStatistician";
+
+            var agentMeta = Agents.GetAgent(agentType);
 
             // STEP 2: Register the agent with the Semantic Kernel. 
             // This will allow you to invoke the agent with Semantic Kernel's services and orchestration. 
@@ -60,30 +54,72 @@ ensuring that every response is grounded in hard data and rigorous statistical c
                 new()
                 {
                     Kernel = _semanticKernel,
-                    Name = agentName,
-                    Description = agentDescription,
-                    Instructions = agentInstructions
+                    Name = agentMeta.AgentType, // Ensure no spaces or it will fail
+                    Description = agentMeta.Description,
+                    Instructions = agentMeta.Instructions
                 };
 
             // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
-            var decisionPrompt = $"""
-            Analyze the following baseball player statistics and provide a detailed analysis of the player's performance. 
-            This is a position player, not a pitcher. 
-            Determine the likelihood of two things happening: 
-            -- The player being on the Hall of Fame ballot (be nominated to be voted on by the BWAA) 
-            -- The player being inducted into the Hall of Fame (getting the actual 75% of ballot votes needed) 
+            var decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
 
-            Analysis Output
-            -- A concise breakdown of each criterion and how the player measures up. 
-            -- A probability score (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            // STEP 4: Create the ChatMessageContent object with the decision prompt.
+            var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
 
-            A final recommendation: “Likely,” “Borderline,” or “Unlikely” for each outcome.
+            var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
+            // Convert agentResponse to a string
+            var analysis = agentResponse[0].Message.ToString();
 
-            <Batting Statistics>
-            Select batting statistics of the player: 
-            {battingStatistics}
-            </Batting Statistics>
-            """;
+            return TypedResults.Ok(analysis);
+        }
+
+        public async Task<IResult> PerformBaseballPlayerAnalysisML(MLBBaseballBatter batter)
+        {
+            var agentType = "MachineLearningExpert";
+
+            var agentMeta = Agents.GetAgent(agentType);
+
+            // Run the prediction engine to get the prediction
+            var onHallOfFameBallotPredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(),
+                batter);
+            var inductedToHallOfFamePredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(),
+                batter);
+            var onHallOfFameBallotPredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotLightGbmModel.ToString(),
+                batter);
+            var inductedToHallOfFamePredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameLightGbmModel.ToString(),
+                batter);
+            var onHallOfFameBallotPredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotFastTreeModel.ToString(),
+                batter);
+            var inductedToHallOfFamePredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(),
+                batter);
+
+            string[] onHallOfFameBallotProbabilities = {
+                onHallOfFameBallotPredictionModel1.Probability.ToString(),
+                onHallOfFameBallotPredictionModel2.Probability.ToString(),
+                onHallOfFameBallotPredictionModel3.Probability.ToString()
+            };
+            string[] inductedToHallOfFameProbabilities = {
+                inductedToHallOfFamePredictionModel1.Probability.ToString(),
+                inductedToHallOfFamePredictionModel2.Probability.ToString(),
+                inductedToHallOfFamePredictionModel3.Probability.ToString()
+            };
+
+
+            // STEP 2: Register the agent with the Semantic Kernel. 
+            // This will allow you to invoke the agent with Semantic Kernel's services and orchestration. 
+            ChatCompletionAgent agent =
+                new()
+                {
+                    Kernel = _semanticKernel,
+                    Name = agentMeta.AgentType, // Ensure no spaces or it will fail
+                    Description = agentMeta.Description,
+                    Instructions = agentMeta.Instructions
+                };
+
+            // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
+            var decisionPrompt = Agents.GetMachineLearningAgentDecisionPrompt(
+                onHallOfFameBallotProbabilities, inductedToHallOfFameProbabilities);
+
+            // STEP 4: Create the ChatMessageContent object with the decision prompt.
             var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
 
             var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
