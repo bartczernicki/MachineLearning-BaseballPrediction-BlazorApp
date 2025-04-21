@@ -72,9 +72,14 @@ namespace BaseballAIWorkbench.ApiService
             return TypedResults.Ok(analysis);
         }
 
-        public async Task<IResult> PerformBaseballPlayerAnalysisML(MLBBaseballBatter batter)
+        public async Task<IResult> PerformBaseballPlayerAnalysisML(AgenticAnalysisConfig agenticAnalysisConfig)
         {
+            Console.WriteLine("Agentic Analysis...");
+            Console.WriteLine("Agentic Analysis Config: Selected Agents: " + string.Join(", ", agenticAnalysisConfig.AgentsToUse));
+
             var agentType = "MachineLearningExpert";
+
+            var batter = agenticAnalysisConfig.BaseballBatter;
 
             var agentMeta = Agents.GetAgent(agentType);
 

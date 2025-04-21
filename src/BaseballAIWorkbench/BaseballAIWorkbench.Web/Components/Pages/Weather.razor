@@ -51,7 +51,7 @@ else
         var baseballData = await BaseballDataService.GetBaseballData();
         var player = baseballData.Skip(10).FirstOrDefault();
 
-        var test = await BaseballApi.GetBaseballPlayerAnalysis(player!);
+        // var test = await BaseballApi.GetBaseballPlayerAnalysis(player!);
 
         //var count = await BaseballApi.GetBaseballPlayerCountAsync();
     }

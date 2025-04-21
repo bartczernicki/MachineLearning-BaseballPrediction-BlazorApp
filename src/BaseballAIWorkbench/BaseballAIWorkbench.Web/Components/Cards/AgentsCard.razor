@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-md-9 col-xl-9">
                     <h6 class="form-text"><span><b>Agentic Research & Analysis with Artificial Intelligence</b></span></h6>
-                    <small class="form-text text-muted">Selected agents: @(this.GetSelectedAgents()) </small>
+                    <small class="form-text text-muted">Selected agents: @(this.GetSelectedAgentNames()) </small>
                     <div class="m-b-0">...<span class="f-right"></span></div>
                 </div>
                 <div class="col-md-3 col-xl-3">
@@ -31,7 +31,7 @@
             </div> 
             <div class="row">
                 <AgenticAnalysisCard @ref="agenticAnalysisCard"
-                                     IsVisible="@hasAgenticAnalysisStarted" AgenticAnalysis="@agenticAnalysis">
+                IsVisible="@hasAgenticAnalysisStarted" AgenticAnalysis="@agenticAnalysis">
                 </AgenticAnalysisCard>
             </div>
         </div>
@@ -56,19 +56,19 @@
     {
         if (agent.IsSelected)
         {
-            selectedAgents.Add(Agents.GetAgentName(agent.AgentType));
+            selectedAgents.Add(agent.AgentType);
         }
         else
         {
-            selectedAgents.Remove(Agents.GetAgentName(agent.AgentType));
+            selectedAgents.Remove(agent.AgentType);
         }
 
         this.StateHasChanged();
     }
 
-    private string GetSelectedAgents()
+    private string GetSelectedAgentNames()
     {
-        return string.Join(", ", selectedAgents);
+        return string.Join(", ", selectedAgents.Select(a => Agents.GetAgentName(a)));
     }
 
     private string RunAnalysisButtonStyle()
@@ -88,6 +88,12 @@
         agenticAnalysis = "Running Agentic Analysis...";
         this.hasAgenticAnalysisStarted = true;
 
-        this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(this.BaseballBatter!);
+        var agenticAnalysisConfig = new AgenticAnalysisConfig
+            {
+                AgentsToUse = this.selectedAgents,
+                BaseballBatter = this.BaseballBatter
+            };
+
+        this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(agenticAnalysisConfig);
     }
 }

@@ -1,7 +1,9 @@
 ﻿
 using Azure;
+using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
 using Markdig;
+using System.Net.Http.Json;
 
 namespace BaseballAIWorkbench.Web
 {
@@ -10,13 +12,12 @@ namespace BaseballAIWorkbench.Web
         public async Task<int> GetBaseballPlayerCountAsync(CancellationToken cancellationToken = default)
         {
             var playerCount = await httpClient.GetFromJsonAsync<int>("/Players", cancellationToken);
-
             return playerCount;
         }
 
-        public async Task<string> GetBaseballPlayerAnalysis(MLBBaseballBatter baseballPlayer, CancellationToken cancellationToken = default)
+        public async Task<string> GetBaseballPlayerAnalysis(AgenticAnalysisConfig agenticAnalysisConfig, CancellationToken cancellationToken = default)
         {
-            var playerAnalysis = await httpClient.PostAsJsonAsync<MLBBaseballBatter>("/BaseballPlayerAnalysisML", baseballPlayer, cancellationToken);
+            var playerAnalysis = await httpClient.PostAsJsonAsync<AgenticAnalysisConfig>("/BaseballPlayerAnalysisML", agenticAnalysisConfig, cancellationToken);
 
             playerAnalysis.EnsureSuccessStatusCode();
 
