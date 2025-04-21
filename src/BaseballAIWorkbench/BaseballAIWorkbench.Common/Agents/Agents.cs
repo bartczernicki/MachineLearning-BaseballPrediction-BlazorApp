@@ -100,8 +100,8 @@
 
             Analysis Output
             -- A concise breakdown of each criterion and how the player measures up. 
-            -- A final probability score (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
-            -- A final qualitative recommendation as well ranging from very unlikely to very likely.
+            -- A probabilistic recommendation (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- A qualitative recommendation as well ranging from very unlikely to very likely.
             
 
             <Batting Statistics>
@@ -128,8 +128,8 @@
 
             Analysis Output
             -- A concise breakdown of based on three different expert ML model probabilities.
-            -- A final probability score (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
-            -- A final qualitative recommendation as well ranging from very unlikely to very likely.
+            -- A probabilistic recommendation (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- A qualitative recommendation as well ranging from very unlikely to very likely.
             
 
             <Batter Probabilities from Different Expert Machine Learning Models>

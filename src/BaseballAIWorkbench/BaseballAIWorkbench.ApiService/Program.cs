@@ -74,29 +74,6 @@ var aiAgents = new AIAgents(machineLearningService, semanticKernelService, baseb
 
 // Define the API Endpoints
 
-app.MapGet("/weatherforecast", () =>
-{
-    var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
-    //var aiAgents = new AIAgents(baseballDataSampleService);
-
-    //var connStringKV = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEastUS2KeyVault");
-    //Console.WriteLine(connStringKV);
-    //var kvUri = new Uri(connStringKV!);
-    //var kvClient = new SecretClient(kvUri, new DefaultAzureCredential());
-    //var secretGpt41ConnString = kvClient.GetSecret("AOAIEastUS2Gpt41");
-
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            Summaries[Random.Shared.Next(Summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
 app.MapGet("/Players", aiAgents.GetPlayers)
     .WithName("GetPlayers");
 app.MapPost("/BaseballPlayerAnalysis", aiAgents.PerformBaseballPlayerAnalysis)
