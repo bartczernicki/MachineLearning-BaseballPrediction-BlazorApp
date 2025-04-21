@@ -5,7 +5,7 @@
 @rendermode InteractiveServer
 
 @inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
-@inject BaseballDataSampleService BaseballDataService
+@inject BaseballDataService BaseballDataService
 
 <h3>What-If Analysis (Rules Engine)</h3>
 
@@ -70,7 +70,7 @@ else
         var yearsPlayed = YearsPlayed;
 
         // Build baseball batters list
-        batters = await BaseballDataService.GetSampleBaseballData();
+        batters = await BaseballDataService.GetBaseballData();
 
         // Select the initial batter, set UI state
 

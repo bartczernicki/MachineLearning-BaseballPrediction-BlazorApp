@@ -5,7 +5,7 @@ using Azure.Identity;
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Add Key Vault Configuration
-var keyVaultConnString = builder.AddConnectionString("AOAIEastUS2Gpt41");
+var keyVaultConnString = builder.AddConnectionString("AOAIEastUS2KeyVault");
 
 // API Service
 var apiService =

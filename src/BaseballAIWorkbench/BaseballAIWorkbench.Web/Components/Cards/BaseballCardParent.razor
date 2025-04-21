@@ -1,5 +1,5 @@
 ﻿@inject PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
-@inject BaseballDataSampleService BaseballDataService
+@inject BaseballDataService BaseballDataService
 @inject ILogger<BaseballCardParent> logger
 
 <div class="card">
@@ -53,7 +53,7 @@
                     {
                         <p/>
                         <div class="col-md-12 col-xl-12">
-                            <AgentsCard />
+                            <AgentsCard BaseballBatter=BaseBallBatterParameter />
                         </div>
                     }
                 </div>

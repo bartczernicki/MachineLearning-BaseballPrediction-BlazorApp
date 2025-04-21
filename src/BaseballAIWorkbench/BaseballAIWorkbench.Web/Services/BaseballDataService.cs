@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace BaseballAIWorkbench.Web.Services
 {
-    public class BaseballDataSampleService
+    public class BaseballDataService
     {
-        public Task<List<MLBBaseballBatter>> GetSampleBaseballData()
+        public Task<List<MLBBaseballBatter>> GetBaseballData()
         {
-            // Return sample baseball players (batters)
-            // Mix of fictitious, active & retired players of all skills
-
             // Note: In a production system this service would load the list of batters
             // from distributed persisted storage, searched in information retrieval engine (i.e. Azure Search, Lucene),
             // a relational database etc.

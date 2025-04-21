@@ -24,13 +24,20 @@ builder.Services.AddHttpClient<WeatherApiClient>(client =>
         client.BaseAddress = new("https+http://apiservice");
     });
 
+builder.Services.AddHttpClient<BaseballApiClient>(client =>
+{
+    // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
+    // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
+    client.BaseAddress = new("https+http://apiservice");
+});
+
 // -- Custom
 
 // TODO:
 // Add SignalR service (for real-time updates to the application)
 
 // Add Data service (provides historical Baseball data to the application)
-builder.Services.AddSingleton<BaseballDataSampleService>();
+builder.Services.AddSingleton<BaseballDataService>();
 
 // Add the ML.NET models and a prediction object pool to the service
 string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-GeneralizedAdditiveModels.mlnet");

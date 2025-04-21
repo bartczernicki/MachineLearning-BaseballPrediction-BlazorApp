@@ -2,7 +2,9 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
+@inject BaseballDataService BaseballDataService
 @inject WeatherApiClient WeatherApi
+@inject BaseballApiClient BaseballApi
 
 <PageTitle>Weather</PageTitle>
 
@@ -45,5 +47,12 @@ else
     protected override async Task OnInitializedAsync()
     {
         forecasts = await WeatherApi.GetWeatherAsync();
+
+        var baseballData = await BaseballDataService.GetBaseballData();
+        var player = baseballData.Skip(10).FirstOrDefault();
+
+        var test = await BaseballApi.GetBaseballPlayerAnalysis(player!);
+
+        //var count = await BaseballApi.GetBaseballPlayerCountAsync();
     }
 }

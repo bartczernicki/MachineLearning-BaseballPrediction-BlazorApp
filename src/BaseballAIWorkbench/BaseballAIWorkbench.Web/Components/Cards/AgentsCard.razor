@@ -1,11 +1,23 @@
 ﻿@inject ILogger<BaseballCard> logger
+@inject BaseballApiClient BaseballApi
 
 <div class="containerFadeIn">
     <div class="card bg-c-lightgray order-card">
         <div class="card-block">
-            <h6 class="form-text"><span><b>Agentic Research & Analysis with Artificial Intelligence</b></span></h6>
-            <small class="form-text text-muted">Select the Agents to include in the Hall of Fame analysis report. Selected agents: @(this.GetSelectedAgents()) </small>
-            <div class="m-b-0">...<span class="f-right"></span></div>
+            <div class="row">
+                <div class="col-md-9 col-xl-9">
+                    <h6 class="form-text"><span><b>Agentic Research & Analysis with Artificial Intelligence</b></span></h6>
+                    <small class="form-text text-muted">Selected agents: @(this.GetSelectedAgents()) </small>
+                    <div class="m-b-0">...<span class="f-right"></span></div>
+                </div>
+                <div class="col-md-3 col-xl-3">
+                    <div class="btnRunAgentAnalysis @(this.RunAnalysisButtonStyle())" @onclick="runAgenticAnalysisClicked"
+                    style="font-size:1.25rem;">
+                        <i class="fa-solid fa-person-running"></i>
+                        Run Agentic Analysis
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <AgentCard @ref="agent1" AgentType="BaseballStatistician"
                 OnIsSelectedValueChanged="HandleChildValueChanged">
@@ -17,6 +29,11 @@
                 OnIsSelectedValueChanged="HandleChildValueChanged">
                 </AgentCard>
             </div> 
+            <div class="row">
+                <AgenticAnalysisCard @ref="agenticAnalysisCard"
+                                     IsVisible="@hasAgenticAnalysisStarted" AgenticAnalysis="@agenticAnalysis">
+                </AgenticAnalysisCard>
+            </div>
         </div>
     </div>
 </div>
@@ -25,8 +42,15 @@
     private AgentCard agent1;
     private AgentCard agent2;
     private AgentCard agent3;
+    private AgenticAnalysisCard agenticAnalysisCard;
+    private bool hasAgenticAnalysisStarted = false;
+    private string agenticAnalysis = string.Empty;
+
     private List<AgentCard> agentCards = new ();
     private List<string> selectedAgents = new();
+
+    [Parameter]
+    public MLBBaseballBatter BaseballBatter { get; set; }
 
     private void HandleChildValueChanged(Agent agent)
     {
@@ -45,5 +69,24 @@
     private string GetSelectedAgents()
     {
         return string.Join(", ", selectedAgents);
+    }
+
+    private string RunAnalysisButtonStyle()
+    {
+        if (selectedAgents.Count > 0)
+        {
+            return string.Empty;
+        }
+        else
+        {
+            return "disabled";
+        }
+    }
+
+    private async Task runAgenticAnalysisClicked()
+    {
+        this.hasAgenticAnalysisStarted = true;
+
+        this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(this.BaseballBatter!);
     }
 }

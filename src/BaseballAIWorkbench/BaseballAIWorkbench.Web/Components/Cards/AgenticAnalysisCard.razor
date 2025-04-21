@@ -1,0 +1,16 @@
+﻿<div class="col-md-12 col-xl-12">
+    <div class="card bg-c-lightgray" style="display:@(IsVisible ? "block" : "none")">
+        <p />
+        <div class="card-block" style="min-height: 275px;">
+            <small class="form-text text-muted">@AgenticAnalysis</small>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; } = false;
+
+    [Parameter]
+    public string AgenticAnalysis { get; set; } = string.Empty;
+}

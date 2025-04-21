@@ -710,12 +710,40 @@ ul {
     padding: 10px 5px 10px 14px;
 }
 
-.iconic * {
-    fill: pink;
-    stroke: pink;
-}
-
 .fa-solid {
     color: lightgray;
     margin-right: 3px;
+}
+
+.btnRunAgentAnalysis {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #007bff;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btnRunAgentAnalysis .fa {
+        margin-right: 0.5rem; /* space between icon and text */
+    }
+
+.btnRunAgentAnalysis:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+.btnRunAgentAnalysis:disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    user-select: none;
 }
