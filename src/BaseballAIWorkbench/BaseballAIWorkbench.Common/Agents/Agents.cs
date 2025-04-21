@@ -1,4 +1,4 @@
-﻿namespace BaseballAIWorkbench.Web.Agents
+﻿namespace BaseballAIWorkbench.Common.Agents
 {
     public static class Agents
     {

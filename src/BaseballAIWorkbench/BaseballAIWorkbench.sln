@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseballAIWorkbench.ApiServ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseballAIWorkbench.Web", "BaseballAIWorkbench.Web\BaseballAIWorkbench.Web.csproj", "{B2B05A9E-6B87-8835-1417-15CF712A5D9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseballAIWorkbench.Common", "BaseballAIWorkbench.Common\BaseballAIWorkbench.Common.csproj", "{50C5194D-CAF8-4D9A-950D-CD96FE0A019B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{B2B05A9E-6B87-8835-1417-15CF712A5D9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2B05A9E-6B87-8835-1417-15CF712A5D9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2B05A9E-6B87-8835-1417-15CF712A5D9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50C5194D-CAF8-4D9A-950D-CD96FE0A019B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50C5194D-CAF8-4D9A-950D-CD96FE0A019B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50C5194D-CAF8-4D9A-950D-CD96FE0A019B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50C5194D-CAF8-4D9A-950D-CD96FE0A019B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

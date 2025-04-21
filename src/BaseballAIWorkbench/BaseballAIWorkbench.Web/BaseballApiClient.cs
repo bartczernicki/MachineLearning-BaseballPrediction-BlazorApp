@@ -28,8 +28,8 @@ namespace BaseballAIWorkbench.Web
                 .Replace("\n", " ")
                 .Replace("\"", string.Empty);
 
-            var playerAnalysisHtml = Markdown.ToHtml(cleanString);
-            return Markdown.ToHtml(playerAnalysisHtml);
+            //var playerAnalysisHtml = Markdown.ToHtml(cleanString);
+            return Markdown.ToHtml(playerAnalysisString);
         }
     }
 }

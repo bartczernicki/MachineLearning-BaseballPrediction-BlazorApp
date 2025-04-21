@@ -69,24 +69,26 @@ ensuring that every response is grounded in hard data and rigorous statistical c
             var decisionPrompt = $"""
             Analyze the following baseball player statistics and provide a detailed analysis of the player's performance. 
             This is a position player, not a pitcher. 
-            Determine the likelihood of two things happening:
-            -- The player being on the Hall of Fame ballot.
-            -- The player being inducted into the Hall of Fame.
+            Determine the likelihood of two things happening: 
+            -- The player being on the Hall of Fame ballot (be nominated to be voted on by the BWAA) 
+            -- The player being inducted into the Hall of Fame (getting the actual 75% of ballot votes needed) 
 
-            Return the response ONLY in valid Markdown. Don't include tick marks.
+            Analysis Output
+            -- A concise breakdown of each criterion and how the player measures up. 
+            -- A probability score (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
 
+            A final recommendation: “Likely,” “Borderline,” or “Unlikely” for each outcome.
+
+            <Batting Statistics>
             Select batting statistics of the player: 
             {battingStatistics}
+            </Batting Statistics>
             """;
             var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
 
-            var analysis = string.Empty;
-            await foreach (ChatMessageContent response in agent.InvokeAsync(chatDecisionMessage))
-            {
-                // Direct response from the agent will be printed here.
-                // Console.WriteLine(response.Content);
-                analysis += response.Content;
-            }
+            var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
+            // Convert agentResponse to a string
+            var analysis = agentResponse[0].Message.ToString();
 
             return TypedResults.Ok(analysis);
         }

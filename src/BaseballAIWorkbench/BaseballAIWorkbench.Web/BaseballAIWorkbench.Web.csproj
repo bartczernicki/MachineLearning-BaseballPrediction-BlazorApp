@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BaseballAIWorkbench.Common\BaseballAIWorkbench.Common.csproj" />
     <ProjectReference Include="..\BaseballAIWorkbench.ServiceDefaults\BaseballAIWorkbench.ServiceDefaults.csproj" />
   </ItemGroup>
 

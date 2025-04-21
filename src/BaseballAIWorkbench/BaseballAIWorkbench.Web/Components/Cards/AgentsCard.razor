@@ -44,7 +44,7 @@
     private AgentCard agent3;
     private AgenticAnalysisCard agenticAnalysisCard;
     private bool hasAgenticAnalysisStarted = false;
-    private string agenticAnalysis = string.Empty;
+    private string agenticAnalysis = "Running Agentic Analysis...";
 
     private List<AgentCard> agentCards = new ();
     private List<string> selectedAgents = new();
@@ -85,6 +85,7 @@
 
     private async Task runAgenticAnalysisClicked()
     {
+        agenticAnalysis = "Running Agentic Analysis...";
         this.hasAgenticAnalysisStarted = true;
 
         this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(this.BaseballBatter!);
