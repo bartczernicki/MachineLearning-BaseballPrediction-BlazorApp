@@ -11,6 +11,7 @@ using static BaseballAIWorkbench.ApiService.Util;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel.Agents.AzureAI;
+using Microsoft.Extensions.Http.Resilience;
 
 
 var builder = WebApplication.CreateBuilder(args);

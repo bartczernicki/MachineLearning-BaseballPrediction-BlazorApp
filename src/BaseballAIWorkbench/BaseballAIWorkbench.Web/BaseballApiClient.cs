@@ -25,12 +25,15 @@ namespace BaseballAIWorkbench.Web
 
             var playerAnalysisString = await playerAnalysis.Content.ReadAsStringAsync(cancellationToken);
 
-            var obj = JsonConvert.DeserializeObject<string>(playerAnalysisString);
-            var obj2 = Regex.Unescape(playerAnalysisString);
+            string bingSourcePattern = @"【[^】]*】";        // match an opening 【, then any chars except 】, then a closing 】
+            string cleanedAnalysis = Regex.Replace(playerAnalysisString, bingSourcePattern, "");
 
-            // now obj.Markdown contains real newline characters
+            var cleanedReadyForHtml = JsonConvert.DeserializeObject<string>(cleanedAnalysis);
 
-            var playerAnalysisHtml = Markdown.ToHtml(obj);
+
+            //var cleanedReadyForHtml = Regex.Unescape(playerAnalysisString);
+
+            var playerAnalysisHtml = Markdown.ToHtml(cleanedReadyForHtml);
             return Markdown.ToHtml(playerAnalysisHtml);
         }
     }

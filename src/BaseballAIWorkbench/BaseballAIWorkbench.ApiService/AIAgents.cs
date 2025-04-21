@@ -87,7 +87,7 @@ namespace BaseballAIWorkbench.ApiService
             var batter = agenticAnalysisConfig.BaseballBatter;
 
             var agentType = agenticAnalysisConfig.AgentsToUse.FirstOrDefault();
-            var agentMeta = Agents.GetAgent(agentType);
+            var agentMeta = Agents.GetAgent(agentType!);
             var decisionPrompt = string.Empty;
 
             // STEP 3: Register the agent with the Semantic Kernel. 
@@ -124,12 +124,30 @@ namespace BaseballAIWorkbench.ApiService
                 // STEP 2: Build the decision prompt to investigate the decisions the Agent can help with.
                 decisionPrompt = Agents.GetMachineLearningAgentDecisionPrompt(
                     onHallOfFameBallotProbabilities, inductedToHallOfFameProbabilities);
+
+                // STEP 4: Create the ChatMessageContent object with the decision prompt.
+                var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
+
+                var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
+                // Convert agentResponse to a string
+                var analysis = agentResponse[0].Message.ToString();
+
+                return TypedResults.Ok(analysis);
             }
             else if (agentType == "BaseballStatistician")
             {
                 var battingStatistics = batter.ToStringWithoutFullPlayerName();
                 // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
                 decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
+
+                // STEP 4: Create the ChatMessageContent object with the decision prompt.
+                var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
+
+                var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
+                // Convert agentResponse to a string
+                var analysis = agentResponse[0].Message.ToString();
+
+                return TypedResults.Ok(analysis);
             }
             else if (agentType == "BaseballEncyclopedia")
             {
@@ -141,10 +159,10 @@ namespace BaseballAIWorkbench.ApiService
 
                 var baseballEncyclopediaAgentDefinition = agentsClient.GetAgent("asst_fVoQfqtvwLZKdQM32ZZstzHQ");
                 AzureAIAgent baseballEncyclopediaAgent = new(baseballEncyclopediaAgentDefinition, agentsClient);
-
+ 
                 var response = string.Empty;
-                ChatMessageContent message = new(AuthorRole.User,
-                    $"Perform MLB Baseball Hall of Fame Ballot research on: {batter.FullPlayerName}. Respond in Markdown only.");
+                decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
+                ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
                 Microsoft.SemanticKernel.Agents.AgentThread agentThread = new AzureAIAgentThread(agentsClient);
                 try
                 {
@@ -154,34 +172,27 @@ namespace BaseballAIWorkbench.ApiService
                         response += chatResponse.Content;
                     }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    return TypedResults.Problem(ex.Message);
+                }
                 finally
                 {
-                    await agentThread.DeleteAsync();
+                    if (!agentThread.IsDeleted)
+                    {
+                        // Delete the agent thread if it was created and not deleted
+                        await agentThread.DeleteAsync();
+                    }
                     //await agentsClient.DeleteAgentAsync(agentThread.Id);
                 }
-                //// Native
-                //Azure.AI.Projects.AgentThread thread = await agentsClient.CreateThreadAsync();
-
-                //// Create message to thread
-                //ThreadMessage message = agentsClient.CreateMessage(
-                //    thread.Id,
-                //    MessageRole.User,
-                //    $"Perform MLB Baseball Hall of Fame Ballot research on: {batter.FullPlayerName}. Respond in Markdown only.");
-                //ThreadRun run = agentsClient.CreateRun(thread, baseballEncyclopediaAgent);
-
-
 
                 return TypedResults.Ok(response);
             }
-
-            // STEP 4: Create the ChatMessageContent object with the decision prompt.
-            var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
-
-            var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
-            // Convert agentResponse to a string
-            var analysis = agentResponse[0].Message.ToString();
-
-            return TypedResults.Ok(analysis);
+            else
+            {
+                return TypedResults.Problem("Agent type not found");
+            }
         }
     }
 }

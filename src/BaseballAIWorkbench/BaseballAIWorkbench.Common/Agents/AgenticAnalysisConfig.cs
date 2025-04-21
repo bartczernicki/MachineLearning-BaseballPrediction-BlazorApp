@@ -10,6 +10,6 @@ namespace BaseballAIWorkbench.Common.Agents
     public class AgenticAnalysisConfig
     {
         public List<string> AgentsToUse { get; set; } = new List<string>();
-        public MLBBaseballBatter BaseballBatter { get; set; }
+        public required MLBBaseballBatter BaseballBatter { get; set; }
     }
 }

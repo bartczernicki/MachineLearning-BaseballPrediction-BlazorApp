@@ -1,4 +1,6 @@
-﻿namespace BaseballAIWorkbench.Common.Agents
+﻿using BaseballAIWorkbench.Common.MachineLearning;
+
+namespace BaseballAIWorkbench.Common.Agents
 {
     public static class Agents
     {
@@ -87,6 +89,35 @@
                 """,
                 _ => "Unknown agent"
             };
+        }
+
+        public static string GetInternetResearchAgentDecisionPrompt(MLBBaseballBatter baseballBatter)
+        {
+            var decisionPrompt = $"""
+            Use internet knowledge only. 
+            The player being analyzed position player, not a pitcher. 
+
+            Determine the likelihood of two things happening: 
+            -- The player being on the Hall of Fame ballot (be nominated to be voted on by the BWAA) 
+            -- The player being inducted into the Hall of Fame (getting the actual 75% of ballot votes needed) 
+
+            Even though the player may have played in the past, respond as if the information is forward looking. 
+
+            Analysis Output
+            -- A concise research of the Baseball Player  
+            -- A probabilistic recommendation (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- A qualitative recommendation as well ranging from very unlikely to very likely.
+            -- If not good information has been found, it is likely the player has not made a name for himself. 
+
+            <Baseball Player>
+            Player to Research
+            {baseballBatter.FullPlayerName}, ID: {baseballBatter.ID}, Last Year Played: {baseballBatter.LastYearPlayed}
+            </Baseball Player>
+
+            Important return Markdown ONLY, no other HTML or tic marks etc.
+            """;
+
+            return decisionPrompt;
         }
 
         public static string GetStatisticsAgentDecisionPrompt(string battingStatistics)

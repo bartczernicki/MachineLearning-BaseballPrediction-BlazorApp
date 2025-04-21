@@ -19,6 +19,9 @@ builder.Services.AddOutputCache();
 
 builder.Services.AddHttpClient<BaseballApiClient>(client =>
 {
+    // Increase the timeout to 2 minutes to allow for long-running analysis requests.
+    client.Timeout = TimeSpan.FromMinutes(2);
+
     // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
     // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
     client.BaseAddress = new("https+http://apiservice");
