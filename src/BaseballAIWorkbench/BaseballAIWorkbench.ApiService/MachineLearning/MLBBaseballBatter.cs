@@ -84,6 +84,17 @@ namespace BaseballAIWorkbench.ApiService.MachineLearning
             return mlbBatterString;
         }
 
+        public string ToStringWithoutFullPlayerName()
+        {
+            var mlbBatterString = $@"Year Played:{this.YearsPlayed}, At Bats:{this.AB}
+            Runs:{this.R}, H:{this.H}, Doubles:{this.Doubles}, Triples:{this.Triples}, Home Runs:{this.HR}, RBIs:{this.RBI}, Stolen Bases:{this.SB},
+            BattingAvg:{this.BattingAverage}, Slugging Percentage:{this.SluggingPct}, All-Star Appearances:{this.AllStarAppearances},
+            Total Player Awards (includes things like: MVPs, All Star Appearances, Silver Slugger, Gold Glove etc.):{this.TotalPlayerAwards},
+            Total Bases:{this.TB}, LastYearPlayed:{this.LastYearPlayed}";
+
+            return mlbBatterString;
+        }
+
         public MLBBaseballBatter CalculateStatisticsProratedBySeason(int numberOfSeasons)
         {
             var batter = new MLBBaseballBatter

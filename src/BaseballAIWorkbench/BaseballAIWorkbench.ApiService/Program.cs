@@ -1,25 +1,19 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using System;
-using static BaseballAIWorkbench.ApiService.Util;
 using BaseballAIWorkbench.ApiService;
 using BaseballAIWorkbench.ApiService.MachineLearning;
-using BaseballAIWorkbench.ApiService.Services; 
-using Azure.AI.OpenAI.Extensions;
+using BaseballAIWorkbench.ApiService.Services;
+using Microsoft.Extensions.ML;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel.ChatCompletion;
+using static BaseballAIWorkbench.ApiService.Util;
 
-// Ensure the NuGet package 'Azure.AI.OpenAI.Extensions' is installed in your project.  
-// You can install it using the following command in the terminal:  
-// dotnet add package Azure.AI.OpenAI.Extensions
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
-
-builder.AddAzureOpenAIClient("openAi", configureSettings: settings =>
-{
-    settings.Credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeVisualStudioCredential = true });
-});
 
 builder.Configuration.AddAzureKeyVaultSecrets(connectionName: "AOAIEastUS2Gpt41");
 
@@ -40,6 +34,19 @@ builder.Services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
     .FromFile("InductedToHallOfFameGeneralizedAdditiveModel", modelPathInductedToHallOfFameGeneralizedAdditiveModel)
     .FromFile("OnHallOfFameBallotGeneralizedAdditiveModel", modelPathOnHallOfFameBallotGeneralizedAdditiveModel);
 
+var aoaiEndPoint = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEndpoint");
+var aoaiApiKey = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIApiKey");
+var aoaiDeploymentName = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIModelDeploymentName");
+
+var semanticKernel = Kernel.CreateBuilder()
+    .AddAzureOpenAIChatCompletion(
+        deploymentName: aoaiDeploymentName!,
+        endpoint: aoaiEndPoint!,
+        apiKey: aoaiApiKey!,
+        serviceId: "azureOpenAIGeneralPurpose")
+    .Build();
+builder.Services.AddSingleton<Kernel>(builder => semanticKernel);
+
 
 var app = builder.Build();
 
@@ -51,12 +58,18 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
+var semanticKernelService = app.Services.GetRequiredService<Kernel>();
+var aiAgents = new AIAgents(semanticKernelService, baseballDataSampleService);
+
+
 // Define the API Endpoints
 
 app.MapGet("/weatherforecast", () =>
 {
     var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
-    var aiAgents = new AIAgents(baseballDataSampleService);
+    //var aiAgents = new AIAgents(baseballDataSampleService);
+
     //var connStringKV = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEastUS2KeyVault");
     //Console.WriteLine(connStringKV);
     //var kvUri = new Uri(connStringKV!);
@@ -75,9 +88,9 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
-app.MapGet("/Players", GetPlayers)
+app.MapGet("/Players", aiAgents.GetPlayers)
     .WithName("GetPlayers");
-app.MapPost("/BaseballPlayerAnalysis", PerformBaseballPlayerAnalysis)
+app.MapPost("/BaseballPlayerAnalysis", aiAgents.PerformBaseballPlayerAnalysis)
     .WithName("BaseballPlayerAnalysis");
 
 // Map the default API routes
@@ -93,12 +106,6 @@ static async Task<IResult> GetPlayers(BaseballDataService service)
 
 static async Task<IResult> PerformBaseballPlayerAnalysis(MLBBaseballBatter batter, BaseballDataService service)
 {
-    var connStringKV = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEastUS2KeyVault");
-    Console.WriteLine(connStringKV);
-    var kvUri = new Uri(connStringKV!);
-    var kvClient = new SecretClient(kvUri, new DefaultAzureCredential());
-    var secretGpt41ConnString = kvClient.GetSecret("AOAIEastUS2Gpt41");
-
     var test = batter.FullPlayerName + batter.H;
     return TypedResults.Ok(test);
 }

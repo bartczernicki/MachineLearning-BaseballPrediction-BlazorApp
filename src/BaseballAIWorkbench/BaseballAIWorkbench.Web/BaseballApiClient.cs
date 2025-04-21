@@ -1,6 +1,7 @@
 ﻿
 using Azure;
 using BaseballAIWorkbench.Web.MachineLearning;
+using Markdig;
 
 namespace BaseballAIWorkbench.Web
 {
@@ -19,7 +20,16 @@ namespace BaseballAIWorkbench.Web
 
             playerAnalysis.EnsureSuccessStatusCode();
 
-            return await playerAnalysis.Content.ReadAsStringAsync();
+            var playerAnalysisString = await playerAnalysis.Content.ReadAsStringAsync();
+
+            var cleanString = playerAnalysisString
+                .Replace("\r\n", " ")
+                .Replace("\n\n", " ")
+                .Replace("\n", " ")
+                .Replace("\"", string.Empty);
+
+            var playerAnalysisHtml = Markdown.ToHtml(cleanString);
+            return Markdown.ToHtml(playerAnalysisHtml);
         }
     }
 }
