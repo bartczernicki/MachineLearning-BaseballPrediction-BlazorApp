@@ -1,4 +1,4 @@
-﻿using BaseballAIWorkbench.ApiService.MachineLearning;
+﻿using BaseballAIWorkbench.Common.MachineLearning;
 using BaseballAIWorkbench.ApiService.Services;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;

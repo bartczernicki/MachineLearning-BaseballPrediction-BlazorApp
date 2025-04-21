@@ -1,6 +1,6 @@
 ﻿
 using Azure;
-using BaseballAIWorkbench.Web.MachineLearning;
+using BaseballAIWorkbench.Common.MachineLearning;
 using Markdig;
 
 namespace BaseballAIWorkbench.Web

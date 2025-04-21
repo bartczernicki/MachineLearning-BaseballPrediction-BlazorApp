@@ -1,5 +1,5 @@
 ﻿using System;
-using BaseballAIWorkbench.ApiService.MachineLearning;
+using BaseballAIWorkbench.Common.MachineLearning;
 
 namespace BaseballAIWorkbench.ApiService.Services
 {

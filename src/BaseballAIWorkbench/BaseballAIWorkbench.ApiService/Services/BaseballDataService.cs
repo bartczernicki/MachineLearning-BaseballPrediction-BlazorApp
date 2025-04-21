@@ -1,4 +1,4 @@
-﻿using BaseballAIWorkbench.ApiService.MachineLearning;
+﻿using BaseballAIWorkbench.Common.MachineLearning;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

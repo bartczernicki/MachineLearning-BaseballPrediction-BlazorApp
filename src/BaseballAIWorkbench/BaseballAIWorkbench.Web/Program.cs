@@ -1,6 +1,6 @@
 using BaseballAIWorkbench.Web;
 using BaseballAIWorkbench.Web.Components;
-using BaseballAIWorkbench.Web.MachineLearning;
+using BaseballAIWorkbench.Common.MachineLearning;
 using BaseballAIWorkbench.Web.Services;
 using Microsoft.Extensions.ML;
 using System.IO;

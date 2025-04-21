@@ -1,8 +1,9 @@
-﻿using BaseballAIWorkbench.Web.MachineLearning;
+﻿using BaseballAIWorkbench.Common.MachineLearning;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BaseballAIWorkbench.Common.MachineLearning;
 
 namespace BaseballAIWorkbench.Web.Services
 {

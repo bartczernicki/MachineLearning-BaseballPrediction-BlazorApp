@@ -1,7 +1,7 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using BaseballAIWorkbench.ApiService;
-using BaseballAIWorkbench.ApiService.MachineLearning;
+using BaseballAIWorkbench.Common.MachineLearning;
 using BaseballAIWorkbench.ApiService.Services;
 using Microsoft.Extensions.ML;
 using Microsoft.SemanticKernel;

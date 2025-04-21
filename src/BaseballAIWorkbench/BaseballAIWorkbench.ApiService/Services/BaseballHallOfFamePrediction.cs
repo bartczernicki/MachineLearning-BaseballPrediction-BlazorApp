@@ -1,4 +1,4 @@
-﻿using BaseballAIWorkbench.ApiService.MachineLearning;
+﻿using BaseballAIWorkbench.Common.MachineLearning;
 using Microsoft.Extensions.ML;
 using Microsoft.ML;
 using System.IO;

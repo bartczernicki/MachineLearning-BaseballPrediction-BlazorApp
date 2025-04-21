@@ -1,5 +1,5 @@
 ﻿using System;
-using BaseballAIWorkbench.Web.MachineLearning;
+using BaseballAIWorkbench.Common.MachineLearning;
 
 namespace BaseballAIWorkbench.Web.Services
 {

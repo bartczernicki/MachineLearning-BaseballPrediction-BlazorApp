@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Reflection;
 
-namespace BaseballAIWorkbench.ApiService.MachineLearning
+namespace BaseballAIWorkbench.Common.MachineLearning
 {
     public static class Helpers
     {
@@ -27,6 +28,14 @@ namespace BaseballAIWorkbench.ApiService.MachineLearning
             }
 
             return string.Format("{0} {1}", predictionLabel, predictionLabelSuffix);
+        }
+
+        public static string GetCurrentAssemblyPath()
+        {
+            var currentAssembly = Assembly.GetExecutingAssembly();
+            string assemblyPath = Path.GetDirectoryName(currentAssembly.Location);
+
+            return assemblyPath;
         }
     }
 }

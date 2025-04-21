@@ -1,7 +1,7 @@
 ﻿using Microsoft.ML.Data;
 using System;
 
-namespace BaseballAIWorkbench.Web.MachineLearning
+namespace BaseballAIWorkbench.Common.MachineLearning
 {
     public class MLBBaseballBatter
     {
@@ -80,6 +80,17 @@ namespace BaseballAIWorkbench.Web.MachineLearning
             R:{this.R}, H:{this.H}, Doubles:{this.Doubles}, Triples:{this.Triples}, HR:{this.HR}, RBI:{this.RBI}, SB:{this.SB},
             BattingAvg:{this.BattingAverage}, Slg:{this.SluggingPct}, AllStar:{this.AllStarAppearances},
             TB:{this.TB}, LastYearPlayed:{this.LastYearPlayed}, ID:{this.ID}";
+
+            return mlbBatterString;
+        }
+
+        public string ToStringWithoutFullPlayerName()
+        {
+            var mlbBatterString = $@"Year Played:{this.YearsPlayed}, At Bats:{this.AB}
+            Runs:{this.R}, H:{this.H}, Doubles:{this.Doubles}, Triples:{this.Triples}, Home Runs:{this.HR}, RBIs:{this.RBI}, Stolen Bases:{this.SB},
+            BattingAvg:{this.BattingAverage}, Slugging Percentage:{this.SluggingPct}, All-Star Appearances:{this.AllStarAppearances},
+            Total Player Awards (includes things like: MVPs, All Star Appearances, Silver Slugger, Gold Glove etc.):{this.TotalPlayerAwards},
+            Total Bases:{this.TB}, LastYearPlayed:{this.LastYearPlayed}";
 
             return mlbBatterString;
         }

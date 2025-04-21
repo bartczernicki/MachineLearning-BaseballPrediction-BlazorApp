@@ -1,6 +1,6 @@
 ﻿
 
-namespace BaseballAIWorkbench.ApiService.MachineLearning
+namespace BaseballAIWorkbench.Common.MachineLearning
 {
     public enum MLModelPredictionType
     {

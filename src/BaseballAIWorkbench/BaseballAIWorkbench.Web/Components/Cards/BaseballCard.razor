@@ -3,7 +3,7 @@
 <div class="containerFadeIn">
     <div class="card bg-c-@((Prediction is null) ? "blue" : GetCardColor(this.UseMachineLearningModel, Prediction.Probability, (int) this.BaseballBatter.HR))  order-card">
         <div class="card-block">
-            <h6 class="text-right">Hall of Fame <b>@MachineLearning.Helpers.GetPredictionLabel(this.MLModelPredictionType, UseMachineLearningModel)</b> - <span class="span-probability"><b>@this.GetPredictionValue(this.UseMachineLearningModel)</b></span></h6>
+            <h6 class="text-right">Hall of Fame <b>@Common.MachineLearning.Helpers.GetPredictionLabel(this.MLModelPredictionType, UseMachineLearningModel)</b> - <span class="span-probability"><b>@this.GetPredictionValue(this.UseMachineLearningModel)</b></span></h6>
             <h6 class="text-right"><span><b>@BaseballBatter.FullPlayerName</b></span></h6>
             <div class="m-b-0">Seasons Played<span class="f-right">@BaseballBatter.YearsPlayed</span></div>
             <div class="m-b-0">Total Bases<span class="f-right">@BaseballBatter.TB</span></div>
@@ -19,7 +19,7 @@
     /* Parameters */
 
     [Parameter]
-    public MLModelPredictionType MLModelPredictionType { get; set; } = MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel;
+    public MLModelPredictionType MLModelPredictionType { get; set; } = Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel;
 
     [Parameter]
     public bool UseMachineLearningModel { get; set; } = true;
