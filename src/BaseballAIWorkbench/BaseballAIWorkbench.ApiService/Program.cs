@@ -87,11 +87,11 @@ var aiAgents = new AIAgents(sharedCredential, machineLearningService, semanticKe
 // Define the API Endpoints
 
 app.MapGet("/Players", aiAgents.GetPlayers)
-    .WithName("GetPlayers");
-app.MapPost("/BaseballPlayerAnalysis", aiAgents.PerformBaseballPlayerAnalysis)
-    .WithName("BaseballPlayerAnalysis");
+    .WithName("GetPlayers")
+    .WithRequestTimeout(TimeSpan.FromSeconds(120));
 app.MapPost("/BaseballPlayerAnalysisML", aiAgents.PerformBaseballPlayerAnalysisML)
-    .WithName("BaseballPlayerAnalysisML");
+    .WithName("BaseballPlayerAnalysisML")
+    .WithRequestTimeout(TimeSpan.FromSeconds(120));
 
 // Map the default API routes
 app.MapDefaultEndpoints();

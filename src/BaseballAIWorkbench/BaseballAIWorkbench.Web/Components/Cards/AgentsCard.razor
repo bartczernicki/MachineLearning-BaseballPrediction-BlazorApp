@@ -85,7 +85,7 @@
 
     private async Task runAgenticAnalysisClicked()
     {
-        agenticAnalysis = "Running Agentic Analysis...";
+        agenticAnalysis = "Running Agentic Analysis with...";
         this.hasAgenticAnalysisStarted = true;
 
         var agenticAnalysisConfig = new AgenticAnalysisConfig
@@ -94,7 +94,15 @@
                 BaseballBatter = this.BaseballBatter
             };
 
-        this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(agenticAnalysisConfig);
+        if (agenticAnalysisConfig.AgentsToUse.Count > 1)
+        {
+            agenticAnalysis += "multiple agents selected";
+        }
+        else if (agenticAnalysisConfig.AgentsToUse.Count == 1)
+        {
+            agenticAnalysis += "a single agent selected";
+            this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(agenticAnalysisConfig);
+        }
         this.StateHasChanged();
     }
 }

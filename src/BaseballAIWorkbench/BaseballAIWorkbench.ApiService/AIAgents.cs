@@ -46,37 +46,37 @@ namespace BaseballAIWorkbench.ApiService
             return TypedResults.Ok(count);
         }
 
-        public async Task<IResult> PerformBaseballPlayerAnalysis(MLBBaseballBatter batter)
-        {
-            var battingStatistics = batter.ToStringWithoutFullPlayerName();
+        //public async Task<IResult> PerformBaseballPlayerAnalysis(MLBBaseballBatter batter)
+        //{
+        //    var battingStatistics = batter.ToStringWithoutFullPlayerName();
 
-            var agentType = "BaseballStatistician";
+        //    var agentType = "BaseballStatistician";
 
-            var agentMeta = Agents.GetAgent(agentType);
+        //    var agentMeta = Agents.GetAgent(agentType);
 
-            // STEP 2: Register the agent with the Semantic Kernel. 
-            // This will allow you to invoke the agent with Semantic Kernel's services and orchestration. 
-            ChatCompletionAgent agent =
-                new()
-                {
-                    Kernel = _semanticKernel,
-                    Name = agentMeta.AgentType, // Ensure no spaces or it will fail
-                    Description = agentMeta.Description,
-                    Instructions = agentMeta.Instructions
-                };
+        //    // STEP 2: Register the agent with the Semantic Kernel. 
+        //    // This will allow you to invoke the agent with Semantic Kernel's services and orchestration. 
+        //    ChatCompletionAgent agent =
+        //        new()
+        //        {
+        //            Kernel = _semanticKernel,
+        //            Name = agentMeta.AgentType, // Ensure no spaces or it will fail
+        //            Description = agentMeta.Description,
+        //            Instructions = agentMeta.Instructions
+        //        };
 
-            // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
-            var decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
+        //    // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
+        //    var decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
 
-            // STEP 4: Create the ChatMessageContent object with the decision prompt.
-            var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
+        //    // STEP 4: Create the ChatMessageContent object with the decision prompt.
+        //    var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
 
-            var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
-            // Convert agentResponse to a string
-            var analysis = agentResponse[0].Message.ToString();
+        //    var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
+        //    // Convert agentResponse to a string
+        //    var analysis = agentResponse[0].Message.ToString();
 
-            return TypedResults.Ok(analysis);
-        }
+        //    return TypedResults.Ok(analysis);
+        //}
 
         public async Task<IResult> PerformBaseballPlayerAnalysisML(AgenticAnalysisConfig agenticAnalysisConfig)
         {

@@ -45,7 +45,7 @@ namespace BaseballAIWorkbench.Common.Agents
                 """,
                 "MachineLearningExpert" =>
                 """
-                An AI agent that harnesses machine learning to dissect and predict baseball player performance. It ingests historical statistics for Machine Learning analysis, and outputs clear probabilistic forecasts. No scouting reports or narrative opinions, just rigorous, ML‑driven insights.
+                An AI agent that harnesses multiple expert machine learning models to dissect and predict baseball player performance. It ingests historical statistics for Machine Learning analysis, and outputs clear probabilistic forecasts. No scouting reports or narrative opinions, just rigorous, ML‑driven insights.
                 """,
                 "BaseballEncyclopedia" =>
                 """
