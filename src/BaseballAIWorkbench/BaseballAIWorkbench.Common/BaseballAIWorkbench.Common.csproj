@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.ML" Version="4.0.2" />
     <PackageReference Include="Microsoft.ML" Version="4.0.2" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.47.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.47.0" />
   </ItemGroup>
 
 </Project>

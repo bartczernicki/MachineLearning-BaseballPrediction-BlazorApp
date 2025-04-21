@@ -100,14 +100,16 @@
 
             Analysis Output
             -- A concise breakdown of each criterion and how the player measures up. 
-            -- A probability score (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
-
-            A final recommendation: “Likely,” “Borderline,” or “Unlikely” for each outcome.
+            -- A final probability score (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- A final qualitative recommendation as well ranging from very unlikely to very likely.
+            
 
             <Batting Statistics>
             Select batting statistics of the player: 
             {battingStatistics}
             </Batting Statistics>
+
+            Important return Markdown ONLY, no other HTML or tic marks etc.
             """;
 
             return decisionPrompt;
@@ -126,14 +128,16 @@
 
             Analysis Output
             -- A concise breakdown of based on three different expert ML model probabilities.
-            -- A probability score (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
-
-            A final recommendation: “Likely,” “Borderline,” or “Unlikely” for each outcome.
+            -- A final probability score (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- A final qualitative recommendation as well ranging from very unlikely to very likely.
+            
 
             <Batter Probabilities from Different Expert Machine Learning Models>
             3 Hall of Fame Ballot Probabilities: {string.Join(", ", hallOfFameBallotProbabilities)}
             3 Hall of Fame Ballot Induction Probabilities: {string.Join(", ", hallOfFameInductionProbabilities)}
             </Batter Probabilities from Different Expert Machine Learning Models>
+
+            Important return Markdown ONLY, no other HTML or tic marks etc.
             """;
 
             return decisionPrompt;

@@ -77,52 +77,53 @@ namespace BaseballAIWorkbench.ApiService
             Console.WriteLine("Agentic Analysis...");
             Console.WriteLine("Agentic Analysis Config: Selected Agents: " + string.Join(", ", agenticAnalysisConfig.AgentsToUse));
 
-            var agentType = "MachineLearningExpert";
-
             var batter = agenticAnalysisConfig.BaseballBatter;
 
+            var agentType = agenticAnalysisConfig.AgentsToUse.FirstOrDefault();
             var agentMeta = Agents.GetAgent(agentType);
+            var decisionPrompt = string.Empty;
 
-            // Run the prediction engine to get the prediction
-            var onHallOfFameBallotPredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(),
-                batter);
-            var inductedToHallOfFamePredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(),
-                batter);
-            var onHallOfFameBallotPredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotLightGbmModel.ToString(),
-                batter);
-            var inductedToHallOfFamePredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameLightGbmModel.ToString(),
-                batter);
-            var onHallOfFameBallotPredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotFastTreeModel.ToString(),
-                batter);
-            var inductedToHallOfFamePredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(),
-                batter);
-
-            string[] onHallOfFameBallotProbabilities = {
-                onHallOfFameBallotPredictionModel1.Probability.ToString(),
-                onHallOfFameBallotPredictionModel2.Probability.ToString(),
-                onHallOfFameBallotPredictionModel3.Probability.ToString()
-            };
-            string[] inductedToHallOfFameProbabilities = {
-                inductedToHallOfFamePredictionModel1.Probability.ToString(),
-                inductedToHallOfFamePredictionModel2.Probability.ToString(),
-                inductedToHallOfFamePredictionModel3.Probability.ToString()
-            };
-
-
-            // STEP 2: Register the agent with the Semantic Kernel. 
+            // STEP 3: Register the agent with the Semantic Kernel. 
             // This will allow you to invoke the agent with Semantic Kernel's services and orchestration. 
-            ChatCompletionAgent agent =
-                new()
-                {
-                    Kernel = _semanticKernel,
-                    Name = agentMeta.AgentType, // Ensure no spaces or it will fail
-                    Description = agentMeta.Description,
-                    Instructions = agentMeta.Instructions
+            ChatCompletionAgent agent = agentMeta.GetChatCompletionAgent(_semanticKernel);
+            // STEP 4: Build the instruction to investigate the decisions the Agent can help with.
+            if (agentType == "MachineLearningExpert")
+            {
+                // Run the prediction engine to get the prediction
+                var onHallOfFameBallotPredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(),
+                    batter);
+                var inductedToHallOfFamePredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(),
+                    batter);
+                var onHallOfFameBallotPredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotLightGbmModel.ToString(),
+                    batter);
+                var inductedToHallOfFamePredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameLightGbmModel.ToString(),
+                    batter);
+                var onHallOfFameBallotPredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotFastTreeModel.ToString(),
+                    batter);
+                var inductedToHallOfFamePredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(),
+                    batter);
+                // Convert ML Probabilities into a string array
+                string[] onHallOfFameBallotProbabilities = {
+                    onHallOfFameBallotPredictionModel1.Probability.ToString(),
+                    onHallOfFameBallotPredictionModel2.Probability.ToString(),
+                    onHallOfFameBallotPredictionModel3.Probability.ToString()
+                };
+                string[] inductedToHallOfFameProbabilities = {
+                    inductedToHallOfFamePredictionModel1.Probability.ToString(),
+                    inductedToHallOfFamePredictionModel2.Probability.ToString(),
+                    inductedToHallOfFamePredictionModel3.Probability.ToString()
                 };
 
-            // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
-            var decisionPrompt = Agents.GetMachineLearningAgentDecisionPrompt(
-                onHallOfFameBallotProbabilities, inductedToHallOfFameProbabilities);
+                // STEP 2: Build the decision prompt to investigate the decisions the Agent can help with.
+                decisionPrompt = Agents.GetMachineLearningAgentDecisionPrompt(
+                    onHallOfFameBallotProbabilities, inductedToHallOfFameProbabilities);
+            }
+            else if (agentType == "BaseballStatistician")
+            {
+                var battingStatistics = batter.ToStringWithoutFullPlayerName();
+                // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
+                decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
+            }
 
             // STEP 4: Create the ChatMessageContent object with the decision prompt.
             var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);

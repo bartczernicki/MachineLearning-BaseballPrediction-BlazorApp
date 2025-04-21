@@ -3,7 +3,9 @@ using Azure;
 using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
 using Markdig;
+using Newtonsoft.Json;
 using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 
 namespace BaseballAIWorkbench.Web
 {
@@ -23,14 +25,13 @@ namespace BaseballAIWorkbench.Web
 
             var playerAnalysisString = await playerAnalysis.Content.ReadAsStringAsync(cancellationToken);
 
-            var cleanString = playerAnalysisString
-                .Replace("\r\n", " ")
-                .Replace("\n\n", " ")
-                .Replace("\n", " ")
-                .Replace("\"", string.Empty);
+            var obj = JsonConvert.DeserializeObject<string>(playerAnalysisString);
+            var obj2 = Regex.Unescape(playerAnalysisString);
 
-            //var playerAnalysisHtml = Markdown.ToHtml(cleanString);
-            return Markdown.ToHtml(playerAnalysisString);
+            // now obj.Markdown contains real newline characters
+
+            var playerAnalysisHtml = Markdown.ToHtml(obj);
+            return Markdown.ToHtml(playerAnalysisHtml);
         }
     }
 }

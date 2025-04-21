@@ -2,8 +2,7 @@
     <div class="card bg-c-lightgray" style="display:@(IsVisible ? "block" : "none")">
         <p />
         <div class="card-block" style="min-height: 275px;">
-            @AgenticAnalysis
-@*             <small class="form-text text-muted">@AgenticAnalysis</small> *@
+            @((MarkupString) AgenticAnalysis)
         </div>
     </div>
 </div>
