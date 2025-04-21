@@ -5,8 +5,12 @@ using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using BaseballAIWorkbench.Common.Agents;
 using Microsoft.Extensions.ML;
-using Microsoft.ML;
-using Microsoft.ML.Data;
+using Azure.Identity;
+using Azure.AI.Projects;
+using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.SemanticKernel.Agents.AzureAI;
+using Microsoft.Extensions.Azure;
 
 namespace BaseballAIWorkbench.ApiService
 {
@@ -15,9 +19,11 @@ namespace BaseballAIWorkbench.ApiService
         private readonly BaseballDataService _baseballDataService;
         private readonly Kernel _semanticKernel;
         private readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
+        private readonly DefaultAzureCredential _sharedAzureCredential;
 
-        public AIAgents(PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine, Kernel semanticKernel, BaseballDataService baseballDataService)
+        public AIAgents(DefaultAzureCredential sharedAzureCredential, PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine, Kernel semanticKernel, BaseballDataService baseballDataService)
         {
+            _sharedAzureCredential = sharedAzureCredential;
             _predictionEnginePool = predictionEngine;
             _semanticKernel = semanticKernel;
             _baseballDataService = baseballDataService;
@@ -74,6 +80,7 @@ namespace BaseballAIWorkbench.ApiService
 
         public async Task<IResult> PerformBaseballPlayerAnalysisML(AgenticAnalysisConfig agenticAnalysisConfig)
         {
+#pragma warning disable SKEXP0110
             Console.WriteLine("Agentic Analysis...");
             Console.WriteLine("Agentic Analysis Config: Selected Agents: " + string.Join(", ", agenticAnalysisConfig.AgentsToUse));
 
@@ -123,6 +130,48 @@ namespace BaseballAIWorkbench.ApiService
                 var battingStatistics = batter.ToStringWithoutFullPlayerName();
                 // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
                 decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
+            }
+            else if (agentType == "BaseballEncyclopedia")
+            {
+                // Build Azure AI Agent Connection
+                var projectConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundryProject");
+                var clientOptions = new AIProjectClientOptions();
+                AIProjectClient projectClient = new AIProjectClient(projectConnectionString, _sharedAzureCredential); //, new DefaultAzureCredential(), clientOptions);
+                AgentsClient agentsClient = projectClient.GetAgentsClient();
+
+                var baseballEncyclopediaAgentDefinition = agentsClient.GetAgent("asst_fVoQfqtvwLZKdQM32ZZstzHQ");
+                AzureAIAgent baseballEncyclopediaAgent = new(baseballEncyclopediaAgentDefinition, agentsClient);
+
+                var response = string.Empty;
+                ChatMessageContent message = new(AuthorRole.User,
+                    $"Perform MLB Baseball Hall of Fame Ballot research on: {batter.FullPlayerName}. Respond in Markdown only.");
+                Microsoft.SemanticKernel.Agents.AgentThread agentThread = new AzureAIAgentThread(agentsClient);
+                try
+                {
+                    await foreach (ChatMessageContent chatResponse in baseballEncyclopediaAgent.InvokeAsync(message, agentThread))
+                    {
+                        Console.WriteLine(chatResponse.Content);
+                        response += chatResponse.Content;
+                    }
+                }
+                finally
+                {
+                    await agentThread.DeleteAsync();
+                    //await agentsClient.DeleteAgentAsync(agentThread.Id);
+                }
+                //// Native
+                //Azure.AI.Projects.AgentThread thread = await agentsClient.CreateThreadAsync();
+
+                //// Create message to thread
+                //ThreadMessage message = agentsClient.CreateMessage(
+                //    thread.Id,
+                //    MessageRole.User,
+                //    $"Perform MLB Baseball Hall of Fame Ballot research on: {batter.FullPlayerName}. Respond in Markdown only.");
+                //ThreadRun run = agentsClient.CreateRun(thread, baseballEncyclopediaAgent);
+
+
+
+                return TypedResults.Ok(response);
             }
 
             // STEP 4: Create the ChatMessageContent object with the decision prompt.

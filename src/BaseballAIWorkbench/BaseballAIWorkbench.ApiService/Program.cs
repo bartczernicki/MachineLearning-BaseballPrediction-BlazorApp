@@ -8,6 +8,9 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using static BaseballAIWorkbench.ApiService.Util;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SemanticKernel.Agents.AzureAI;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,21 +45,29 @@ builder.Services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
     .FromFile("InductedToHallOfFameLightGbmModel", modelPathInductedToHallOfFameLightGBMModel)
     .FromFile("OnHallOfFameBallotLightGbmModel", modelPathOnHallOfFameBallotLightGBMModel);
 
+var sharedCredential = new DefaultAzureCredential(false);
 var aoaiEndPoint = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEndpoint");
 var aoaiApiKey = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIApiKey");
 var aoaiDeploymentName = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIModelDeploymentName");
+
+// Add custom Http Client
+HttpClient httpClient = new HttpClient();
+httpClient.Timeout = TimeSpan.FromMinutes(2);
 
 var semanticKernel = Kernel.CreateBuilder()
     .AddAzureOpenAIChatCompletion(
         deploymentName: aoaiDeploymentName!,
         endpoint: aoaiEndPoint!,
         apiKey: aoaiApiKey!,
-        serviceId: "azureOpenAIGeneralPurpose")
+        serviceId: "azureOpenAIGeneralPurpose",
+        httpClient: httpClient)
     .Build();
 builder.Services.AddSingleton<Kernel>(builder => semanticKernel);
 
-
 var app = builder.Build();
+
+
+
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
@@ -69,7 +80,7 @@ if (app.Environment.IsDevelopment())
 var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
 var semanticKernelService = app.Services.GetRequiredService<Kernel>();
 var machineLearningService = app.Services.GetRequiredService<PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>>();
-var aiAgents = new AIAgents(machineLearningService, semanticKernelService, baseballDataSampleService);
+var aiAgents = new AIAgents(sharedCredential, machineLearningService, semanticKernelService, baseballDataSampleService);
 
 
 // Define the API Endpoints
@@ -84,16 +95,3 @@ app.MapPost("/BaseballPlayerAnalysisML", aiAgents.PerformBaseballPlayerAnalysisM
 // Map the default API routes
 app.MapDefaultEndpoints();
 app.Run();
-
-//static async Task<IResult> GetPlayers(BaseballDataService service)
-//{
-//    var players = await service.GetBaseballData();
-//    var count = players.Count;
-//    return TypedResults.Ok(count);
-//}
-
-//static async Task<IResult> PerformBaseballPlayerAnalysis(MLBBaseballBatter batter, BaseballDataService service)
-//{
-//    var test = batter.FullPlayerName + batter.H;
-//    return TypedResults.Ok(test);
-//}

@@ -10,6 +10,7 @@ var keyVaultConnString = builder.AddConnectionString("AOAIEastUS2KeyVault");
 var aoaiEndPoint = builder.AddConnectionString("AOAIEndpoint");
 var aoaiApiKey = builder.AddConnectionString("AOAIAPIKey");
 var aoaiDeploymentName = builder.AddConnectionString("AOAIModelDeploymentName");
+var azureAIFoundryProject = builder.AddConnectionString("AzureAIFoundryProject");
 
 // API Service
 var apiService =
@@ -17,7 +18,8 @@ var apiService =
     .WithReference(keyVaultConnString)
     .WithReference(aoaiEndPoint)
     .WithReference(aoaiApiKey)
-    .WithReference(aoaiDeploymentName);
+    .WithReference(aoaiDeploymentName)
+    .WithReference(azureAIFoundryProject);
 
 // Web Frontend
 builder.AddProject<Projects.BaseballAIWorkbench_Web>("webfrontend")
