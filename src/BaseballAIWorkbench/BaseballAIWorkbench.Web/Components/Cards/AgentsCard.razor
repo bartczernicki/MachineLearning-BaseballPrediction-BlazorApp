@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-md-9 col-xl-9">
                     <h6 class="form-text"><span><b>Agentic Research & Analysis with Artificial Intelligence</b></span></h6>
-                    <small class="form-text text-muted">Selected agents: @(this.GetSelectedAgentNames()) </small>
+                    <small class="form-text text-muted">Selected Agents: @(this.GetSelectedAgentNames()) </small>
                     <div class="m-b-0">...<span class="f-right"></span></div>
                 </div>
                 <div class="col-md-3 col-xl-3">
@@ -96,11 +96,12 @@
 
         if (agenticAnalysisConfig.AgentsToUse.Count > 1)
         {
-            agenticAnalysis += "multiple agents selected";
+            agenticAnalysis += "multiple agents & final quantitative analysis";
+            this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysisMultipleModels(agenticAnalysisConfig);
         }
         else if (agenticAnalysisConfig.AgentsToUse.Count == 1)
         {
-            agenticAnalysis += "a single agent selected";
+            agenticAnalysis += "a single agent";
             this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(agenticAnalysisConfig);
         }
         this.StateHasChanged();

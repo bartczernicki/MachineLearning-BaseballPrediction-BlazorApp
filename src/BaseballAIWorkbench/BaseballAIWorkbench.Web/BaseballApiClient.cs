@@ -36,5 +36,25 @@ namespace BaseballAIWorkbench.Web
             var playerAnalysisHtml = Markdown.ToHtml(cleanedReadyForHtml);
             return Markdown.ToHtml(playerAnalysisHtml);
         }
+
+        public async Task<string> GetBaseballPlayerAnalysisMultipleModels(AgenticAnalysisConfig agenticAnalysisConfig, CancellationToken cancellationToken = default)
+        {
+            var playerAnalysis = await httpClient.PostAsJsonAsync<AgenticAnalysisConfig>("/BaseballPlayerAnalysisMultipleAgents", agenticAnalysisConfig, cancellationToken);
+
+            playerAnalysis.EnsureSuccessStatusCode();
+
+            var playerAnalysisString = await playerAnalysis.Content.ReadAsStringAsync(cancellationToken);
+
+            string bingSourcePattern = @"【[^】]*】";        // match an opening 【, then any chars except 】, then a closing 】
+            string cleanedAnalysis = Regex.Replace(playerAnalysisString, bingSourcePattern, "");
+
+            var cleanedReadyForHtml = JsonConvert.DeserializeObject<string>(cleanedAnalysis);
+
+
+            //var cleanedReadyForHtml = Regex.Unescape(playerAnalysisString);
+
+            var playerAnalysisHtml = Markdown.ToHtml(cleanedReadyForHtml);
+            return Markdown.ToHtml(playerAnalysisHtml);
+        }
     }
 }
