@@ -137,7 +137,8 @@ namespace BaseballAIWorkbench.Common.Agents
             {baseballBatter.FullPlayerName}, ID: {baseballBatter.ID}, Last Year Played: {baseballBatter.LastYearPlayed}
             </Baseball Player>
 
-            Important return Markdown ONLY, no other HTML or tic marks etc.
+            Important return Markdown ONLY, no other HTML or tic marks etc.  
+            Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
             """;
 
             return decisionPrompt;
@@ -164,6 +165,7 @@ namespace BaseballAIWorkbench.Common.Agents
             </Batting Statistics>
 
             Important return Markdown ONLY, no other HTML or tic marks etc.
+            Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
             """;
 
             return decisionPrompt;
@@ -192,6 +194,7 @@ namespace BaseballAIWorkbench.Common.Agents
             </Batter Probabilities from Different Expert Machine Learning Models>
 
             Important return Markdown ONLY, no other HTML or tic marks etc.
+            Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
             """;
 
             return decisionPrompt;
@@ -231,14 +234,16 @@ namespace BaseballAIWorkbench.Common.Agents
                    - A brief interpretation of how varying \(k\) dampens or amplifies agent consensus.
                 
                 5. **Output format**:
-                   ```markdown
-                   ## Unified Hall‑of‑Fame Probabilities
+                   ```Markdown format ONLY no other HTML or tic marks etc.```
+                   ```Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).```
+                   ```Do not include the math from above (Steps 1 - 4)```
+                   ### Unified Agentic Hall‑of‑Fame Probabilities
                 
-                   - **Ballot Appearance**  
+                   - **Hall of Fame Ballot Appearance**  
                      • Point estimate (k=1): XX.X%  
                      • Sensitivity band (k=0.5–2.0): [YY.Y%, ZZ.Z%]
                 
-                   - **Induction**  
+                   - **Hall of Fame Induction**  
                      • Point estimate (k=1): AA.A%  
                      • Sensitivity band (k=0.5–2.0): [BB.B%, CC.C%]
                 

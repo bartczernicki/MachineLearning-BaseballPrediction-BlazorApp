@@ -747,3 +747,9 @@ ul {
     opacity: 0.6;
     user-select: none;
 }
+
+.language-markdown {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}

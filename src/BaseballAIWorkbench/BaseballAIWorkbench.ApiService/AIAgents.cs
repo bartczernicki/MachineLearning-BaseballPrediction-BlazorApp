@@ -328,7 +328,7 @@ namespace BaseballAIWorkbench.ApiService
             // Convert ChatHistory to a string
             // var agentsAnalysisHistoryString = string.Join(Environment.NewLine, agentsAnalysisHistory.Select(a => a.Content));
 
-            Console.WriteLine("Agentic Analysis - Final Quantitative Analysis");
+            Console.WriteLine("Agentic Analysis - Agent Type: Final Quantitative Analysis");
 
             //agentsAnalysisHistory.AddSystemMessage(Agents.GetAgentInstructions("QuantitativeAnalysis"));
             //var openAIPromptExecutionSettings = new AzureOpenAIPromptExecutionSettings()

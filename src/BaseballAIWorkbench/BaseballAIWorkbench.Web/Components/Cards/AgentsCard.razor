@@ -96,12 +96,12 @@
 
         if (agenticAnalysisConfig.AgentsToUse.Count > 1)
         {
-            agenticAnalysis += "multiple agents & final quantitative analysis";
+            agenticAnalysis += "multiple research agents & 'Agent Q' final quantitative analysis";
             this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysisMultipleModels(agenticAnalysisConfig);
         }
         else if (agenticAnalysisConfig.AgentsToUse.Count == 1)
         {
-            agenticAnalysis += "a single agent";
+            agenticAnalysis += "a single research agent";
             this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(agenticAnalysisConfig);
         }
         this.StateHasChanged();
