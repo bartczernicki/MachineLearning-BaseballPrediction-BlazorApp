@@ -1,11 +1,6 @@
 **Baseball AI Workbench**
 is a web application that showcases performing quantitative decision analysis (decision thresholding, what-if analysis, AI Agents with probability & confidence interval analysis) using in-memory Machine Learning models with historical baseball data.
 
-**Live Demo Web Site:** https://baseballmlworkbench.azurefd.net/  
-**AI Architecture Details:** https://docs.microsoft.com/en-us/azure/architecture/data-guide/big-data/baseball-ml-workload  
-**DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmachinelearningworkbench   
-**Full Get Started Guide:** https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/GETSTARTED.md  
-
 ![Baseball ML Workbench](https://raw.githubusercontent.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/refs/heads/master/BaseballAIWorkbench.png)
 
 **The application has the following features:**
