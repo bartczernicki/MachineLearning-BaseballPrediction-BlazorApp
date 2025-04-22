@@ -1,7 +1,16 @@
+**Scenario Unlocked**
+unlocks solutions where human judgement and decision-making is involved. Sufficiently important decisions require deeper analysis. If a quantitative approach is available, it is usually the one preferred as it will offer the best combination of an approach and outcome.
+
+[!Sports Decision Scenario](https://raw.githubusercontent.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/refs/heads/master/SportsDecisionScenario.png) 
+
 **Baseball AI Workbench**
 is a web application that showcases performing quantitative decision analysis (decision thresholding, what-if analysis, AI Agents with probability & confidence interval analysis) using in-memory Machine Learning models with historical baseball data.
 
 ![Baseball ML Workbench](https://raw.githubusercontent.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/refs/heads/master/BaseballAIWorkbench.png)
+
+
+
+
 
 **The application has the following features:**
 * Historical position player (batters) up to the end of the 2024 season 
