@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel.Agents.AzureAI;
 using Microsoft.Extensions.Http.Resilience;
+using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,6 +66,14 @@ var semanticKernel = Kernel.CreateBuilder()
     .Build();
 builder.Services.AddSingleton<Kernel>(builder => semanticKernel);
 
+
+AzureOpenAIChatCompletionService reasoningCompletionService = new(
+        deploymentName: "o4-mini",
+        endpoint: aoaiEndPoint!,
+        apiKey: aoaiApiKey!,
+        httpClient: httpClient
+);
+
 var app = builder.Build();
 
 
@@ -79,7 +88,7 @@ if (app.Environment.IsDevelopment())
 var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
 var semanticKernelService = app.Services.GetRequiredService<Kernel>();
 var machineLearningService = app.Services.GetRequiredService<PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>>();
-var aiAgents = new AIAgents(sharedCredential, machineLearningService, null,
+var aiAgents = new AIAgents(sharedCredential, machineLearningService, reasoningCompletionService,
     semanticKernelService, baseballDataSampleService);
 
 

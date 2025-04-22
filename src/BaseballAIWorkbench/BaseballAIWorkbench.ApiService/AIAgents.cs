@@ -11,6 +11,7 @@ using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Agents.AzureAI;
 using Microsoft.Extensions.Azure;
+using OpenAI.Chat;
 
 namespace BaseballAIWorkbench.ApiService
 {
@@ -18,14 +19,16 @@ namespace BaseballAIWorkbench.ApiService
     {
         private readonly BaseballDataService _baseballDataService;
         private readonly Kernel _semanticKernel;
+        private readonly AzureOpenAIChatCompletionService _chatCompletionReasoning;
         private readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
         private readonly DefaultAzureCredential _sharedAzureCredential;
 
-        public AIAgents(DefaultAzureCredential sharedAzureCredential, PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine, 
-                Kernel semanticKernelReasoning, Kernel semanticKernel, BaseballDataService baseballDataService)
+        public AIAgents(DefaultAzureCredential sharedAzureCredential, PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine,
+                AzureOpenAIChatCompletionService chatCompletionReasoning, Kernel semanticKernel, BaseballDataService baseballDataService)
         {
             _sharedAzureCredential = sharedAzureCredential;
             _predictionEnginePool = predictionEngine;
+            _chatCompletionReasoning = chatCompletionReasoning;
             _semanticKernel = semanticKernel;
             _baseballDataService = baseballDataService;
         }
@@ -126,7 +129,7 @@ namespace BaseballAIWorkbench.ApiService
                     onHallOfFameBallotProbabilities, inductedToHallOfFameProbabilities);
 
                 // STEP 4: Create the ChatMessageContent object with the decision prompt.
-                var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
+                var chatDecisionMessage = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, decisionPrompt);
 
                 var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
                 // Convert agentResponse to a string
@@ -141,7 +144,7 @@ namespace BaseballAIWorkbench.ApiService
                 decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
 
                 // STEP 4: Create the ChatMessageContent object with the decision prompt.
-                var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
+                var chatDecisionMessage = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, decisionPrompt);
 
                 var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
                 // Convert agentResponse to a string
@@ -162,11 +165,11 @@ namespace BaseballAIWorkbench.ApiService
  
                 var response = string.Empty;
                 decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
-                ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
+                Microsoft.SemanticKernel.ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
                 Microsoft.SemanticKernel.Agents.AgentThread agentThread = new AzureAIAgentThread(agentsClient);
                 try
                 {
-                    await foreach (ChatMessageContent chatResponse in baseballEncyclopediaAgent.InvokeAsync(message, agentThread))
+                    await foreach (Microsoft.SemanticKernel.ChatMessageContent chatResponse in baseballEncyclopediaAgent.InvokeAsync(message, agentThread))
                     {
                         Console.WriteLine(chatResponse.Content);
                         response += chatResponse.Content;
@@ -197,6 +200,9 @@ namespace BaseballAIWorkbench.ApiService
 
         public async Task<IResult> PerformBaseballPlayerAnalysisMupltipleAgents(AgenticAnalysisConfig agenticAnalysisConfig)
         {
+
+            //var chatCompletionServicetest = _semanticKernelReasoning.Services.GetRequiredService<IChatCompletionService>();
+
 #pragma warning disable SKEXP0110
             Console.WriteLine("Agentic Analysis...");
             Console.WriteLine("Agentic Analysis - Config Selected Agents: " + string.Join(", ", agenticAnalysisConfig.AgentsToUse));
@@ -248,7 +254,7 @@ namespace BaseballAIWorkbench.ApiService
                         onHallOfFameBallotProbabilities, inductedToHallOfFameProbabilities);
 
                     // STEP 4: Create the ChatMessageContent object with the decision prompt.
-                    var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
+                    var chatDecisionMessage = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, decisionPrompt);
 
                     var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
                     //// Convert agentResponse to a string
@@ -264,7 +270,7 @@ namespace BaseballAIWorkbench.ApiService
                     decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
 
                     // STEP 4: Create the ChatMessageContent object with the decision prompt.
-                    var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
+                    var chatDecisionMessage = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, decisionPrompt);
 
                     var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
                     //// Convert agentResponse to a string
@@ -285,11 +291,11 @@ namespace BaseballAIWorkbench.ApiService
 
                     var analysis = string.Empty;
                     decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
-                    ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
+                    Microsoft.SemanticKernel.ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
                     Microsoft.SemanticKernel.Agents.AgentThread agentThread = new AzureAIAgentThread(agentsClient);
                     try
                     {
-                        await foreach (ChatMessageContent chatResponse in baseballEncyclopediaAgent.InvokeAsync(message, agentThread))
+                        await foreach (Microsoft.SemanticKernel.ChatMessageContent chatResponse in baseballEncyclopediaAgent.InvokeAsync(message, agentThread))
                         {
                             Console.WriteLine(chatResponse.Content);
                             analysis += chatResponse.Content;
@@ -324,12 +330,19 @@ namespace BaseballAIWorkbench.ApiService
 
             Console.WriteLine("Agentic Analysis - Final Quantitative Analysis");
 
-            var chatMessageContent = new ChatMessageContent(AuthorRole.User, Agents.GetQuantitativeAnalysisPrompt());
+            //agentsAnalysisHistory.AddSystemMessage(Agents.GetAgentInstructions("QuantitativeAnalysis"));
+            //var openAIPromptExecutionSettings = new AzureOpenAIPromptExecutionSettings()
+            //{
+            //    ReasoningEffort = ChatReasoningEffortLevel.High
+            //};
+            //agentsAnalysisHistory.AddUserMessage(Agents.GetQuantitativeAnalysisPrompt());
+            ////var chatCompletionService = _semanticKernelReasoning.Services.GetRequiredService<IChatCompletionService>();
+            //var quantAnalysisResponse = await _chatCompletionReasoning.GetChatMessageContentAsync(agentsAnalysisHistory, openAIPromptExecutionSettings);
+
+            var chatMessageContent = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, Agents.GetQuantitativeAnalysisPrompt());
             var quantitativeAnalysisAgent = Agents.GetAgent("QuantitativeAnalysis");
 
             ChatCompletionAgent quantAgent = quantitativeAnalysisAgent.GetChatCompletionAgent(_semanticKernel);
-
-
 
             Microsoft.SemanticKernel.Agents.AgentThread quantAgentThread = new ChatHistoryAgentThread(agentsAnalysisHistory);
             var quantitativeAnalysisResponse = await quantAgent.InvokeAsync(chatMessageContent, quantAgentThread).ToArrayAsync();
