@@ -6,7 +6,7 @@ is a web application that showcases performing decision analysis (decision thres
 **DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmachinelearningworkbench   
 **Full Get Started Guide:** https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/GETSTARTED.md  
 
-![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbenchDemo.gif)
+![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballAIWorkbenchDemo.png)
 
 **The application has the following features:**
 * Historical position player (batters) up to the end of the 2023 season 
