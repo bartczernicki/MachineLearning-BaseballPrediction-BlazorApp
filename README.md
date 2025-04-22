@@ -1,5 +1,5 @@
-**Baseball Machine Learning Workbench**
-is a web application that showcases performing decision analysis (decision thresholding, what-if analysis) using in-memory Machine Learning models with baseball data.
+**Baseball AI Workbench**
+is a web application that showcases performing quantitative decision analysis (decision thresholding, what-if analysis, AI Agents with probability & confidence interval analysis) using in-memory Machine Learning models with historical baseball data.
 
 **Live Demo Web Site:** https://baseballmlworkbench.azurefd.net/  
 **AI Architecture Details:** https://docs.microsoft.com/en-us/azure/architecture/data-guide/big-data/baseball-ml-workload  
