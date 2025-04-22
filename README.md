@@ -6,23 +6,23 @@ is a web application that showcases performing decision analysis (decision thres
 **DockerHub Container Location:** https://hub.docker.com/r/bartczernicki/baseballmachinelearningworkbench   
 **Full Get Started Guide:** https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/GETSTARTED.md  
 
-![Baseball ML Workbench](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballAIWorkbenchDemo.png)
+![Baseball ML Workbench](https://raw.githubusercontent.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/refs/heads/master/BaseballAIWorkbench.png)
 
 **The application has the following features:**
-* Historical position player (batters) up to the end of the 2023 season 
+* Historical position player (batters) up to the end of the 2024 season 
 * Three different decision analysis mechanisms to perform what-if analysis
+* Agentic AI integrations with Agents performing research & quantitative analysis 
 * A simple "expert" rules engine to predict baseball hall of fame induction, contrasted with a Machine Intelligence solution
 * Single and multiple machine learning models working together to predict baseball hall of fame ballot and induction probabilities
 * Machine Learning models are surfaced via ML.NET in-memory for rapid inference (predictions)
-* Surfaced via the Server-Side Blazor .NET Core web application framework using SignalR to deliver the predictions from the server to the web client at scale
-* Self-contained application in a Docker container on DockerHub, allowing you to run it completely offline or locally
+* Surfaced via the Aspire.NET integration with a Blazor application framework using SignalR to deliver the predictions from the server to the web client at scale
+* Self-contained application with Docker, allowing you to run locally
 
 **Architecture - Cloud Deployment Diagram:**
 ![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
 
 **Project Structure (Verified):**
-* Visual Studio 2019 v4.0 for Windows/Mac - Visual Studio 2022, .NET Core 3.x - .NET 8, Server-Side Blazor, ML.NET v1.5 - v3.0.1, Azure SignalR (optional for massively scaling message communication for Azure deployments)
-* Note: Updated Azure service versions or NuGet package references could work
+* Visual Studio 2022, .NET 9, Server-Side Blazor, ML.NET v4.02, Semantic Kernel, Azure AI Foundy, Azure OpenAI Azure SignalR (optional for massively scaling message communication for Azure deployments)
 
 **More Information:**
 * ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet
