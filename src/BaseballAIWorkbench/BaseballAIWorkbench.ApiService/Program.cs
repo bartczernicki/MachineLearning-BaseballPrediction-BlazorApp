@@ -68,8 +68,6 @@ builder.Services.AddSingleton<Kernel>(builder => semanticKernel);
 var app = builder.Build();
 
 
-
-
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
 
@@ -81,7 +79,8 @@ if (app.Environment.IsDevelopment())
 var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
 var semanticKernelService = app.Services.GetRequiredService<Kernel>();
 var machineLearningService = app.Services.GetRequiredService<PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>>();
-var aiAgents = new AIAgents(sharedCredential, machineLearningService, semanticKernelService, baseballDataSampleService);
+var aiAgents = new AIAgents(sharedCredential, machineLearningService, null,
+    semanticKernelService, baseballDataSampleService);
 
 
 // Define the API Endpoints

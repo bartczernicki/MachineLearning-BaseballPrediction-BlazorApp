@@ -21,7 +21,8 @@ namespace BaseballAIWorkbench.ApiService
         private readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
         private readonly DefaultAzureCredential _sharedAzureCredential;
 
-        public AIAgents(DefaultAzureCredential sharedAzureCredential, PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine, Kernel semanticKernel, BaseballDataService baseballDataService)
+        public AIAgents(DefaultAzureCredential sharedAzureCredential, PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine, 
+                Kernel semanticKernelReasoning, Kernel semanticKernel, BaseballDataService baseballDataService)
         {
             _sharedAzureCredential = sharedAzureCredential;
             _predictionEnginePool = predictionEngine;
@@ -86,14 +87,12 @@ namespace BaseballAIWorkbench.ApiService
 
             var batter = agenticAnalysisConfig.BaseballBatter;
             Console.WriteLine("Agentic Analysis Config - Baseball Player: " + batter.FullPlayerName);
-
+            
+            var decisionPrompt = string.Empty;
             var agentType = agenticAnalysisConfig.AgentsToUse.FirstOrDefault();
             var agentMeta = Agents.GetAgent(agentType!);
-            var decisionPrompt = string.Empty;
-
-            // STEP 3: Register the agent with the Semantic Kernel. 
-            // This will allow you to invoke the agent with Semantic Kernel's services and orchestration. 
             ChatCompletionAgent agent = agentMeta.GetChatCompletionAgent(_semanticKernel);
+
             // STEP 4: Build the instruction to investigate the decisions the Agent can help with.
             if (agentType == "MachineLearningExpert")
             {
@@ -211,9 +210,9 @@ namespace BaseballAIWorkbench.ApiService
             foreach (var agentTypeInConfig in agenticAnalysisConfig.AgentsToUse)
             {
                 Console.WriteLine("Agentic Analysis - Agent Type: " + agentTypeInConfig);
-                var agentMeta = Agents.GetAgent(agentTypeInConfig!);
-                var decisionPrompt = string.Empty;
 
+                var decisionPrompt = string.Empty;
+                var agentMeta = Agents.GetAgent(agentTypeInConfig!);
                 ChatCompletionAgent agent = agentMeta.GetChatCompletionAgent(_semanticKernel);
 
                 // STEP 4: Build the instruction to investigate the decisions the Agent can help with.
@@ -321,9 +320,22 @@ namespace BaseballAIWorkbench.ApiService
             } // End of Agents foreach
 
             // Convert ChatHistory to a string
-            var agentsAnalysisHistoryString = string.Join(Environment.NewLine, agentsAnalysisHistory.Select(a => a.Content));
+            // var agentsAnalysisHistoryString = string.Join(Environment.NewLine, agentsAnalysisHistory.Select(a => a.Content));
 
-            return TypedResults.Ok(agentsAnalysisHistoryString);
+            Console.WriteLine("Agentic Analysis - Final Quantitative Analysis");
+
+            var chatMessageContent = new ChatMessageContent(AuthorRole.User, Agents.GetQuantitativeAnalysisPrompt());
+            var quantitativeAnalysisAgent = Agents.GetAgent("QuantitativeAnalysis");
+
+            ChatCompletionAgent quantAgent = quantitativeAnalysisAgent.GetChatCompletionAgent(_semanticKernel);
+
+
+
+            Microsoft.SemanticKernel.Agents.AgentThread quantAgentThread = new ChatHistoryAgentThread(agentsAnalysisHistory);
+            var quantitativeAnalysisResponse = await quantAgent.InvokeAsync(chatMessageContent, quantAgentThread).ToArrayAsync();
+            var quantitativeAnalysisString = quantitativeAnalysisResponse[0].Message.ToString();
+
+            return TypedResults.Ok(quantitativeAnalysisString);
         }
     }
 }
