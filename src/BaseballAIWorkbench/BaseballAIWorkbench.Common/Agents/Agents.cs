@@ -6,6 +6,7 @@ namespace BaseballAIWorkbench.Common.Agents
     {
         public static Agent GetAgent(string agentType)
         {
+#pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
             return agentType switch
             {
                 "BaseballStatistician" => new Agent
@@ -41,6 +42,7 @@ namespace BaseballAIWorkbench.Common.Agents
                     Instructions = GetAgentInstructions(agentType)
                 }
             };
+#pragma warning restore CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
         }
 
         public static string GetAgentDescription(string agentType)
