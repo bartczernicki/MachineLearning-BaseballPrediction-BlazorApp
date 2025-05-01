@@ -158,7 +158,7 @@ namespace BaseballAIWorkbench.ApiService
                 var projectConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundryProject");
                 var clientOptions = new AIProjectClientOptions();
                 AIProjectClient projectClient = new AIProjectClient(projectConnectionString, _sharedAzureCredential); //, new DefaultAzureCredential(), clientOptions);
-                AgentsClient agentsClient = projectClient.GetAgentsClient();
+                AgentsClient agentsClient = projectClient.GetAgentsClient(apiVersion: "2025-03-01-preview");
 
                 var baseballEncyclopediaAgentDefinition = agentsClient.GetAgent("asst_fVoQfqtvwLZKdQM32ZZstzHQ");
                 AzureAIAgent baseballEncyclopediaAgent = new(baseballEncyclopediaAgentDefinition, agentsClient);

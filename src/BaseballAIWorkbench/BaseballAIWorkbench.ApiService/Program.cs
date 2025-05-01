@@ -47,7 +47,21 @@ builder.Services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
     .FromFile("InductedToHallOfFameLightGbmModel", modelPathInductedToHallOfFameLightGBMModel)
     .FromFile("OnHallOfFameBallotLightGbmModel", modelPathOnHallOfFameBallotLightGBMModel);
 
-var sharedCredential = new DefaultAzureCredential(false);
+
+var credentialOptions = new DefaultAzureCredentialOptions
+{
+    ExcludeEnvironmentCredential = true,
+    ExcludeWorkloadIdentityCredential = true,
+    ExcludeManagedIdentityCredential = true,
+    ExcludeVisualStudioCodeCredential = true,
+    ExcludeVisualStudioCredential = true,
+    //ExcludeAzurePowerShellCredential = true,
+    //ExcludeInteractiveBrowserCredential = true,
+    //ExcludeVisualStudioCredential = true,
+    //ExcludeSharedTokenCacheCredential = true,
+};
+
+var sharedCredential = new DefaultAzureCredential(credentialOptions);
 var aoaiEndPoint = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEndpoint");
 var aoaiApiKey = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIApiKey");
 var aoaiDeploymentName = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIModelDeploymentName");
