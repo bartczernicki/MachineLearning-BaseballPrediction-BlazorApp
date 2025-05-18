@@ -130,7 +130,9 @@ namespace BaseballAIWorkbench.Common.Agents
 
             Analysis Output
             -- A concise research of the Baseball Player  
-            -- A probabilistic recommendation (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- A probabilistic recommendation (0–100% non-inclusive) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- Format all probabilities as percentages (e.g., 0.1234 = 12.34%).
+            -- If a probability is < 0.001 (0.1%), return "< 0.1%". If a probability is > 0.999 (99.9%), return "> 99.9%".
             -- A qualitative recommendation as well ranging from very unlikely to very likely.
             -- If not good information has been found, it is likely the player has not made a name for himself. 
 
@@ -157,7 +159,9 @@ namespace BaseballAIWorkbench.Common.Agents
 
             Analysis Output
             -- A concise breakdown of each criterion and how the player measures up. 
-            -- A probabilistic recommendation (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- A probabilistic recommendation (0–100% non-inclusive) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- Format all probabilities as percentages (e.g., 0.1234 = 12.34%).
+            -- If a probability is < 0.001 (0.1%), return "< 0.1%". If a probability is > 0.999 (99.9%), return "> 99.9%".
             -- A qualitative recommendation as well ranging from very unlikely to very likely.
             
 
@@ -186,7 +190,9 @@ namespace BaseballAIWorkbench.Common.Agents
 
             Analysis Output
             -- A concise breakdown of based on three different expert ML model probabilities.
-            -- A probabilistic recommendation (0–100%) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- A probabilistic recommendation (0–100% non-inclusive) for both “Ballot Appearance” and “Induction,” with a brief rationale. 
+            -- Format all probabilities as percentages (e.g., 0.1234 = 12.34%).
+            -- If a probability is < 0.001 (0.1%), return "< 0.1%". If a probability is > 0.999 (99.9%), return "> 99.9%".
             -- A qualitative recommendation as well ranging from very unlikely to very likely.
             
 
