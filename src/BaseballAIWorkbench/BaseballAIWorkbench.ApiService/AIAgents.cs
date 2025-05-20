@@ -1,17 +1,14 @@
-﻿using BaseballAIWorkbench.Common.MachineLearning;
+﻿using Azure.AI.Agents.Persistent;
+using Azure.Identity;
 using BaseballAIWorkbench.ApiService.Services;
+using BaseballAIWorkbench.Common.Agents;
+using BaseballAIWorkbench.Common.MachineLearning;
+using Microsoft.Extensions.ML;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.ChatCompletion;
-using BaseballAIWorkbench.Common.Agents;
-using Microsoft.Extensions.ML;
-using Azure.Identity;
-using Azure.AI.Projects;
-using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Agents.AzureAI;
-using Microsoft.Extensions.Azure;
-using OpenAI.Chat;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 
 namespace BaseballAIWorkbench.ApiService
 {
@@ -156,23 +153,30 @@ namespace BaseballAIWorkbench.ApiService
             {
                 // Build Azure AI Agent Connection
                 var projectConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundryProject");
-                var clientOptions = new AIProjectClientOptions();
-                AIProjectClient projectClient = new AIProjectClient(projectConnectionString, _sharedAzureCredential); //, new DefaultAzureCredential(), clientOptions);
-                AgentsClient agentsClient = projectClient.GetAgentsClient(apiVersion: "2025-03-01-preview");
+                var projectConnectionStringUri = new Uri(projectConnectionString!);
+                var agentAdminClientOptions = 
+                    new PersistentAgentsAdministrationClientOptions(PersistentAgentsAdministrationClientOptions.ServiceVersion.V2025_05_01);
+                var agentsClient = 
+                    new PersistentAgentsClient(projectConnectionString, _sharedAzureCredential, agentAdminClientOptions);
+                var baseballEncyclopediaPersistentAgent = agentsClient.Administration.GetAgent("asst_QXweremvFzAxpLL9qmhCXIVY").Value;
 
-                var baseballEncyclopediaAgentDefinition = agentsClient.GetAgent("asst_fVoQfqtvwLZKdQM32ZZstzHQ");
-                AzureAIAgent baseballEncyclopediaAgent = new(baseballEncyclopediaAgentDefinition, agentsClient);
- 
+                baseballEncyclopediaPersistentAgent.Tools[0].
+
+                AzureAIAgent baseballEncyclopediaSemanticKernelAgent = new(baseballEncyclopediaPersistentAgent, agentsClient);
+
                 var response = string.Empty;
                 decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
-                Microsoft.SemanticKernel.ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
-                Microsoft.SemanticKernel.Agents.AgentThread agentThread = new AzureAIAgentThread(agentsClient);
+
+                // Create the Thread
+                AzureAIAgentThread agentSemanticKernelThread = new(agentsClient);
+                // Create the ChatMessageContent object with the decision prompt.
+                ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
+
                 try
                 {
-                    await foreach (Microsoft.SemanticKernel.ChatMessageContent chatResponse in baseballEncyclopediaAgent.InvokeAsync(message, agentThread))
+                    await foreach (ChatMessageContent agentResponse in baseballEncyclopediaSemanticKernelAgent.InvokeAsync(message, agentSemanticKernelThread))
                     {
-                        Console.WriteLine(chatResponse.Content);
-                        response += chatResponse.Content;
+                        response += agentResponse.InnerContent;
                     }
                 }
                 catch (Exception ex)
@@ -182,12 +186,7 @@ namespace BaseballAIWorkbench.ApiService
                 }
                 finally
                 {
-                    if (!agentThread.IsDeleted)
-                    {
-                        // Delete the agent thread if it was created and not deleted
-                        await agentThread.DeleteAsync();
-                    }
-                    //await agentsClient.DeleteAgentAsync(agentThread.Id);
+                    await agentsClient.Threads.DeleteThreadAsync(agentSemanticKernelThread.Id);
                 }
 
                 return TypedResults.Ok(response);
@@ -282,11 +281,11 @@ namespace BaseballAIWorkbench.ApiService
                 {
                     // Build Azure AI Agent Connection
                     var projectConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundryProject");
-                    var clientOptions = new AIProjectClientOptions();
-                    AIProjectClient projectClient = new AIProjectClient(projectConnectionString, _sharedAzureCredential); //, new DefaultAzureCredential(), clientOptions);
-                    AgentsClient agentsClient = projectClient.GetAgentsClient();
+                    //var clientOptions = new AIProjectClientOptions();
+                    var agentsClient = new PersistentAgentsClient(projectConnectionString, _sharedAzureCredential); //, new DefaultAzureCredential(), clientOptions);
+                    //AgentsClient agentsClient = projectClient.GetAgentsClient();
 
-                    var baseballEncyclopediaAgentDefinition = agentsClient.GetAgent("asst_fVoQfqtvwLZKdQM32ZZstzHQ");
+                    var baseballEncyclopediaAgentDefinition = agentsClient.Administration.GetAgent("asst_fVoQfqtvwLZKdQM32ZZstzHQ");
                     AzureAIAgent baseballEncyclopediaAgent = new(baseballEncyclopediaAgentDefinition, agentsClient);
 
                     var analysis = string.Empty;
