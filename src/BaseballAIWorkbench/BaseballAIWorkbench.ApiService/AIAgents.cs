@@ -158,9 +158,40 @@ namespace BaseballAIWorkbench.ApiService
                     new PersistentAgentsAdministrationClientOptions(PersistentAgentsAdministrationClientOptions.ServiceVersion.V2025_05_01);
                 var agentsClient = 
                     new PersistentAgentsClient(projectConnectionString, _sharedAzureCredential, agentAdminClientOptions);
-                var baseballEncyclopediaPersistentAgent = agentsClient.Administration.GetAgent("asst_QXweremvFzAxpLL9qmhCXIVY").Value;
+                
+                var azureAIFoundrySportsAgentID = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundrySportsAgentID");
+                var baseballEncyclopediaPersistentAgent = agentsClient.Administration.GetAgent(azureAIFoundrySportsAgentID).Value;
 
-                AzureAIAgent baseballEncyclopediaSemanticKernelAgent = new(baseballEncyclopediaPersistentAgent, agentsClient);
+                //ConnectionID in this format: /subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.CognitiveServices/accounts/<ai_service_name>/projects/<project_name>/connections/<connection_name> 
+                var bingWebGroundingConnectionID = Environment.GetEnvironmentVariable("ConnectionStrings__BingWebGroundingConnectionID");
+
+                var bingSearchConfig = new BingGroundingSearchConfiguration(bingWebGroundingConnectionID)
+                {
+                    Count = 10,
+                    Market = "en-US"
+                };
+
+                BingGroundingToolDefinition bingGroundingTool = new BingGroundingToolDefinition(
+        new BingGroundingSearchToolParameters(
+                            [
+                                bingSearchConfig
+                            ])
+                    );
+
+                // Use Azure AI Data Zone Deployment (dz-) prefix for the model deployment name
+                var modelDeploymentName = "dz-" + Environment.GetEnvironmentVariable("ConnectionStrings__AOAIModelDeploymentName");
+
+                // Copy key settings to the new transient agent
+                PersistentAgent transientAzureAIFoundryAgent = agentsClient.Administration.CreateAgent(
+                    model: modelDeploymentName,
+                    name: "transientSportsAgent",
+                    instructions: baseballEncyclopediaPersistentAgent.Instructions,
+                    tools: [bingGroundingTool],
+                    temperature: baseballEncyclopediaPersistentAgent.Temperature,
+                    topP: baseballEncyclopediaPersistentAgent.TopP
+                );
+
+                AzureAIAgent transientSemanticKernelAgent = new(transientAzureAIFoundryAgent, agentsClient);
 
                 var response = string.Empty;
                 decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
@@ -172,7 +203,7 @@ namespace BaseballAIWorkbench.ApiService
 
                 try
                 {
-                    await foreach (ChatMessageContent agentResponse in baseballEncyclopediaSemanticKernelAgent.InvokeAsync(message, agentSemanticKernelThread))
+                    await foreach (ChatMessageContent agentResponse in transientSemanticKernelAgent.InvokeAsync(message, agentSemanticKernelThread))
                     {
                         response += agentResponse.Content;
                     }
@@ -184,7 +215,9 @@ namespace BaseballAIWorkbench.ApiService
                 }
                 finally
                 {
+                    // Remove the Thread and the AI Agent
                     await agentsClient.Threads.DeleteThreadAsync(agentSemanticKernelThread.Id);
+                    await agentsClient.Administration.DeleteAgentAsync(transientAzureAIFoundryAgent.Id);
                 }
 
                 return TypedResults.Ok(response);
@@ -200,12 +233,12 @@ namespace BaseballAIWorkbench.ApiService
 
             //var chatCompletionServicetest = _semanticKernelReasoning.Services.GetRequiredService<IChatCompletionService>();
 
-#pragma warning disable SKEXP0110
-            Console.WriteLine("Agentic Analysis...");
-            Console.WriteLine("Agentic Analysis - Config Selected Agents: " + string.Join(", ", agenticAnalysisConfig.AgentsToUse));
+            #pragma warning disable SKEXP0110
+            Console.WriteLine("Multi-Agentic Analysis...");
+            Console.WriteLine("Multi-Agentic Analysis - Config Selected Agents: " + string.Join(", ", agenticAnalysisConfig.AgentsToUse));
 
             var batter = agenticAnalysisConfig.BaseballBatter;
-            Console.WriteLine("Agentic Analysis - Config Baseball Player: " + batter.FullPlayerName);
+            Console.WriteLine("Multi-Agentic Analysis - Config Baseball Player: " + batter.FullPlayerName);
 
             // Set Up Chat History
             ChatHistory agentsAnalysisHistory = [];
@@ -284,13 +317,44 @@ namespace BaseballAIWorkbench.ApiService
                         new PersistentAgentsAdministrationClientOptions(PersistentAgentsAdministrationClientOptions.ServiceVersion.V2025_05_01);
                     var agentsClient =
                         new PersistentAgentsClient(projectConnectionString, _sharedAzureCredential, agentAdminClientOptions);
-                    var baseballEncyclopediaPersistentAgent = agentsClient.Administration.GetAgent("asst_QXweremvFzAxpLL9qmhCXIVY").Value;
+                    var azureAIFoundrySportsAgentID = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundrySportsAgentID");
+                    var baseballEncyclopediaPersistentAgent = agentsClient.Administration.GetAgent(azureAIFoundrySportsAgentID).Value;
 
-                    AzureAIAgent baseballEncyclopediaSemanticKernelAgent = new(baseballEncyclopediaPersistentAgent, agentsClient);
+                    //ConnectionID in this format: /subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.CognitiveServices/accounts/<ai_service_name>/projects/<project_name>/connections/<connection_name> 
+                    var bingWebGroundingConnectionID = Environment.GetEnvironmentVariable("ConnectionStrings__BingWebGroundingConnectionID");
 
-                    var analysis = string.Empty;
+                    var bingSearchConfig = new BingGroundingSearchConfiguration(bingWebGroundingConnectionID)
+                    {
+                        Count = 10,
+                        Market = "en-US"
+                    };
+
+                    BingGroundingToolDefinition bingGroundingTool = new BingGroundingToolDefinition(
+            new BingGroundingSearchToolParameters(
+                                [
+                                    bingSearchConfig
+                                ])
+                        );
+
+                    // Use Azure AI Data Zone Deployment (dz-) prefix for the model deployment name
+                    var modelDeploymentName = "dz-" + Environment.GetEnvironmentVariable("ConnectionStrings__AOAIModelDeploymentName");
+
+                    // Copy key settings to the new transient agent
+                    PersistentAgent transientAzureAIFoundryAgent = agentsClient.Administration.CreateAgent(
+                        model: modelDeploymentName,
+                        name: "transientSportsAgent",
+                        instructions: baseballEncyclopediaPersistentAgent.Instructions,
+                        tools: [bingGroundingTool],
+                        temperature: baseballEncyclopediaPersistentAgent.Temperature,
+                        topP: baseballEncyclopediaPersistentAgent.TopP
+                    );
+
+                    AzureAIAgent transientSemanticKernelAgent = new(transientAzureAIFoundryAgent, agentsClient);
+
+                    var response = string.Empty;
                     decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
 
+                    var analysis = string.Empty;
                     // Create the Thread
                     AzureAIAgentThread agentSemanticKernelThread = new(agentsClient);
                     // Create the ChatMessageContent object with the decision prompt.
@@ -298,7 +362,7 @@ namespace BaseballAIWorkbench.ApiService
 
                     try
                     {
-                        await foreach (ChatMessageContent agentResponse in baseballEncyclopediaSemanticKernelAgent.InvokeAsync(message, agentSemanticKernelThread))
+                        await foreach (ChatMessageContent agentResponse in transientSemanticKernelAgent.InvokeAsync(message, agentSemanticKernelThread))
                         {
                             analysis += agentResponse.Content;
                         }
@@ -314,6 +378,7 @@ namespace BaseballAIWorkbench.ApiService
                         agentsAnalysisHistory.AddAssistantMessage(Environment.NewLine + "Baseball Encyclopedia Agent Analysis: " + Environment.NewLine + analysis);
 
                         await agentsClient.Threads.DeleteThreadAsync(agentSemanticKernelThread.Id);
+                        await agentsClient.Administration.DeleteAgentAsync(transientSemanticKernelAgent.Id);
                     }
                 }
                 else
