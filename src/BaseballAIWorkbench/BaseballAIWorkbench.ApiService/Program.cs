@@ -78,6 +78,7 @@ var semanticKernel = Kernel.CreateBuilder()
         serviceId: "azureOpenAIGeneralPurpose",
         httpClient: httpClient)
     .Build();
+//builder.ConfigureOpenTelemetry();
 builder.Services.AddSingleton<Kernel>(builder => semanticKernel);
 
 
