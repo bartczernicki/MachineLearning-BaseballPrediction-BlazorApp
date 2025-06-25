@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
-    <PackageReference Include="Markdig" Version="0.41.2" />
+    <PackageReference Include="Markdig" Version="0.41.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.6" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.30.3" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="4.0.2" />
