@@ -143,6 +143,14 @@ namespace BaseballAIWorkbench.Common.Agents
 
             Important return Markdown ONLY, no other HTML or tic marks etc.  
             Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
+            If including a summary table, use the following markdown format as an example:
+            - Put each column header and row on its own line. Add proper carriage return.
+            - Use | to separate columns.
+            - Make sure there are no missing vertical bars
+            | Criterion                    | Player Outcome              |
+            |------------------------------|-----------------------------|
+            | Ballot Appearance Probability| > 99.9% (Very Likely)       |
+            | Induction Probability        | 84.72% (Likely)             | 
             """;
 
             return decisionPrompt;
@@ -172,6 +180,15 @@ namespace BaseballAIWorkbench.Common.Agents
 
             Important return Markdown ONLY, no other HTML or tic marks etc.
             Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
+            If including a summary table, use the following markdown format as an example:
+            - Put each column header and row on its own line. Add proper carriage return.
+            - Use | to separate columns.
+            - Make sure there are no missing vertical bars
+
+            | Criterion                    | Player Outcome              |
+            |------------------------------|-----------------------------|
+            | Ballot Appearance Probability| > 99.9% (Very Likely)       |
+            | Induction Probability        | 84.72% (Likely)             | 
             """;
 
             return decisionPrompt;
@@ -203,6 +220,25 @@ namespace BaseballAIWorkbench.Common.Agents
 
             Important return Markdown ONLY, no other HTML or tic marks etc.
             Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
+            If including a summary table, use the following markdown format as an example:
+            - Output the table in its own code block, and do not repeat or duplicate the table header or separator row.
+            - Put each column header and row on its own line. Add proper carriage return.
+            - Use | to separate columns.
+            - Make sure there are no missing vertical bars
+                        Do not add any text, headings, or extra line breaks before or after the table.
+
+            Do not repeat the header or add extra separator rows.
+
+            Check to ensure there are no missing or extra pipes (|) and no duplicated header/separator rows.
+
+            Only include the table inside the code block.
+
+            ```
+            | Criterion                    | Player Outcome              |
+            |------------------------------|-----------------------------|
+            | Ballot Appearance Probability| > 99.9% (Very Likely)       |
+            | Induction Probability        | 84.72% (Likely)             |
+            ```
             """;
 
             return decisionPrompt;
