@@ -17,10 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.14.1" />
-    <PackageReference Include="Aspire.Azure.Security.KeyVault" Version="9.3.1" />
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
-    <PackageReference Include="Aspire.Hosting.Azure.KeyVault" Version="9.3.1" />
+    <PackageReference Include="Azure.Identity" Version="1.15.0" />
+    <PackageReference Include="Aspire.Azure.Security.KeyVault" Version="9.4.1" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.4.1" />
+    <PackageReference Include="Aspire.Hosting.Azure.KeyVault" Version="9.4.1" />
   </ItemGroup>
 
 </Project>
