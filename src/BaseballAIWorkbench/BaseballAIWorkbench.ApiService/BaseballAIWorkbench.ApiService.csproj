@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI" Version="2.2.0-beta.4" />
-    <PackageReference Include="Azure.Identity" Version="1.16.0" />
+    <PackageReference Include="Azure.Identity" Version="1.17.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
     <PackageReference Include="Aspire.Azure.Security.KeyVault" Version="9.5.1" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.9.0" />
