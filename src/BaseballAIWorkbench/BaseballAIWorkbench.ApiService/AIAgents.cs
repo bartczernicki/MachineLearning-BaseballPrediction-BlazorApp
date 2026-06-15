@@ -4,6 +4,7 @@ using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ML;
 
 namespace BaseballAIWorkbench.ApiService
@@ -15,17 +16,20 @@ namespace BaseballAIWorkbench.ApiService
         private readonly AzureOpenAIClient _azureOpenAIClient;
         private readonly AzureOpenAIModelOptions _modelOptions;
         private readonly WebIqMcpToolProvider _webIqMcpToolProvider;
+        private readonly ILoggerFactory _loggerFactory;
 
         public AIAgents(PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine,
             AzureOpenAIClient azureOpenAIClient,
             AzureOpenAIModelOptions modelOptions,
             WebIqMcpToolProvider webIqMcpToolProvider,
+            ILoggerFactory loggerFactory,
             BaseballDataService baseballDataService)
         {
             _predictionEnginePool = predictionEngine;
             _azureOpenAIClient = azureOpenAIClient;
             _modelOptions = modelOptions;
             _webIqMcpToolProvider = webIqMcpToolProvider;
+            _loggerFactory = loggerFactory;
             _baseballDataService = baseballDataService;
         }
 
@@ -160,11 +164,14 @@ namespace BaseballAIWorkbench.ApiService
             var chatClient = _azureOpenAIClient.GetChatClient(_modelOptions.DeploymentName).AsIChatClient();
 
             return tools is { Count: > 0 }
-                ? chatClient.AsAIAgent(
-                    name: agentMeta.AgentType,
-                    description: agentMeta.Description,
-                    instructions: agentMeta.Instructions,
-                    tools: tools.ToList())
+                ? chatClient.AsBuilder()
+                    .UseFunctionInvocation(_loggerFactory)
+                    .BuildAIAgent(
+                        name: agentMeta.AgentType,
+                        description: agentMeta.Description,
+                        instructions: agentMeta.Instructions,
+                        tools: tools.ToList(),
+                        loggerFactory: _loggerFactory)
                 : chatClient.AsAIAgent(
                     name: agentMeta.AgentType,
                     description: agentMeta.Description,

@@ -58,7 +58,8 @@ var machineLearningService = app.Services.GetRequiredService<PredictionEnginePoo
 var azureOpenAIClient = app.Services.GetRequiredService<AzureOpenAIClient>();
 var modelOptions = app.Services.GetRequiredService<AzureOpenAIModelOptions>();
 var webIqMcpToolProvider = app.Services.GetRequiredService<WebIqMcpToolProvider>();
-var aiAgents = new AIAgents(machineLearningService, azureOpenAIClient, modelOptions, webIqMcpToolProvider, baseballDataSampleService);
+var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+var aiAgents = new AIAgents(machineLearningService, azureOpenAIClient, modelOptions, webIqMcpToolProvider, loggerFactory, baseballDataSampleService);
 
 // Define the API Endpoints
 

@@ -6,15 +6,18 @@ namespace BaseballAIWorkbench.ApiService
 {
     public sealed class WebIqMcpToolProvider(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
-        private static readonly Uri WebIqMcpEndpoint = new("https://api.microsoft.ai/v3/mcp/");
+        private const string McpServerName = "MAIGrounding-MCP";
+        private const string LegacyApiKeyConnectionStringName = "WebIQMcpApiKey";
+        private static readonly Uri DefaultMcpEndpoint = new("https://api.microsoft.ai/v3/mcp/");
 
         public async Task<WebIqMcpToolScope> CreateToolScopeAsync(CancellationToken cancellationToken = default)
         {
-            var apiKey = GetRequiredConnectionString(configuration, "WebIQMcpApiKey");
+            var apiKey = GetRequiredApiKey(configuration);
+            var endpoint = GetMcpEndpoint(configuration);
             var transportOptions = new HttpClientTransportOptions
             {
-                Name = "WebIQ-MCP",
-                Endpoint = WebIqMcpEndpoint,
+                Name = McpServerName,
+                Endpoint = endpoint,
                 TransportMode = HttpTransportMode.StreamableHttp,
                 AdditionalHeaders = new Dictionary<string, string>
                 {
@@ -41,7 +44,7 @@ namespace BaseballAIWorkbench.ApiService
             {
                 await cleanupOnFailure.DisposeAsync().ConfigureAwait(false);
                 throw new InvalidOperationException(
-                    "WebIQ MCP rejected the API key. Check the AppHost user secret ConnectionStrings:WebIQMcpApiKey and make sure it contains the WebIQ MCP x-apikey value.",
+                    "MAI Grounding MCP rejected the API key. Check the AppHost user secret ConnectionStrings:WebIQMcpApiKey or MAIGrounding-MCP:headers:x-apikey and make sure it contains the MCP x-apikey value.",
                     ex);
             }
             catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.UnsupportedMediaType)
@@ -58,18 +61,43 @@ namespace BaseballAIWorkbench.ApiService
             }
         }
 
-        private static string GetRequiredConnectionString(IConfiguration configuration, string name)
+        private static Uri GetMcpEndpoint(IConfiguration configuration)
         {
-            var value = configuration.GetConnectionString(name)
-                ?? configuration[$"ConnectionStrings:{name}"]
-                ?? Environment.GetEnvironmentVariable($"ConnectionStrings__{name}");
+            var configuredUrl = configuration[$"{McpServerName}:url"];
+
+            if (string.IsNullOrWhiteSpace(configuredUrl))
+            {
+                return DefaultMcpEndpoint;
+            }
+
+            return Uri.TryCreate(configuredUrl, UriKind.Absolute, out var endpoint)
+                ? endpoint
+                : throw new InvalidOperationException($"Invalid MCP endpoint URL in {McpServerName}:url.");
+        }
+
+        private static string GetRequiredApiKey(IConfiguration configuration)
+        {
+            var value = configuration[$"{McpServerName}:headers:x-apikey"]
+                ?? configuration.GetConnectionString(LegacyApiKeyConnectionStringName)
+                ?? configuration[$"ConnectionStrings:{LegacyApiKeyConnectionStringName}"]
+                ?? Environment.GetEnvironmentVariable($"ConnectionStrings__{LegacyApiKeyConnectionStringName}");
 
             if (!string.IsNullOrWhiteSpace(value))
             {
-                return value;
+                var apiKey = TrimPastedQuotes(value.Trim());
+                if (!string.IsNullOrWhiteSpace(apiKey))
+                {
+                    return apiKey;
+                }
             }
 
-            throw new InvalidOperationException($"Missing required connection string: ConnectionStrings__{name}.");
+            throw new InvalidOperationException(
+                $"Missing required MCP API key. Set {McpServerName}:headers:x-apikey or ConnectionStrings__{LegacyApiKeyConnectionStringName}.");
+        }
+
+        private static string TrimPastedQuotes(string value)
+        {
+            return value.Trim('"', '\'', '\u201c', '\u201d');
         }
     }
 
