@@ -91,16 +91,19 @@ namespace BaseballAIWorkbench.Common.Agents
                 You process and analyze player performance data to deliver clear, numbers‑driven insights. 
                 You have access to a wide range of metrics, allowing you to compare players, track statistical trends over time, and answer complex statistical queries. 
                 By design, you ignore narrative context, scouting reports, and subjective opinions, ensuring that every response is grounded in hard data and rigorous statistical calculations.
+                Return plain Markdown only. Do not wrap any part of the answer in code fences. Use ### as the highest heading level; never use # or ## headings.
                 """,
                 "MachineLearningExpert" =>
                 """
                 You are Baseball Machine Learning Expert, a specialist AI agent devoted entirely to the quantitative analysis of baseball. You have two dedicated machine‑learning models at your disposal:
                 Hall of Fame Ballot Model — Based on provided batting statistics, forecasts a probability of belonging in the Baseball Hall of Fame Ballot.
                 Hall of Fame Induction Model — Based on provided batting statistics, forecasts the probability of a player’s induction.
+                Return plain Markdown only. Do not wrap any part of the answer in code fences. Use ### as the highest heading level; never use # or ## headings.
                 """,
                 "BaseballEncyclopedia" =>
                 """
                 You are Baseball Encyclopedia, an AI agent that taps into the internet via Bing to research every angle of a baseball player’s story. You scour news outlets, feature articles, expert opinions, and fan commentary to build comprehensive profiles. Focusing purely on narrative and media sources, you deliver rich context from biographical details to the latest headlines, while intentionally setting aside raw statistical analysis.
+                Return plain Markdown only. Do not wrap any part of the answer in code fences. Use ### as the highest heading level; never use # or ## headings.
                 """,
                 "QuantitativeAnalysis" =>
                 """
@@ -111,6 +114,7 @@ namespace BaseballAIWorkbench.Common.Agents
                 and one on internet research (“Baseball Encyclopedia Agent”).
 
                 Not all three agents may be present, so do not include them if not in the Chat History.
+                Return plain Markdown only. Do not wrap any part of the answer in code fences. Use ### as the highest heading level; never use # or ## headings.
                 """,
                 _ => "Unknown agent"
             };
@@ -141,12 +145,13 @@ namespace BaseballAIWorkbench.Common.Agents
             {baseballBatter.FullPlayerName}, ID: {baseballBatter.ID}, Last Year Played: {baseballBatter.LastYearPlayed}
             </Baseball Player>
 
-            Important return Markdown ONLY, no other HTML or tic marks etc.  
+            Important: return plain Markdown only. Do not include HTML, backticks, or code fences.
             Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
-            If including a summary table, use the following markdown format as an example:
+            If including a summary table, emit it as a normal Markdown pipe table, with a blank line before and after the table.
             - Put each column header and row on its own line. Add proper carriage return.
             - Use | to separate columns.
             - Make sure there are no missing vertical bars
+
             | Criterion                    | Player Outcome              |
             |------------------------------|-----------------------------|
             | Ballot Appearance Probability| > 99.9% (Very Likely)       |
@@ -178,9 +183,9 @@ namespace BaseballAIWorkbench.Common.Agents
             {battingStatistics}
             </Batting Statistics>
 
-            Important return Markdown ONLY, no other HTML or tic marks etc.
+            Important: return plain Markdown only. Do not include HTML, backticks, or code fences.
             Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
-            If including a summary table, use the following markdown format as an example:
+            If including a summary table, emit it as a normal Markdown pipe table, with a blank line before and after the table.
             - Put each column header and row on its own line. Add proper carriage return.
             - Use | to separate columns.
             - Make sure there are no missing vertical bars
@@ -218,27 +223,19 @@ namespace BaseballAIWorkbench.Common.Agents
             3 Hall of Fame Ballot Induction Probabilities: {string.Join(", ", hallOfFameInductionProbabilities)}
             </Batter Probabilities from Different Expert Machine Learning Models>
 
-            Important return Markdown ONLY, no other HTML or tic marks etc.
+            Important: return plain Markdown only. Do not include HTML, backticks, or code fences.
             Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
-            If including a summary table, use the following markdown format as an example:
-            - Output the table in its own code block, and do not repeat or duplicate the table header or separator row.
+            If including a summary table, emit it as a normal Markdown pipe table, with a blank line before and after the table.
             - Put each column header and row on its own line. Add proper carriage return.
             - Use | to separate columns.
             - Make sure there are no missing vertical bars
-                        Do not add any text, headings, or extra line breaks before or after the table.
-
             Do not repeat the header or add extra separator rows.
-
             Check to ensure there are no missing or extra pipes (|) and no duplicated header/separator rows.
 
-            Only include the table inside the code block.
-
-            ```
             | Criterion                    | Player Outcome              |
             |------------------------------|-----------------------------|
             | Ballot Appearance Probability| > 99.9% (Very Likely)       |
             | Induction Probability        | 84.72% (Likely)             |
-            ```
             """;
 
             return decisionPrompt;
@@ -278,9 +275,8 @@ namespace BaseballAIWorkbench.Common.Agents
                    - A brief interpretation of how varying \(k\) dampens or amplifies agent consensus.
                 
                 5. **Output format**:
-                   ```Markdown format ONLY no other HTML or tic marks etc.```
-                   ```Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).```
-                   ```Do not include the math from above (Steps 1 - 4)```
+                   Return plain Markdown only. Do not include HTML, backticks, code fences, or the math from steps 1-4.
+                   Formatting rule: only use '###' (level 3) or smaller headings. Do not use '#' (level 1) nor '##' (level 2).
                    ### Unified Agentic Hall‑of‑Fame Probabilities
                 
                    - **Hall of Fame Ballot Appearance**  

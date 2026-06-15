@@ -766,23 +766,80 @@ ul {
     line-height: 1.5;
 }
 
+.agentic-analysis-output h1,
+.agentic-analysis-output h2,
+.agentic-analysis-output h3,
+.agentic-analysis-output h4,
+.agentic-analysis-output h5,
+.agentic-analysis-output h6 {
+    margin: 1.15rem 0 0.55rem;
+    line-height: 1.18;
+}
+
+.agentic-analysis-output h1 {
+    font-size: 1.55rem;
+}
+
+.agentic-analysis-output h2 {
+    font-size: 1.35rem;
+}
+
+.agentic-analysis-output h3 {
+    font-size: 1.18rem;
+}
+
+.agentic-analysis-output h4,
+.agentic-analysis-output h5,
+.agentic-analysis-output h6 {
+    font-size: 1rem;
+}
+
 .agentic-analysis-output table {
     width: 100%;
-    margin: 0.75rem 0 1rem;
-    border-collapse: collapse;
+    min-width: 520px;
+    margin: 0.9rem 0 1.1rem;
+    border: 1px solid #cfd7e3;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 6px;
     background-color: #fff;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+    overflow: hidden;
 }
 
 .agentic-analysis-output th,
 .agentic-analysis-output td {
-    padding: 0.5rem 0.65rem;
-    border: 1px solid #d9dee3;
+    padding: 0.55rem 0.75rem;
+    border-right: 1px solid #d9e0ea;
+    border-bottom: 1px solid #d9e0ea;
     vertical-align: top;
+    font-variant-numeric: tabular-nums;
 }
 
 .agentic-analysis-output th {
-    background-color: #f2f4f7;
+    background: linear-gradient(180deg, #2f3d4f 0%, #263445 100%);
+    color: #f8fafc;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: 0.78rem;
+}
+
+.agentic-analysis-output th:last-child,
+.agentic-analysis-output td:last-child {
+    border-right: 0;
+}
+
+.agentic-analysis-output tr:last-child td {
+    border-bottom: 0;
+}
+
+.agentic-analysis-output tbody tr:nth-child(even) {
+    background-color: #f7f9fc;
+}
+
+.agentic-analysis-output tbody tr:hover {
+    background-color: #eef4fb;
 }
 
 .agentic-analysis-output p:last-child,
@@ -790,4 +847,15 @@ ul {
 .agentic-analysis-output ol:last-child,
 .agentic-analysis-output table:last-child {
     margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+    .agentic-analysis-output table {
+        min-width: 460px;
+    }
+
+    .agentic-analysis-output th,
+    .agentic-analysis-output td {
+        padding: 0.48rem 0.58rem;
+    }
 }
