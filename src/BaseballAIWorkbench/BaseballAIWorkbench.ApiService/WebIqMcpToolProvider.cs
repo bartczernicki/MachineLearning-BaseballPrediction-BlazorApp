@@ -1,6 +1,8 @@
 using Microsoft.Extensions.AI;
 using ModelContextProtocol.Client;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace BaseballAIWorkbench.ApiService
 {
@@ -9,11 +11,18 @@ namespace BaseballAIWorkbench.ApiService
         private const string McpServerName = "MAIGrounding-MCP";
         private const string LegacyApiKeyConnectionStringName = "WebIQMcpApiKey";
         private static readonly Uri DefaultMcpEndpoint = new("https://api.microsoft.ai/v3/mcp/");
+        private readonly ILogger<WebIqMcpToolProvider> _logger = loggerFactory.CreateLogger<WebIqMcpToolProvider>();
 
         public async Task<WebIqMcpToolScope> CreateToolScopeAsync(CancellationToken cancellationToken = default)
         {
-            var apiKey = GetRequiredApiKey(configuration);
+            var apiKeyConfig = GetRequiredApiKey(configuration);
             var endpoint = GetMcpEndpoint(configuration);
+
+            _logger.LogInformation(
+                "Using MCP API key from {ApiKeySource}: {MaskedApiKey}",
+                apiKeyConfig.Source,
+                MaskApiKey(apiKeyConfig.Value));
+
             var transportOptions = new HttpClientTransportOptions
             {
                 Name = McpServerName,
@@ -21,7 +30,7 @@ namespace BaseballAIWorkbench.ApiService
                 TransportMode = HttpTransportMode.StreamableHttp,
                 AdditionalHeaders = new Dictionary<string, string>
                 {
-                    ["x-apikey"] = apiKey
+                    ["x-apikey"] = apiKeyConfig.Value
                 }
             };
 
@@ -75,19 +84,27 @@ namespace BaseballAIWorkbench.ApiService
                 : throw new InvalidOperationException($"Invalid MCP endpoint URL in {McpServerName}:url.");
         }
 
-        private static string GetRequiredApiKey(IConfiguration configuration)
+        private static ApiKeyConfig GetRequiredApiKey(IConfiguration configuration)
         {
-            var value = configuration[$"{McpServerName}:headers:x-apikey"]
-                ?? configuration.GetConnectionString(LegacyApiKeyConnectionStringName)
-                ?? configuration[$"ConnectionStrings:{LegacyApiKeyConnectionStringName}"]
-                ?? Environment.GetEnvironmentVariable($"ConnectionStrings__{LegacyApiKeyConnectionStringName}");
-
-            if (!string.IsNullOrWhiteSpace(value))
+            var candidates = new[]
             {
-                var apiKey = TrimPastedQuotes(value.Trim());
+                (Value: configuration[$"{McpServerName}:headers:x-apikey"], Source: $"{McpServerName}:headers:x-apikey"),
+                (Value: configuration.GetConnectionString(LegacyApiKeyConnectionStringName), Source: $"ConnectionStrings:{LegacyApiKeyConnectionStringName}"),
+                (Value: configuration[$"ConnectionStrings:{LegacyApiKeyConnectionStringName}"], Source: $"ConnectionStrings:{LegacyApiKeyConnectionStringName}"),
+                (Value: Environment.GetEnvironmentVariable($"ConnectionStrings__{LegacyApiKeyConnectionStringName}"), Source: $"ConnectionStrings__{LegacyApiKeyConnectionStringName}")
+            };
+
+            foreach (var candidate in candidates)
+            {
+                if (string.IsNullOrWhiteSpace(candidate.Value))
+                {
+                    continue;
+                }
+
+                var apiKey = TrimPastedQuotes(candidate.Value.Trim());
                 if (!string.IsNullOrWhiteSpace(apiKey))
                 {
-                    return apiKey;
+                    return new ApiKeyConfig(apiKey, candidate.Source);
                 }
             }
 
@@ -99,6 +116,20 @@ namespace BaseballAIWorkbench.ApiService
         {
             return value.Trim('"', '\'', '\u201c', '\u201d');
         }
+
+        private static string MaskApiKey(string apiKey)
+        {
+            var fingerprint = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(apiKey)))[..12];
+
+            if (apiKey.Length <= 8)
+            {
+                return $"<redacted; length={apiKey.Length}; sha256={fingerprint}>";
+            }
+
+            return $"{apiKey[..4]}...{apiKey[^4..]} (length={apiKey.Length}; sha256={fingerprint})";
+        }
+
+        private sealed record ApiKeyConfig(string Value, string Source);
     }
 
     public sealed class WebIqMcpToolScope(IAsyncDisposable mcpClient, IReadOnlyList<AITool> tools) : IAsyncDisposable
