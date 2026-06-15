@@ -1,13 +1,10 @@
 ﻿<div class="col-md-12 col-xl-12">
     <div class="card bg-c-lightgray" style="display:@(IsVisible ? "block" : "none")">
         <p />
-        <div class="card-block" style="min-height: 275px; font-size:smaller; max-width: 100%; box-sizing: border-box; overflow-x: hidden; white-space: normal; word-wrap: break-word;overflow-wrap: break-word;">
+        <div class="card-block agentic-analysis-output">
             @((MarkupString) AgenticAnalysis)
         </div>
     </div>
-</div>
-<div>
-    @AgenticAnalysis
 </div>
 
 @code {

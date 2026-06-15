@@ -7,9 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Microsoft.SemanticKernel;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -54,9 +52,6 @@ public static class Extensions
 
     public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
-        // Enable model diagnostics with sensitive data.
-        AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
-
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
@@ -68,14 +63,12 @@ public static class Extensions
             {
                 metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddMeter("Microsoft.SemanticKernel*")
                     .AddRuntimeInstrumentation();
             })
             .WithTracing(tracing =>
             {
                 tracing.AddSource(builder.Environment.ApplicationName)
                     .AddAspNetCoreInstrumentation()
-                    .AddSource("Microsoft.SemanticKernel*")
                     .AddSource("Custom.Telemetry")
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
                     //.AddGrpcClientInstrumentation()
@@ -83,41 +76,6 @@ public static class Extensions
             });
 
         builder.AddOpenTelemetryExporters();
-
-        return builder;
-    }
-
-    public static IKernelBuilder ConfigureOpenTelemetry(this IKernelBuilder builder, IConfiguration configuration)
-    {
-        //var useOtlpExporter = !string.IsNullOrWhiteSpace(configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-        //if (!useOtlpExporter)
-        //{
-        //    return builder;
-        //}
-
-        var endpoint = "https://localhost:17028/";
-
-        var resourceBuilder = ResourceBuilder
-            .CreateDefault();
-
-        // Enable model diagnostics with sensitive data.
-        AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
-
-        var traceProvider = Sdk.CreateTracerProviderBuilder()
-            .SetResourceBuilder(resourceBuilder)
-            .AddSource("Microsoft.SemanticKernel*")
-            .AddSource("Custom.Telemetry")
-            .AddOtlpExporter()
-            .Build();
-
-        var meterProvider = Sdk.CreateMeterProviderBuilder()
-            .SetResourceBuilder(resourceBuilder)
-            .AddMeter("Microsoft.SemanticKernel*")
-            .AddOtlpExporter()
-            .Build();
-
-        builder.Services.AddSingleton<BaseProvider>(traceProvider);
-        builder.Services.AddSingleton<BaseProvider>(meterProvider);
 
         return builder;
     }

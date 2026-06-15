@@ -1,26 +1,14 @@
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
+using Azure.AI.OpenAI;
 using BaseballAIWorkbench.ApiService;
-using BaseballAIWorkbench.Common.MachineLearning;
 using BaseballAIWorkbench.ApiService.Services;
+using BaseballAIWorkbench.Common.MachineLearning;
 using Microsoft.Extensions.ML;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.ChatCompletion;
-using static BaseballAIWorkbench.ApiService.Util;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.Agents.AzureAI;
-using Microsoft.Extensions.Http.Resilience;
-using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
-
+using System.ClientModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
-
-// builder.Configuration.AddAzureKeyVaultSecrets(connectionName: "AOAIEastUS2Gpt41");
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
@@ -47,50 +35,15 @@ builder.Services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
     .FromFile("InductedToHallOfFameLightGbmModel", modelPathInductedToHallOfFameLightGBMModel)
     .FromFile("OnHallOfFameBallotLightGbmModel", modelPathOnHallOfFameBallotLightGBMModel);
 
+var aoaiEndPoint = GetRequiredConnectionString(builder.Configuration, "AOAIEndpoint");
+var aoaiApiKey = GetRequiredConnectionString(builder.Configuration, "AOAIApiKey", "AOAIAPIKey");
+var aoaiDeploymentName = GetRequiredConnectionString(builder.Configuration, "AOAIModelDeploymentName");
 
-var credentialOptions = new DefaultAzureCredentialOptions
-{
-    ExcludeEnvironmentCredential = true,
-    ExcludeWorkloadIdentityCredential = true,
-    ExcludeManagedIdentityCredential = true,
-    //ExcludeVisualStudioCodeCredential = true,
-    ExcludeVisualStudioCredential = true,
-    //ExcludeAzurePowerShellCredential = true,
-    //ExcludeInteractiveBrowserCredential = true,
-    //ExcludeVisualStudioCredential = true,
-    //ExcludeSharedTokenCacheCredential = true,
-};
-
-var sharedCredential = new DefaultAzureCredential(credentialOptions);
-var aoaiEndPoint = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIEndpoint");
-var aoaiApiKey = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIApiKey");
-var aoaiDeploymentName = Environment.GetEnvironmentVariable("ConnectionStrings__AOAIModelDeploymentName");
-
-// Add custom Http Client
-HttpClient httpClient = new HttpClient();
-httpClient.Timeout = TimeSpan.FromMinutes(2);
-
-var semanticKernel = Kernel.CreateBuilder()
-    .AddAzureOpenAIChatCompletion(
-        deploymentName: aoaiDeploymentName!,
-        endpoint: aoaiEndPoint!,
-        apiKey: aoaiApiKey!,
-        serviceId: "azureOpenAIGeneralPurpose",
-        httpClient: httpClient)
-    .Build();
-//builder.ConfigureOpenTelemetry();
-builder.Services.AddSingleton<Kernel>(builder => semanticKernel);
-
-
-AzureOpenAIChatCompletionService reasoningCompletionService = new(
-        deploymentName: "o4-mini",
-        endpoint: aoaiEndPoint!,
-        apiKey: aoaiApiKey!,
-        httpClient: httpClient
-);
+builder.Services.AddSingleton(new AzureOpenAIClient(new Uri(aoaiEndPoint), new ApiKeyCredential(aoaiApiKey)));
+builder.Services.AddSingleton(new AzureOpenAIModelOptions(aoaiDeploymentName));
+builder.Services.AddSingleton<WebIqMcpToolProvider>();
 
 var app = builder.Build();
-
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
@@ -101,11 +54,11 @@ if (app.Environment.IsDevelopment())
 }
 
 var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
-var semanticKernelService = app.Services.GetRequiredService<Kernel>();
 var machineLearningService = app.Services.GetRequiredService<PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>>();
-var aiAgents = new AIAgents(sharedCredential, machineLearningService, reasoningCompletionService,
-    semanticKernelService, baseballDataSampleService);
-
+var azureOpenAIClient = app.Services.GetRequiredService<AzureOpenAIClient>();
+var modelOptions = app.Services.GetRequiredService<AzureOpenAIModelOptions>();
+var webIqMcpToolProvider = app.Services.GetRequiredService<WebIqMcpToolProvider>();
+var aiAgents = new AIAgents(machineLearningService, azureOpenAIClient, modelOptions, webIqMcpToolProvider, baseballDataSampleService);
 
 // Define the API Endpoints
 
@@ -122,3 +75,21 @@ app.MapPost("/BaseballPlayerAnalysisMultipleAgents", aiAgents.PerformBaseballPla
 // Map the default API routes
 app.MapDefaultEndpoints();
 app.Run();
+
+static string GetRequiredConnectionString(IConfiguration configuration, string name, params string[] aliases)
+{
+    foreach (var candidate in new[] { name }.Concat(aliases))
+    {
+        var value = configuration.GetConnectionString(candidate)
+            ?? configuration[$"ConnectionStrings:{candidate}"]
+            ?? Environment.GetEnvironmentVariable($"ConnectionStrings__{candidate}");
+
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+    }
+
+    var expectedNames = string.Join(", ", new[] { name }.Concat(aliases).Select(candidate => $"ConnectionStrings__{candidate}"));
+    throw new InvalidOperationException($"Missing required connection string. Set one of: {expectedNames}.");
+}

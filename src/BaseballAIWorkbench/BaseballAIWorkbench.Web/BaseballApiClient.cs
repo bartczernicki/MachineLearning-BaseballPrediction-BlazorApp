@@ -1,7 +1,5 @@
 ﻿
-using Azure;
 using BaseballAIWorkbench.Common.Agents;
-using BaseballAIWorkbench.Common.MachineLearning;
 using Markdig;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
@@ -11,6 +9,12 @@ namespace BaseballAIWorkbench.Web
 {
     public class BaseballApiClient(HttpClient httpClient)
     {
+        private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder()
+            .UseAdvancedExtensions()
+            .UsePipeTables()
+            .UseGridTables()
+            .Build();
+
         public async Task<int> GetBaseballPlayerCountAsync(CancellationToken cancellationToken = default)
         {
             var playerCount = await httpClient.GetFromJsonAsync<int>("/Players", cancellationToken);
@@ -28,13 +32,7 @@ namespace BaseballAIWorkbench.Web
             string bingSourcePattern = @"【[^】]*】";        // match an opening 【, then any chars except 】, then a closing 】
             string cleanedAnalysis = Regex.Replace(playerAnalysisString, bingSourcePattern, "");
 
-            var cleanedReadyForHtml = JsonConvert.DeserializeObject<string>(cleanedAnalysis);
-
-
-            //var cleanedReadyForHtml = Regex.Unescape(playerAnalysisString);
-
-            var playerAnalysisHtml = Markdown.ToHtml(cleanedReadyForHtml);
-            return Markdown.ToHtml(playerAnalysisHtml);
+            return ConvertAgentMarkdownToHtml(cleanedAnalysis);
         }
 
         public async Task<string> GetBaseballPlayerAnalysisMultipleModels(AgenticAnalysisConfig agenticAnalysisConfig, CancellationToken cancellationToken = default)
@@ -48,13 +46,30 @@ namespace BaseballAIWorkbench.Web
             string bingSourcePattern = @"【[^】]*】";        // match an opening 【, then any chars except 】, then a closing 】
             string cleanedAnalysis = Regex.Replace(playerAnalysisString, bingSourcePattern, "");
 
-            var cleanedReadyForHtml = JsonConvert.DeserializeObject<string>(cleanedAnalysis);
+            return ConvertAgentMarkdownToHtml(cleanedAnalysis);
+        }
 
+        private static string ConvertAgentMarkdownToHtml(string jsonString)
+        {
+            var markdown = NormalizeAgentMarkdown(JsonConvert.DeserializeObject<string>(jsonString) ?? string.Empty);
+            return Markdown.ToHtml(markdown, MarkdownPipeline);
+        }
 
-            //var cleanedReadyForHtml = Regex.Unescape(playerAnalysisString);
+        private static string NormalizeAgentMarkdown(string markdown)
+        {
+            markdown = markdown.Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 
-            var playerAnalysisHtml = Markdown.ToHtml(cleanedReadyForHtml);
-            return Markdown.ToHtml(playerAnalysisHtml);
+            markdown = Regex.Replace(
+                markdown,
+                @"\A\s*```(?:markdown|md)?\s*\n(?<content>[\s\S]*?)\n```\s*\z",
+                "${content}",
+                RegexOptions.IgnoreCase);
+
+            markdown = Regex.Replace(markdown, @"(?m)^[ \t]{1,3}(\|)", "$1");
+            markdown = Regex.Replace(markdown, @"(?m)([^\n])\n(\|.+\|\s*$)", "$1\n\n$2");
+            markdown = Regex.Replace(markdown, @"(?m)^(\|[ \t:\-|\u2013\u2014]+\|\s*)\n([^\n|])", "$1\n\n$2");
+
+            return markdown.Trim();
         }
     }
 }

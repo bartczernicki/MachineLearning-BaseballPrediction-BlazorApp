@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -9,14 +9,14 @@
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
     <PackageReference Include="Markdig" Version="0.42.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.9" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.32.0" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="4.0.2" />
     <PackageReference Include="Microsoft.ML" Version="4.0.2" />
     <PackageReference Include="Microsoft.ML.FastTree" Version="4.0.2" />
-    <PackageReference Include="System.CodeDom" Version="9.0.9" />
-    <PackageReference Include="System.Threading.Channels" Version="9.0.9" />
-    <PackageReference Include="System.Threading.RateLimiting" Version="9.0.9" />
+    <PackageReference Include="System.CodeDom" Version="10.0.8" />
+    <PackageReference Include="System.Threading.Channels" Version="10.0.9" />
+    <PackageReference Include="System.Threading.RateLimiting" Version="10.0.9" />
   </ItemGroup>
 
   <ItemGroup>

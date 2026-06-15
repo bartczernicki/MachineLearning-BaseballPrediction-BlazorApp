@@ -753,3 +753,41 @@ ul {
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
+
+.agentic-analysis-output {
+    min-height: 275px;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.agentic-analysis-output table {
+    width: 100%;
+    margin: 0.75rem 0 1rem;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+.agentic-analysis-output th,
+.agentic-analysis-output td {
+    padding: 0.5rem 0.65rem;
+    border: 1px solid #d9dee3;
+    vertical-align: top;
+}
+
+.agentic-analysis-output th {
+    background-color: #f2f4f7;
+    font-weight: 700;
+}
+
+.agentic-analysis-output p:last-child,
+.agentic-analysis-output ul:last-child,
+.agentic-analysis-output ol:last-child,
+.agentic-analysis-output table:last-child {
+    margin-bottom: 0;
+}

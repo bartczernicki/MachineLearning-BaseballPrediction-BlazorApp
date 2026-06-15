@@ -11,11 +11,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 var aoaiEndPoint = builder.AddConnectionString("AOAIEndpoint");
 var aoaiApiKey = builder.AddConnectionString("AOAIAPIKey");
 var aoaiDeploymentName = builder.AddConnectionString("AOAIModelDeploymentName");
-var azureAIFoundryProject = builder.AddConnectionString("AzureAIFoundryProject");
-// Add Bing Configuration
-var bingWebGroundingConnectionID = builder.AddConnectionString("BingWebGroundingConnectionID");
-// AzureAI Foundry SportsAgentID (used as a template for the AI Agent)
-var azureAIFoundrySportsAgentID = builder.AddConnectionString("AzureAIFoundrySportsAgentID");
+var webIQMcpApiKey = builder.AddConnectionString("WebIQMcpApiKey");
 
 // API Service
 var apiService =
@@ -24,12 +20,12 @@ var apiService =
     .WithReference(aoaiEndPoint)
     .WithReference(aoaiApiKey)
     .WithReference(aoaiDeploymentName)
-    .WithReference(azureAIFoundryProject)
-    .WithReference(azureAIFoundrySportsAgentID)
-    .WithReference(bingWebGroundingConnectionID);
+    .WithReference(webIQMcpApiKey);
 
 // Web Frontend
 builder.AddProject<Projects.BaseballAIWorkbench_Web>("webfrontend")
+    .WithHttpsEndpoint(port: 7295, name: "https")
+    .WithHttpEndpoint(port: 5044, name: "http")
     .WithExternalHttpEndpoints()
     .WithReference(apiService)
     .WaitFor(apiService);

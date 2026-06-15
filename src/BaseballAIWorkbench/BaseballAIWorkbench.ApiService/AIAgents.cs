@@ -1,32 +1,31 @@
-﻿using Azure.AI.Agents.Persistent;
-using Azure.Identity;
+﻿using Azure.AI.OpenAI;
 using BaseballAIWorkbench.ApiService.Services;
 using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.ML;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.Agents.AzureAI;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 
 namespace BaseballAIWorkbench.ApiService
 {
     public class AIAgents
     {
         private readonly BaseballDataService _baseballDataService;
-        private readonly Kernel _semanticKernel;
-        private readonly AzureOpenAIChatCompletionService _chatCompletionReasoning;
         private readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
-        private readonly DefaultAzureCredential _sharedAzureCredential;
+        private readonly AzureOpenAIClient _azureOpenAIClient;
+        private readonly AzureOpenAIModelOptions _modelOptions;
+        private readonly WebIqMcpToolProvider _webIqMcpToolProvider;
 
-        public AIAgents(DefaultAzureCredential sharedAzureCredential, PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine,
-                AzureOpenAIChatCompletionService chatCompletionReasoning, Kernel semanticKernel, BaseballDataService baseballDataService)
+        public AIAgents(PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine,
+            AzureOpenAIClient azureOpenAIClient,
+            AzureOpenAIModelOptions modelOptions,
+            WebIqMcpToolProvider webIqMcpToolProvider,
+            BaseballDataService baseballDataService)
         {
-            _sharedAzureCredential = sharedAzureCredential;
             _predictionEnginePool = predictionEngine;
-            _chatCompletionReasoning = chatCompletionReasoning;
-            _semanticKernel = semanticKernel;
+            _azureOpenAIClient = azureOpenAIClient;
+            _modelOptions = modelOptions;
+            _webIqMcpToolProvider = webIqMcpToolProvider;
             _baseballDataService = baseballDataService;
         }
 
@@ -47,370 +46,155 @@ namespace BaseballAIWorkbench.ApiService
             return TypedResults.Ok(count);
         }
 
-        //public async Task<IResult> PerformBaseballPlayerAnalysis(MLBBaseballBatter batter)
-        //{
-        //    var battingStatistics = batter.ToStringWithoutFullPlayerName();
-
-        //    var agentType = "BaseballStatistician";
-
-        //    var agentMeta = Agents.GetAgent(agentType);
-
-        //    // STEP 2: Register the agent with the Semantic Kernel. 
-        //    // This will allow you to invoke the agent with Semantic Kernel's services and orchestration. 
-        //    ChatCompletionAgent agent =
-        //        new()
-        //        {
-        //            Kernel = _semanticKernel,
-        //            Name = agentMeta.AgentType, // Ensure no spaces or it will fail
-        //            Description = agentMeta.Description,
-        //            Instructions = agentMeta.Instructions
-        //        };
-
-        //    // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
-        //    var decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
-
-        //    // STEP 4: Create the ChatMessageContent object with the decision prompt.
-        //    var chatDecisionMessage = new ChatMessageContent(AuthorRole.User, decisionPrompt);
-
-        //    var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
-        //    // Convert agentResponse to a string
-        //    var analysis = agentResponse[0].Message.ToString();
-
-        //    return TypedResults.Ok(analysis);
-        //}
-
         public async Task<IResult> PerformBaseballPlayerAnalysisML(AgenticAnalysisConfig agenticAnalysisConfig)
         {
-#pragma warning disable SKEXP0110
             Console.WriteLine("Agentic Analysis...");
             Console.WriteLine("Agentic Analysis Config - Selected Agents: " + string.Join(", ", agenticAnalysisConfig.AgentsToUse));
 
             var batter = agenticAnalysisConfig.BaseballBatter;
             Console.WriteLine("Agentic Analysis Config - Baseball Player: " + batter.FullPlayerName);
-            
-            var decisionPrompt = string.Empty;
+
             var agentType = agenticAnalysisConfig.AgentsToUse.FirstOrDefault();
-            var agentMeta = Agents.GetAgent(agentType!);
-            ChatCompletionAgent agent = agentMeta.GetChatCompletionAgent(_semanticKernel);
-
-            // STEP 4: Build the instruction to investigate the decisions the Agent can help with.
-            if (agentType == "MachineLearningExpert")
-            {
-                // Run the prediction engine to get the prediction
-                var onHallOfFameBallotPredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(),
-                    batter);
-                var inductedToHallOfFamePredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(),
-                    batter);
-                var onHallOfFameBallotPredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotLightGbmModel.ToString(),
-                    batter);
-                var inductedToHallOfFamePredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameLightGbmModel.ToString(),
-                    batter);
-                var onHallOfFameBallotPredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotFastTreeModel.ToString(),
-                    batter);
-                var inductedToHallOfFamePredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(),
-                    batter);
-                // Convert ML Probabilities into a string array
-                string[] onHallOfFameBallotProbabilities = {
-                    onHallOfFameBallotPredictionModel1.Probability.ToString(),
-                    onHallOfFameBallotPredictionModel2.Probability.ToString(),
-                    onHallOfFameBallotPredictionModel3.Probability.ToString()
-                };
-                string[] inductedToHallOfFameProbabilities = {
-                    inductedToHallOfFamePredictionModel1.Probability.ToString(),
-                    inductedToHallOfFamePredictionModel2.Probability.ToString(),
-                    inductedToHallOfFamePredictionModel3.Probability.ToString()
-                };
-
-                // STEP 2: Build the decision prompt to investigate the decisions the Agent can help with.
-                decisionPrompt = Agents.GetMachineLearningAgentDecisionPrompt(
-                    onHallOfFameBallotProbabilities, inductedToHallOfFameProbabilities);
-
-                // STEP 4: Create the ChatMessageContent object with the decision prompt.
-                var chatDecisionMessage = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, decisionPrompt);
-
-                var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
-                // Convert agentResponse to a string
-                var analysis = agentResponse[0].Message.ToString();
-
-                return TypedResults.Ok(analysis);
-            }
-            else if (agentType == "BaseballStatistician")
-            {
-                var battingStatistics = batter.ToStringWithoutFullPlayerName();
-                // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
-                decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
-
-                // STEP 4: Create the ChatMessageContent object with the decision prompt.
-                var chatDecisionMessage = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, decisionPrompt);
-
-                var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
-                // Convert agentResponse to a string
-                var analysis = agentResponse[0].Message.ToString();
-
-                return TypedResults.Ok(analysis);
-            }
-            else if (agentType == "BaseballEncyclopedia")
-            {
-                // Build Azure AI Agent Connection
-                var projectConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundryProject");
-                var projectConnectionStringUri = new Uri(projectConnectionString!);
-                var agentAdminClientOptions = 
-                    new PersistentAgentsAdministrationClientOptions(PersistentAgentsAdministrationClientOptions.ServiceVersion.V2025_05_01);
-                var agentsClient = 
-                    new PersistentAgentsClient(projectConnectionString, _sharedAzureCredential, agentAdminClientOptions);
-                
-                var azureAIFoundrySportsAgentID = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundrySportsAgentID");
-                var baseballEncyclopediaPersistentAgent = agentsClient.Administration.GetAgent(azureAIFoundrySportsAgentID).Value;
-
-                //ConnectionID in this format: /subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.CognitiveServices/accounts/<ai_service_name>/projects/<project_name>/connections/<connection_name> 
-                var bingWebGroundingConnectionID = Environment.GetEnvironmentVariable("ConnectionStrings__BingWebGroundingConnectionID");
-
-                var bingSearchConfig = new BingGroundingSearchConfiguration(bingWebGroundingConnectionID)
-                {
-                    Count = 10,
-                    Market = "en-US"
-                };
-
-                BingGroundingToolDefinition bingGroundingTool = new BingGroundingToolDefinition(
-        new BingGroundingSearchToolParameters(
-                            [
-                                bingSearchConfig
-                            ])
-                    );
-
-                // Use Azure AI Data Zone Deployment (dz-) prefix for the model deployment name
-                var modelDeploymentName = "dz-" + Environment.GetEnvironmentVariable("ConnectionStrings__AOAIModelDeploymentName");
-
-                // Copy key settings to the new transient agent
-                PersistentAgent transientAzureAIFoundryAgent = agentsClient.Administration.CreateAgent(
-                    model: modelDeploymentName,
-                    name: "transientSportsAgent",
-                    instructions: baseballEncyclopediaPersistentAgent.Instructions,
-                    tools: [bingGroundingTool],
-                    temperature: baseballEncyclopediaPersistentAgent.Temperature,
-                    topP: baseballEncyclopediaPersistentAgent.TopP
-                );
-
-                AzureAIAgent transientSemanticKernelAgent = new(transientAzureAIFoundryAgent, agentsClient);
-
-                var response = string.Empty;
-                decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
-
-                // Create the Thread
-                AzureAIAgentThread agentSemanticKernelThread = new(agentsClient);
-                // Create the ChatMessageContent object with the decision prompt.
-                ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
-
-                try
-                {
-                    await foreach (ChatMessageContent agentResponse in transientSemanticKernelAgent.InvokeAsync(message, agentSemanticKernelThread))
-                    {
-                        response += agentResponse.Content;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                    return TypedResults.Problem(ex.Message);
-                }
-                finally
-                {
-                    // Remove the Thread and the AI Agent
-                    await agentsClient.Threads.DeleteThreadAsync(agentSemanticKernelThread.Id);
-                    await agentsClient.Administration.DeleteAgentAsync(transientAzureAIFoundryAgent.Id);
-                }
-
-                return TypedResults.Ok(response);
-            }
-            else
+            if (string.IsNullOrWhiteSpace(agentType))
             {
                 return TypedResults.Problem("Agent type not found");
+            }
+
+            try
+            {
+                var analysis = await RunAnalysisAgentAsync(agentType, batter);
+                return TypedResults.Ok(analysis);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return TypedResults.Problem(ex.Message);
             }
         }
 
         public async Task<IResult> PerformBaseballPlayerAnalysisMupltipleAgents(AgenticAnalysisConfig agenticAnalysisConfig)
         {
-
-            //var chatCompletionServicetest = _semanticKernelReasoning.Services.GetRequiredService<IChatCompletionService>();
-
-            #pragma warning disable SKEXP0110
             Console.WriteLine("Multi-Agentic Analysis...");
             Console.WriteLine("Multi-Agentic Analysis - Config Selected Agents: " + string.Join(", ", agenticAnalysisConfig.AgentsToUse));
 
             var batter = agenticAnalysisConfig.BaseballBatter;
             Console.WriteLine("Multi-Agentic Analysis - Config Baseball Player: " + batter.FullPlayerName);
 
-            // Set Up Chat History
-            ChatHistory agentsAnalysisHistory = [];
+            var agentsAnalysisHistory = new List<string>();
 
-            foreach (var agentTypeInConfig in agenticAnalysisConfig.AgentsToUse)
+            try
             {
-                Console.WriteLine("Agentic Analysis - Agent Type: " + agentTypeInConfig);
-
-                var decisionPrompt = string.Empty;
-                var agentMeta = Agents.GetAgent(agentTypeInConfig!);
-                ChatCompletionAgent agent = agentMeta.GetChatCompletionAgent(_semanticKernel);
-
-                // STEP 4: Build the instruction to investigate the decisions the Agent can help with.
-                if (agentTypeInConfig == "MachineLearningExpert")
+                foreach (var agentTypeInConfig in agenticAnalysisConfig.AgentsToUse)
                 {
-                    // Run the prediction engine to get the prediction
-                    var onHallOfFameBallotPredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(),
-                        batter);
-                    var inductedToHallOfFamePredictionModel1 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(),
-                        batter);
-                    var onHallOfFameBallotPredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotLightGbmModel.ToString(),
-                        batter);
-                    var inductedToHallOfFamePredictionModel2 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameLightGbmModel.ToString(),
-                        batter);
-                    var onHallOfFameBallotPredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.OnHallOfFameBallotFastTreeModel.ToString(),
-                        batter);
-                    var inductedToHallOfFamePredictionModel3 = _predictionEnginePool.Predict(Common.MachineLearning.MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(),
-                        batter);
-                    // Convert ML Probabilities into a string array
-                    string[] onHallOfFameBallotProbabilities = {
-                    onHallOfFameBallotPredictionModel1.Probability.ToString(),
-                    onHallOfFameBallotPredictionModel2.Probability.ToString(),
-                    onHallOfFameBallotPredictionModel3.Probability.ToString()
-                    };
-                    string[] inductedToHallOfFameProbabilities = {
-                    inductedToHallOfFamePredictionModel1.Probability.ToString(),
-                    inductedToHallOfFamePredictionModel2.Probability.ToString(),
-                    inductedToHallOfFamePredictionModel3.Probability.ToString()
-                    };
+                    Console.WriteLine("Agentic Analysis - Agent Type: " + agentTypeInConfig);
 
-                    // STEP 2: Build the decision prompt to investigate the decisions the Agent can help with.
-                    decisionPrompt = Agents.GetMachineLearningAgentDecisionPrompt(
-                        onHallOfFameBallotProbabilities, inductedToHallOfFameProbabilities);
-
-                    // STEP 4: Create the ChatMessageContent object with the decision prompt.
-                    var chatDecisionMessage = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, decisionPrompt);
-
-                    var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
-                    //// Convert agentResponse to a string
-                    var analysis = agentResponse[0].Message.ToString();
-
-                    // Add the analysis to the agents analysis history
-                    agentsAnalysisHistory.AddAssistantMessage(Environment.NewLine + "## Machine Learning Expert Agent Analysis: " + Environment.NewLine + analysis);
+                    var analysis = await RunAnalysisAgentAsync(agentTypeInConfig, batter);
+                    var agentName = Agents.GetAgentName(agentTypeInConfig);
+                    agentsAnalysisHistory.Add($"## {agentName} Agent Analysis:{Environment.NewLine}{analysis}");
                 }
-                else if (agentTypeInConfig == "BaseballStatistician")
-                {
-                    var battingStatistics = batter.ToStringWithoutFullPlayerName();
-                    // STEP 3: Build the instruction to investigate the decisions the Agent can help with.
-                    decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
 
-                    // STEP 4: Create the ChatMessageContent object with the decision prompt.
-                    var chatDecisionMessage = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, decisionPrompt);
+                Console.WriteLine("Agentic Analysis - Agent Type: Final Quantitative Analysis");
 
-                    var agentResponse = await agent.InvokeAsync(chatDecisionMessage).ToArrayAsync();
-                    //// Convert agentResponse to a string
-                    var analysis = agentResponse[0].Message.ToString();
-                    // Add the analysis to the agents analysis history
-                    agentsAnalysisHistory.AddAssistantMessage(Environment.NewLine + "## Baseball Statistician Agent Analysis: " + Environment.NewLine + analysis);
-                }
-                else if (agentTypeInConfig == "BaseballEncyclopedia")
-                {
-                    // Build Azure AI Agent Connection
-                    var projectConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundryProject");
-                    var projectConnectionStringUri = new Uri(projectConnectionString!);
-                    var agentAdminClientOptions =
-                        new PersistentAgentsAdministrationClientOptions(PersistentAgentsAdministrationClientOptions.ServiceVersion.V2025_05_01);
-                    var agentsClient =
-                        new PersistentAgentsClient(projectConnectionString, _sharedAzureCredential, agentAdminClientOptions);
-                    var azureAIFoundrySportsAgentID = Environment.GetEnvironmentVariable("ConnectionStrings__AzureAIFoundrySportsAgentID");
-                    var baseballEncyclopediaPersistentAgent = agentsClient.Administration.GetAgent(azureAIFoundrySportsAgentID).Value;
+                var quantitativeAnalysisAgent = CreateAgent(Agents.GetAgent("QuantitativeAnalysis"));
+                var quantitativeAnalysisPrompt =
+                    $"""
+                    Treat the following completed agent analyses as the chat history referenced by your instructions.
 
-                    //ConnectionID in this format: /subscriptions/<subscription_id>/resourceGroups/<resource_group_name>/providers/Microsoft.CognitiveServices/accounts/<ai_service_name>/projects/<project_name>/connections/<connection_name> 
-                    var bingWebGroundingConnectionID = Environment.GetEnvironmentVariable("ConnectionStrings__BingWebGroundingConnectionID");
+                    <Agent Analyses>
+                    {string.Join(Environment.NewLine + Environment.NewLine, agentsAnalysisHistory)}
+                    </Agent Analyses>
 
-                    var bingSearchConfig = new BingGroundingSearchConfiguration(bingWebGroundingConnectionID)
-                    {
-                        Count = 10,
-                        Market = "en-US"
-                    };
+                    {Agents.GetQuantitativeAnalysisPrompt()}
+                    """;
 
-                    BingGroundingToolDefinition bingGroundingTool = new BingGroundingToolDefinition(
-            new BingGroundingSearchToolParameters(
-                                [
-                                    bingSearchConfig
-                                ])
-                        );
+                return TypedResults.Ok(await RunAgentAsync(quantitativeAnalysisAgent, quantitativeAnalysisPrompt));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return TypedResults.Problem(ex.Message);
+            }
+        }
 
-                    // Use Azure AI Data Zone Deployment (dz-) prefix for the model deployment name
-                    var modelDeploymentName = "dz-" + Environment.GetEnvironmentVariable("ConnectionStrings__AOAIModelDeploymentName");
+        private async Task<string> RunAnalysisAgentAsync(string agentType, MLBBaseballBatter batter)
+        {
+            return agentType switch
+            {
+                "MachineLearningExpert" => await RunMachineLearningExpertAsync(batter),
+                "BaseballStatistician" => await RunBaseballStatisticianAsync(batter),
+                "BaseballEncyclopedia" => await RunBaseballEncyclopediaAsync(batter),
+                _ => throw new InvalidOperationException("Agent type not found")
+            };
+        }
 
-                    // Copy key settings to the new transient agent
-                    PersistentAgent transientAzureAIFoundryAgent = agentsClient.Administration.CreateAgent(
-                        model: modelDeploymentName,
-                        name: "transientSportsAgent",
-                        instructions: baseballEncyclopediaPersistentAgent.Instructions,
-                        tools: [bingGroundingTool],
-                        temperature: baseballEncyclopediaPersistentAgent.Temperature,
-                        topP: baseballEncyclopediaPersistentAgent.TopP
-                    );
+        private async Task<string> RunMachineLearningExpertAsync(MLBBaseballBatter batter)
+        {
+            var agent = CreateAgent(Agents.GetAgent("MachineLearningExpert"));
+            var decisionPrompt = Agents.GetMachineLearningAgentDecisionPrompt(
+                GetHallOfFameBallotProbabilities(batter),
+                GetHallOfFameInductionProbabilities(batter));
 
-                    AzureAIAgent transientSemanticKernelAgent = new(transientAzureAIFoundryAgent, agentsClient);
+            return await RunAgentAsync(agent, decisionPrompt);
+        }
 
-                    var response = string.Empty;
-                    decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
+        private async Task<string> RunBaseballStatisticianAsync(MLBBaseballBatter batter)
+        {
+            var agent = CreateAgent(Agents.GetAgent("BaseballStatistician"));
+            var battingStatistics = batter.ToStringWithoutFullPlayerName();
+            var decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
 
-                    var analysis = string.Empty;
-                    // Create the Thread
-                    AzureAIAgentThread agentSemanticKernelThread = new(agentsClient);
-                    // Create the ChatMessageContent object with the decision prompt.
-                    ChatMessageContent message = new(AuthorRole.User, decisionPrompt);
+            return await RunAgentAsync(agent, decisionPrompt);
+        }
 
-                    try
-                    {
-                        await foreach (ChatMessageContent agentResponse in transientSemanticKernelAgent.InvokeAsync(message, agentSemanticKernelThread))
-                        {
-                            analysis += agentResponse.Content;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        return TypedResults.Problem(ex.Message);
-                    }
-                    finally
-                    {
-                        // Add the analysis to the agents analysis history
-                        agentsAnalysisHistory.AddAssistantMessage(Environment.NewLine + "Baseball Encyclopedia Agent Analysis: " + Environment.NewLine + analysis);
+        private async Task<string> RunBaseballEncyclopediaAsync(MLBBaseballBatter batter)
+        {
+            await using var webIqTools = await _webIqMcpToolProvider.CreateToolScopeAsync();
+            var agent = CreateAgent(Agents.GetAgent("BaseballEncyclopedia"), webIqTools.Tools);
+            var decisionPrompt = Agents.GetInternetResearchAgentDecisionPrompt(batter);
 
-                        await agentsClient.Threads.DeleteThreadAsync(agentSemanticKernelThread.Id);
-                        await agentsClient.Administration.DeleteAgentAsync(transientSemanticKernelAgent.Id);
-                    }
-                }
-                else
-                {
-                    return TypedResults.Problem("Agent type not found");
-                }
-            } // End of Agents foreach
+            return await RunAgentAsync(agent, decisionPrompt);
+        }
 
-            // Convert ChatHistory to a string
-            // var agentsAnalysisHistoryString = string.Join(Environment.NewLine, agentsAnalysisHistory.Select(a => a.Content));
+        private ChatClientAgent CreateAgent(Agent agentMeta, IReadOnlyList<AITool>? tools = null)
+        {
+            var chatClient = _azureOpenAIClient.GetChatClient(_modelOptions.DeploymentName).AsIChatClient();
 
-            Console.WriteLine("Agentic Analysis - Agent Type: Final Quantitative Analysis");
+            return tools is { Count: > 0 }
+                ? chatClient.AsAIAgent(
+                    name: agentMeta.AgentType,
+                    description: agentMeta.Description,
+                    instructions: agentMeta.Instructions,
+                    tools: tools.ToList())
+                : chatClient.AsAIAgent(
+                    name: agentMeta.AgentType,
+                    description: agentMeta.Description,
+                    instructions: agentMeta.Instructions);
+        }
 
-            //agentsAnalysisHistory.AddSystemMessage(Agents.GetAgentInstructions("QuantitativeAnalysis"));
-            //var openAIPromptExecutionSettings = new AzureOpenAIPromptExecutionSettings()
-            //{
-            //    ReasoningEffort = ChatReasoningEffortLevel.High
-            //};
-            //agentsAnalysisHistory.AddUserMessage(Agents.GetQuantitativeAnalysisPrompt());
-            ////var chatCompletionService = _semanticKernelReasoning.Services.GetRequiredService<IChatCompletionService>();
-            //var quantAnalysisResponse = await _chatCompletionReasoning.GetChatMessageContentAsync(agentsAnalysisHistory, openAIPromptExecutionSettings);
+        private static async Task<string> RunAgentAsync(ChatClientAgent agent, string prompt)
+        {
+            var response = await agent.RunAsync(prompt);
+            return response.ToString();
+        }
 
-            var chatMessageContent = new Microsoft.SemanticKernel.ChatMessageContent(AuthorRole.User, Agents.GetQuantitativeAnalysisPrompt());
-            var quantitativeAnalysisAgent = Agents.GetAgent("QuantitativeAnalysis");
+        private string[] GetHallOfFameBallotProbabilities(MLBBaseballBatter batter)
+        {
+            return
+            [
+                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(), batter).Probability.ToString(),
+                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotLightGbmModel.ToString(), batter).Probability.ToString(),
+                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotFastTreeModel.ToString(), batter).Probability.ToString()
+            ];
+        }
 
-            ChatCompletionAgent quantAgent = quantitativeAnalysisAgent.GetChatCompletionAgent(_semanticKernel);
-
-            Microsoft.SemanticKernel.Agents.AgentThread quantAgentThread = new ChatHistoryAgentThread(agentsAnalysisHistory);
-            var quantitativeAnalysisResponse = await quantAgent.InvokeAsync(chatMessageContent, quantAgentThread).ToArrayAsync();
-            var quantitativeAnalysisString = quantitativeAnalysisResponse[0].Message.ToString();
-
-            return TypedResults.Ok(quantitativeAnalysisString);
+        private string[] GetHallOfFameInductionProbabilities(MLBBaseballBatter batter)
+        {
+            return
+            [
+                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(), batter).Probability.ToString(),
+                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameLightGbmModel.ToString(), batter).Probability.ToString(),
+                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(), batter).Probability.ToString()
+            ];
         }
     }
 }
