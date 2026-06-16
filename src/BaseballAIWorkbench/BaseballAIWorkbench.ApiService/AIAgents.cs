@@ -218,7 +218,11 @@ namespace BaseballAIWorkbench.ApiService
             return new ChatClientAgentRunOptions(new ChatOptions
             {
                 ToolMode = ChatToolMode.RequireSpecific(toolName),
-                AllowMultipleToolCalls = false
+                AllowMultipleToolCalls = false,
+                Reasoning = new ReasoningOptions
+                {
+                    Effort = ReasoningEffort.High
+                }
             });
         }
 
@@ -480,6 +484,8 @@ namespace BaseballAIWorkbench.ApiService
                 <Deterministic Quantitative Inputs>
                 Included agents: {includedAgentNames}
                 Omitted agents: {omittedAgentNames}
+                Selected agent probability inputs:
+                {FormatAgentProbabilityInputTable(assessments.Included)}
                 ballotAppearanceProbabilities: {FormatDoubleArray(assessments.Included.Select(assessment => assessment.BallotAppearanceProbability))}
                 inductionProbabilities: {FormatDoubleArray(assessments.Included.Select(assessment => assessment.InductionProbability))}
                 kValues: {FormatDoubleArray(DefaultLuceKValues)}
@@ -487,9 +493,28 @@ namespace BaseballAIWorkbench.ApiService
                 """;
         }
 
+        private static string FormatAgentProbabilityInputTable(IEnumerable<AgentProbabilityAssessment> assessments)
+        {
+            var tableRows = assessments.Select(assessment =>
+                $"| {assessment.AgentName} | {FormatDecimalProbability(assessment.BallotAppearanceProbability)} | {FormatDecimalProbability(assessment.InductionProbability)} | Yes |");
+
+            return string.Join(
+                Environment.NewLine,
+                [
+                    "| Agent | Ballot Appearance Input | Induction Input | Use In Calculation |",
+                    "|---|---:|---:|---|",
+                    .. tableRows
+                ]);
+        }
+
         private static string FormatDoubleArray(IEnumerable<double> values)
         {
-            return $"[{string.Join(", ", values.Select(value => value.ToString("0.####", CultureInfo.InvariantCulture)))}]";
+            return $"[{string.Join(", ", values.Select(FormatDecimalProbability))}]";
+        }
+
+        private static string FormatDecimalProbability(double value)
+        {
+            return value.ToString("0.####", CultureInfo.InvariantCulture);
         }
 
         private float[] GetHallOfFameBallotProbabilities(MLBBaseballBatter batter)

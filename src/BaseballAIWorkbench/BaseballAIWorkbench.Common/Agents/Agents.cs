@@ -272,6 +272,11 @@ namespace BaseballAIWorkbench.Common.Agents
                 Use the tool result as the only source for point estimates, lower bounds, upper bounds, and sensitivity values.
                 Mention any omitted agents from <Deterministic Quantitative Inputs> in Caveats.
                 Base the qualitative recommendation on the tool-returned point estimate.
+                In ### Key Evidence, include a Markdown table introduced as "Probabilities used in deterministic calculation".
+                That Key Evidence table must use exactly these columns:
+                | Agent | Ballot Appearance Input | Induction Input | Use In Calculation |
+                Populate that table only from the Selected agent probability inputs table in <Deterministic Quantitative Inputs>.
+                Use "Yes" for Use In Calculation for every included selected agent.
 
                 Required output:
                 {AgentMarkdownOutputRules}
