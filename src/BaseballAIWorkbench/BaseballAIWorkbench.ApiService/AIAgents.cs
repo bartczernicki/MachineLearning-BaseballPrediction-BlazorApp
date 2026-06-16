@@ -6,11 +6,17 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ML;
+using System.ComponentModel;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace BaseballAIWorkbench.ApiService
 {
     public class AIAgents
     {
+        private const string LuceConfidenceIntervalToolName = "calculate_luce_confidence_interval";
+        private static readonly double[] DefaultLuceKValues = [0.5, 1.0, 2.0];
+
         private readonly BaseballDataService _baseballDataService;
         private readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
         private readonly AzureOpenAIClient _azureOpenAIClient;
@@ -84,7 +90,7 @@ namespace BaseballAIWorkbench.ApiService
             var batter = agenticAnalysisConfig.BaseballBatter;
             Console.WriteLine("Multi-Agentic Analysis - Config Baseball Player: " + batter.FullPlayerName);
 
-            var agentsAnalysisHistory = new List<string>();
+            var agentAnalyses = new List<CompletedAgentAnalysis>();
 
             try
             {
@@ -94,24 +100,37 @@ namespace BaseballAIWorkbench.ApiService
 
                     var analysis = await RunAnalysisAgentAsync(agentTypeInConfig, batter);
                     var agentName = Agents.GetAgentName(agentTypeInConfig);
-                    agentsAnalysisHistory.Add($"### {agentName} Agent Analysis:{Environment.NewLine}{analysis}");
+                    agentAnalyses.Add(new CompletedAgentAnalysis(agentTypeInConfig, agentName, analysis));
                 }
 
                 Console.WriteLine("Agentic Analysis - Agent Type: Final Quantitative Analysis");
 
-                var quantitativeAnalysisAgent = CreateAgent(Agents.GetAgent("QuantitativeAnalysis"));
+                var parsedProbabilityAssessments = ParseAgentProbabilityAssessments(agentAnalyses);
+                if (parsedProbabilityAssessments.Included.Count == 0)
+                {
+                    return TypedResults.Problem("No parsable Probability Assessment tables were found in the completed agent analyses.");
+                }
+
+                var quantitativeAnalysisAgent = CreateAgent(
+                    Agents.GetAgent("QuantitativeAnalysis"),
+                    [CreateLuceConfidenceIntervalTool()]);
                 var quantitativeAnalysisPrompt =
                     $"""
                     Treat the following completed agent analyses as the chat history referenced by your instructions.
 
                     <Agent Analyses>
-                    {string.Join(Environment.NewLine + Environment.NewLine, agentsAnalysisHistory)}
+                    {FormatAgentAnalyses(agentAnalyses)}
                     </Agent Analyses>
+
+                    {FormatDeterministicQuantitativeInputs(parsedProbabilityAssessments)}
 
                     {Agents.GetQuantitativeAnalysisPrompt()}
                     """;
 
-                return TypedResults.Ok(await RunAgentAsync(quantitativeAnalysisAgent, quantitativeAnalysisPrompt));
+                return TypedResults.Ok(await RunAgentAsync(
+                    quantitativeAnalysisAgent,
+                    quantitativeAnalysisPrompt,
+                    CreateRequiredToolRunOptions(LuceConfidenceIntervalToolName)));
             }
             catch (Exception ex)
             {
@@ -185,10 +204,292 @@ namespace BaseballAIWorkbench.ApiService
                     instructions: agentMeta.Instructions);
         }
 
-        private static async Task<string> RunAgentAsync(ChatClientAgent agent, string prompt)
+        private static async Task<string> RunAgentAsync(
+            ChatClientAgent agent,
+            string prompt,
+            ChatClientAgentRunOptions? runOptions = null)
         {
-            var response = await agent.RunAsync(prompt);
+            var response = await agent.RunAsync(prompt, options: runOptions);
             return response.ToString();
+        }
+
+        private static ChatClientAgentRunOptions CreateRequiredToolRunOptions(string toolName)
+        {
+            return new ChatClientAgentRunOptions(new ChatOptions
+            {
+                ToolMode = ChatToolMode.RequireSpecific(toolName),
+                AllowMultipleToolCalls = false
+            });
+        }
+
+        private static AITool CreateLuceConfidenceIntervalTool()
+        {
+            return AIFunctionFactory.Create(
+                (Func<double[], double[], double[]?, LuceConfidenceIntervalResult>)CalculateLuceConfidenceInterval,
+                new AIFunctionFactoryOptions
+                {
+                    Name = LuceConfidenceIntervalToolName,
+                    Description = "Calculates deterministic Luce's-choice point estimates and sensitivity ranges for Hall-of-Fame ballot appearance and induction probabilities."
+                });
+        }
+
+        [Description("Calculates deterministic Luce's-choice point estimates and sensitivity ranges for Hall-of-Fame probability assessments.")]
+        private static LuceConfidenceIntervalResult CalculateLuceConfidenceInterval(
+            [Description("Prior agent probabilities for the Ballot Appearance outcome, expressed as decimals from 0 to 1.")] double[] ballotAppearanceProbabilities,
+            [Description("Prior agent probabilities for the Induction outcome, expressed as decimals from 0 to 1.")] double[] inductionProbabilities,
+            [Description("Positive sensitivity k values. Use [0.5, 1.0, 2.0] when no custom sweep is needed.")] double[]? kValues)
+        {
+            var effectiveKValues = GetEffectiveKValues(kValues);
+            var ballotValues = ValidateProbabilityInputs(ballotAppearanceProbabilities, nameof(ballotAppearanceProbabilities));
+            var inductionValues = ValidateProbabilityInputs(inductionProbabilities, nameof(inductionProbabilities));
+
+            Console.WriteLine(
+                $"AgentQ Tool Invocation - {LuceConfidenceIntervalToolName}: ballotAppearanceProbabilities={FormatDoubleArray(ballotValues)}, inductionProbabilities={FormatDoubleArray(inductionValues)}, kValues={FormatDoubleArray(effectiveKValues)}");
+
+            return new LuceConfidenceIntervalResult(
+                CalculateOutcomeConfidenceInterval("Ballot Appearance", ballotValues, effectiveKValues),
+                CalculateOutcomeConfidenceInterval("Induction", inductionValues, effectiveKValues),
+                effectiveKValues);
+        }
+
+        private static LuceOutcomeConfidenceInterval CalculateOutcomeConfidenceInterval(
+            string criterion,
+            IReadOnlyList<double> probabilities,
+            IReadOnlyList<double> kValues)
+        {
+            var sensitivityValues = kValues
+                .Select(k => new LuceSensitivityValue(k, CalculateLuceProbability(probabilities, k)))
+                .ToArray();
+
+            var pointEstimate = CalculateLuceProbability(probabilities, 1.0);
+
+            return new LuceOutcomeConfidenceInterval(
+                criterion,
+                pointEstimate,
+                sensitivityValues.Min(value => value.Probability),
+                sensitivityValues.Max(value => value.Probability),
+                sensitivityValues);
+        }
+
+        private static double CalculateLuceProbability(IReadOnlyList<double> probabilities, double k)
+        {
+            var positiveEvidence = probabilities.Sum(probability => Math.Pow(probability, k));
+            var negativeEvidence = probabilities.Sum(probability => Math.Pow(1.0 - probability, k));
+
+            return positiveEvidence / (positiveEvidence + negativeEvidence);
+        }
+
+        private static double[] ValidateProbabilityInputs(double[]? probabilities, string parameterName)
+        {
+            if (probabilities is null || probabilities.Length == 0)
+            {
+                throw new ArgumentException("At least one probability is required.", parameterName);
+            }
+
+            foreach (var probability in probabilities)
+            {
+                if (!double.IsFinite(probability) || probability is < 0.0 or > 1.0)
+                {
+                    throw new ArgumentOutOfRangeException(parameterName, "Probabilities must be finite values between 0 and 1.");
+                }
+            }
+
+            return probabilities;
+        }
+
+        private static double[] GetEffectiveKValues(double[]? kValues)
+        {
+            var effectiveKValues = kValues is { Length: > 0 }
+                ? kValues
+                    .Where(k => double.IsFinite(k) && k > 0.0)
+                    .Distinct()
+                    .Order()
+                    .ToArray()
+                : DefaultLuceKValues;
+
+            return effectiveKValues.Length > 0 ? effectiveKValues : DefaultLuceKValues;
+        }
+
+        private static ParsedAgentProbabilityAssessments ParseAgentProbabilityAssessments(
+            IReadOnlyList<CompletedAgentAnalysis> agentAnalyses)
+        {
+            var included = new List<AgentProbabilityAssessment>();
+            var omitted = new List<OmittedAgentProbabilityAssessment>();
+
+            foreach (var agentAnalysis in agentAnalyses)
+            {
+                if (TryParseAgentProbabilityAssessment(agentAnalysis, out var assessment, out var omittedReason))
+                {
+                    included.Add(assessment);
+                }
+                else
+                {
+                    omitted.Add(new OmittedAgentProbabilityAssessment(agentAnalysis.AgentName, omittedReason));
+                }
+            }
+
+            return new ParsedAgentProbabilityAssessments(included, omitted);
+        }
+
+        private static bool TryParseAgentProbabilityAssessment(
+            CompletedAgentAnalysis agentAnalysis,
+            out AgentProbabilityAssessment assessment,
+            out string omittedReason)
+        {
+            var probabilityAssessmentSection = ExtractProbabilityAssessmentSection(agentAnalysis.Analysis)
+                ?? agentAnalysis.Analysis;
+            double? ballotAppearanceProbability = null;
+            double? inductionProbability = null;
+
+            foreach (var line in probabilityAssessmentSection.Split('\n'))
+            {
+                var cells = SplitMarkdownTableRow(line);
+                if (cells.Length < 2 || IsMarkdownTableSeparator(cells) || IsMarkdownTableHeader(cells))
+                {
+                    continue;
+                }
+
+                var criterion = cells[0];
+                if (!TryParseProbabilityValue(cells[1], out var probability))
+                {
+                    continue;
+                }
+
+                if (criterion.Contains("ballot", StringComparison.OrdinalIgnoreCase))
+                {
+                    ballotAppearanceProbability = probability;
+                }
+                else if (criterion.Contains("induction", StringComparison.OrdinalIgnoreCase))
+                {
+                    inductionProbability = probability;
+                }
+            }
+
+            if (ballotAppearanceProbability.HasValue && inductionProbability.HasValue)
+            {
+                assessment = new AgentProbabilityAssessment(
+                    agentAnalysis.AgentName,
+                    ballotAppearanceProbability.Value,
+                    inductionProbability.Value);
+                omittedReason = string.Empty;
+                return true;
+            }
+
+            assessment = default!;
+            omittedReason = "Could not parse both Ballot Appearance and Induction probabilities.";
+            return false;
+        }
+
+        private static string? ExtractProbabilityAssessmentSection(string analysis)
+        {
+            var lines = analysis.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+            var startLine = -1;
+
+            for (var i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].Trim().Equals("### Probability Assessment", StringComparison.OrdinalIgnoreCase))
+                {
+                    startLine = i + 1;
+                    break;
+                }
+            }
+
+            if (startLine < 0)
+            {
+                return null;
+            }
+
+            var endLine = lines.Length;
+            for (var i = startLine; i < lines.Length; i++)
+            {
+                if (lines[i].TrimStart().StartsWith("### ", StringComparison.Ordinal))
+                {
+                    endLine = i;
+                    break;
+                }
+            }
+
+            return string.Join('\n', lines[startLine..endLine]);
+        }
+
+        private static string[] SplitMarkdownTableRow(string line)
+        {
+            var trimmedLine = line.Trim();
+            if (!trimmedLine.StartsWith('|') || !trimmedLine.EndsWith('|'))
+            {
+                return [];
+            }
+
+            return trimmedLine
+                .Trim('|')
+                .Split('|')
+                .Select(cell => cell.Trim())
+                .ToArray();
+        }
+
+        private static bool IsMarkdownTableHeader(IReadOnlyList<string> cells)
+        {
+            return cells[0].Equals("Criterion", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsMarkdownTableSeparator(IReadOnlyList<string> cells)
+        {
+            return cells.All(cell => Regex.IsMatch(cell, @"^:?-{3,}:?$"));
+        }
+
+        private static bool TryParseProbabilityValue(string probabilityText, out double probability)
+        {
+            var normalizedProbabilityText = probabilityText.Replace('\u00A0', ' ').Trim();
+            var percentMatch = Regex.Match(normalizedProbabilityText, @"(?<value>\d+(?:\.\d+)?)\s*%");
+
+            if (percentMatch.Success
+                && double.TryParse(percentMatch.Groups["value"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var percentValue))
+            {
+                probability = Math.Clamp(percentValue / 100.0, 0.0, 1.0);
+                return true;
+            }
+
+            var decimalMatch = Regex.Match(normalizedProbabilityText, @"(?<value>\d+(?:\.\d+)?)");
+            if (decimalMatch.Success
+                && double.TryParse(decimalMatch.Groups["value"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var decimalValue))
+            {
+                probability = Math.Clamp(decimalValue > 1.0 ? decimalValue / 100.0 : decimalValue, 0.0, 1.0);
+                return true;
+            }
+
+            probability = 0.0;
+            return false;
+        }
+
+        private static string FormatAgentAnalyses(IReadOnlyList<CompletedAgentAnalysis> agentAnalyses)
+        {
+            return string.Join(
+                Environment.NewLine + Environment.NewLine,
+                agentAnalyses.Select(agentAnalysis =>
+                    $"### {agentAnalysis.AgentName} Agent Analysis:{Environment.NewLine}{agentAnalysis.Analysis}"));
+        }
+
+        private static string FormatDeterministicQuantitativeInputs(ParsedAgentProbabilityAssessments assessments)
+        {
+            var includedAgentNames = string.Join(", ", assessments.Included.Select(assessment => assessment.AgentName));
+            var omittedAgentNames = assessments.Omitted.Count == 0
+                ? "None"
+                : string.Join(", ", assessments.Omitted.Select(omitted => $"{omitted.AgentName} ({omitted.Reason})"));
+
+            return $"""
+                <Deterministic Quantitative Inputs>
+                Included agents: {includedAgentNames}
+                Omitted agents: {omittedAgentNames}
+                ballotAppearanceProbabilities: {FormatDoubleArray(assessments.Included.Select(assessment => assessment.BallotAppearanceProbability))}
+                inductionProbabilities: {FormatDoubleArray(assessments.Included.Select(assessment => assessment.InductionProbability))}
+                kValues: {FormatDoubleArray(DefaultLuceKValues)}
+                </Deterministic Quantitative Inputs>
+                """;
+        }
+
+        private static string FormatDoubleArray(IEnumerable<double> values)
+        {
+            return $"[{string.Join(", ", values.Select(value => value.ToString("0.####", CultureInfo.InvariantCulture)))}]";
         }
 
         private float[] GetHallOfFameBallotProbabilities(MLBBaseballBatter batter)
@@ -210,5 +511,32 @@ namespace BaseballAIWorkbench.ApiService
                 _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(), batter).Probability
             ];
         }
+
+        private sealed record CompletedAgentAnalysis(string AgentType, string AgentName, string Analysis);
+
+        private sealed record AgentProbabilityAssessment(
+            string AgentName,
+            double BallotAppearanceProbability,
+            double InductionProbability);
+
+        private sealed record OmittedAgentProbabilityAssessment(string AgentName, string Reason);
+
+        private sealed record ParsedAgentProbabilityAssessments(
+            List<AgentProbabilityAssessment> Included,
+            List<OmittedAgentProbabilityAssessment> Omitted);
+
+        public sealed record LuceConfidenceIntervalResult(
+            LuceOutcomeConfidenceInterval BallotAppearance,
+            LuceOutcomeConfidenceInterval Induction,
+            double[] KValues);
+
+        public sealed record LuceOutcomeConfidenceInterval(
+            string Criterion,
+            double PointEstimate,
+            double LowerBound,
+            double UpperBound,
+            LuceSensitivityValue[] SensitivityValues);
+
+        public sealed record LuceSensitivityValue(double K, double Probability);
     }
 }

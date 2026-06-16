@@ -258,21 +258,25 @@ namespace BaseballAIWorkbench.Common.Agents
             var decisionPrompt =
                 $"""
                 Produce two unified agentic Hall-of-Fame probability assessments:
-                1) Hall-of-Fame Ballot Appearance probability estimate with a sensitivity band.
-                2) Hall-of-Fame Induction probability estimate with a sensitivity band.
-                
-                Use the following approach:
-                
-                1. Extract each completed agent's Probability Assessment table from the chat history.
-                2. For each available agent, read the Ballot Appearance and Induction rows.
-                3. Combine each outcome separately using the existing Luce's-Choice-inspired soft-max fusion approach.
-                4. Report the point estimate at k=1 and a sensitivity band using a small k sweep such as 0.5, 1.0, and 2.0.
-                5. Base the qualitative recommendation on the point estimate.
+                1) Hall-of-Fame Ballot Appearance probability estimate with a deterministic sensitivity range.
+                2) Hall-of-Fame Induction probability estimate with a deterministic sensitivity range.
+
+                You have a local deterministic tool named calculate_luce_confidence_interval.
+                You must call calculate_luce_confidence_interval before writing the final answer.
+                Pass the exact numeric arrays from <Deterministic Quantitative Inputs> into the tool:
+                - ballotAppearanceProbabilities
+                - inductionProbabilities
+                - kValues
+
+                Do not estimate, approximate, or recalculate the Luce confidence interval yourself.
+                Use the tool result as the only source for point estimates, lower bounds, upper bounds, and sensitivity values.
+                Mention any omitted agents from <Deterministic Quantitative Inputs> in Caveats.
+                Base the qualitative recommendation on the tool-returned point estimate.
 
                 Required output:
                 {AgentMarkdownOutputRules}
                 {ProbabilityAssessmentRules}
-                In the Probability Assessment table, put the point estimate and sensitivity band in the Probability column.
+                In the Probability Assessment table, put the point estimate and deterministic sensitivity range in the Probability column.
                 """;
 
             return decisionPrompt;
