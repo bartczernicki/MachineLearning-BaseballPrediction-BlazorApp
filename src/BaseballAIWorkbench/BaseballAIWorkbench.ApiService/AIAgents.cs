@@ -94,7 +94,7 @@ namespace BaseballAIWorkbench.ApiService
 
                     var analysis = await RunAnalysisAgentAsync(agentTypeInConfig, batter);
                     var agentName = Agents.GetAgentName(agentTypeInConfig);
-                    agentsAnalysisHistory.Add($"## {agentName} Agent Analysis:{Environment.NewLine}{analysis}");
+                    agentsAnalysisHistory.Add($"### {agentName} Agent Analysis:{Environment.NewLine}{analysis}");
                 }
 
                 Console.WriteLine("Agentic Analysis - Agent Type: Final Quantitative Analysis");
@@ -134,9 +134,16 @@ namespace BaseballAIWorkbench.ApiService
         private async Task<string> RunMachineLearningExpertAsync(MLBBaseballBatter batter)
         {
             var agent = CreateAgent(Agents.GetAgent("MachineLearningExpert"));
+            var hallOfFameBallotProbabilities = GetHallOfFameBallotProbabilities(batter);
+            var hallOfFameInductionProbabilities = GetHallOfFameInductionProbabilities(batter);
+            var hallOfFameBallotAverageProbability = hallOfFameBallotProbabilities.Average();
+            var hallOfFameInductionAverageProbability = hallOfFameInductionProbabilities.Average();
+
             var decisionPrompt = Agents.GetMachineLearningAgentDecisionPrompt(
-                GetHallOfFameBallotProbabilities(batter),
-                GetHallOfFameInductionProbabilities(batter));
+                hallOfFameBallotProbabilities,
+                hallOfFameBallotAverageProbability,
+                hallOfFameInductionProbabilities,
+                hallOfFameInductionAverageProbability);
 
             return await RunAgentAsync(agent, decisionPrompt);
         }
@@ -184,23 +191,23 @@ namespace BaseballAIWorkbench.ApiService
             return response.ToString();
         }
 
-        private string[] GetHallOfFameBallotProbabilities(MLBBaseballBatter batter)
+        private float[] GetHallOfFameBallotProbabilities(MLBBaseballBatter batter)
         {
             return
             [
-                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(), batter).Probability.ToString(),
-                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotLightGbmModel.ToString(), batter).Probability.ToString(),
-                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotFastTreeModel.ToString(), batter).Probability.ToString()
+                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel.ToString(), batter).Probability,
+                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotLightGbmModel.ToString(), batter).Probability,
+                _predictionEnginePool.Predict(MLModelPredictionType.OnHallOfFameBallotFastTreeModel.ToString(), batter).Probability
             ];
         }
 
-        private string[] GetHallOfFameInductionProbabilities(MLBBaseballBatter batter)
+        private float[] GetHallOfFameInductionProbabilities(MLBBaseballBatter batter)
         {
             return
             [
-                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(), batter).Probability.ToString(),
-                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameLightGbmModel.ToString(), batter).Probability.ToString(),
-                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(), batter).Probability.ToString()
+                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel.ToString(), batter).Probability,
+                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameLightGbmModel.ToString(), batter).Probability,
+                _predictionEnginePool.Predict(MLModelPredictionType.InductedToHallOfFameFastTreeModel.ToString(), batter).Probability
             ];
         }
     }
