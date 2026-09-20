@@ -1,0 +1,121 @@
+[
+  {
+    "id": "strong-consensus",
+    "playerName": "Alex Consensus Fixture",
+    "selectedSeasons": 18,
+    "lastYear": 2024,
+    "expectedAssessment": "numeric",
+    "context": "Fictional retired position player. The selected 18 seasons match the career discussed. No actual ballot or election result is provided.",
+    "searches": [
+      { "purpose": "professional assessment", "status": "success", "note": "Independent national and specialist commentary located." },
+      { "purpose": "voter commentary", "status": "success", "note": "One author explicitly documents current BBWAA voting eligibility." },
+      { "purpose": "substantive objections", "status": "success", "note": "Contrary case searched; strongest retrieved objection concerns timing, not eventual merits." }
+    ],
+    "sources": [
+      { "sourceId": "S1", "title": "A compelling eventual case", "url": "https://example.org/baseball-evaluation/consensus-1", "publicationDate": "2025-03-01", "author": "Fictional Writer Avery", "documentedRole": "National baseball columnist; voting status not stated", "extract": "Avery describes Alex as a highly convincing eventual Hall of Fame candidate. Avery expects the player to appear on the BBWAA ballot and considers eventual election very likely, while declining to predict the first ballot." },
+      { "sourceId": "S2", "title": "Why I expect broad support", "url": "https://example.org/baseball-evaluation/consensus-2", "publicationDate": "2025-04-01", "author": "Fictional Writer Blake", "documentedRole": "Author explicitly identifies current BBWAA voting eligibility", "extract": "Blake says they intend to support Alex when eligible and reports the case has unusually broad acceptance among the professional analysts interviewed. Blake cautions that individual voting intentions do not guarantee an eventual result." },
+      { "sourceId": "S3", "title": "First-ballot caution", "url": "https://example.org/baseball-evaluation/consensus-3", "publicationDate": "2025-05-01", "author": "Fictional Analyst Casey", "documentedRole": "Specialist baseball analyst; voting status not stated", "extract": "Casey questions whether Alex will be elected immediately because crowded ballots can delay support. Casey nonetheless regards eventual BBWAA election as highly likely and finds little serious opposition to the merits." }
+    ]
+  },
+  {
+    "id": "divided-opinions",
+    "playerName": "Drew Divided Fixture",
+    "selectedSeasons": 17,
+    "lastYear": 2023,
+    "expectedAssessment": "numeric",
+    "context": "Fictional retired position player. The professional case is contested; the dossier does not contain actual election results.",
+    "searches": [
+      { "purpose": "professional assessment", "status": "success", "note": "Substantial independent coverage found." },
+      { "purpose": "voter commentary", "status": "success", "note": "Supportive and skeptical documented voter commentary found." },
+      { "purpose": "substantive objections", "status": "success", "note": "A substantive skeptical case is present." }
+    ],
+    "sources": [
+      { "sourceId": "S1", "title": "A candidate worth supporting", "url": "https://example.org/baseball-evaluation/divided-1", "publicationDate": "2025-02-10", "author": "Fictional Voter Devon", "documentedRole": "Author explicitly identifies current BBWAA voting eligibility", "extract": "Devon expects Drew to appear on the ballot and intends to vote for him, arguing his best seasons made him one of the era's defining players." },
+      { "sourceId": "S2", "title": "Why the case falls short for me", "url": "https://example.org/baseball-evaluation/divided-2", "publicationDate": "2025-02-12", "author": "Fictional Voter Ellis", "documentedRole": "Author explicitly identifies current BBWAA voting eligibility", "extract": "Ellis also expects ballot appearance but would not support election, emphasizing a brief peak and limited sustained prominence. Ellis calls this a defensible disagreement rather than a character judgment." },
+      { "sourceId": "S3", "title": "A divided professional debate", "url": "https://example.org/baseball-evaluation/divided-3", "publicationDate": "2025-03-01", "author": "Fictional Analyst Finley", "documentedRole": "Baseball analyst; voting status not stated", "extract": "Finley describes genuine division among professional commentators and uncertainty about whether Drew's case can accumulate enough support for eventual BBWAA election. A fan poll favors him, but Finley warns that poll participants are not the electorate." }
+    ]
+  },
+  {
+    "id": "sparse-hof-attention",
+    "playerName": "Gray Coverage Fixture",
+    "selectedSeasons": 14,
+    "lastYear": 2020,
+    "expectedAssessment": "numeric",
+    "context": "Successful broad searches identify the correct fictional player and substantial general career coverage, but no serious supportive Hall of Fame campaign. Absence is an inference limited to these sources.",
+    "searches": [
+      { "purpose": "professional assessment", "status": "success", "note": "Multiple career retrospectives located and identity confirmed; none advocates Hall of Fame election." },
+      { "purpose": "voter commentary", "status": "success", "note": "Targeted searches found no substantive voter endorsement despite ample general coverage." },
+      { "purpose": "substantive objections", "status": "success", "note": "A specialist directly describes the player as outside serious candidate discussions." }
+    ],
+    "sources": [
+      { "sourceId": "S1", "title": "A respected long career", "url": "https://example.org/baseball-evaluation/sparse-1", "publicationDate": "2021-01-01", "author": "Fictional Writer Harper", "documentedRole": "Professional beat writer; voting status not stated", "extract": "Harper's extensive retrospective calls Gray a reliable contributor and respected teammate without presenting a Hall of Fame case." },
+      { "sourceId": "S2", "title": "Remembering Gray's fourteen seasons", "url": "https://example.org/baseball-evaluation/sparse-2", "publicationDate": "2022-02-01", "author": "Fictional Writer Indigo", "documentedRole": "National baseball writer; voting status not stated", "extract": "Indigo independently surveys Gray's career and memorable moments. The article does not address ballot selection or advocate election." },
+      { "sourceId": "S3", "title": "The quieter retirement class", "url": "https://example.org/baseball-evaluation/sparse-3", "publicationDate": "2023-03-01", "author": "Fictional Analyst Jules", "documentedRole": "Specialist Hall of Fame analyst; voting status not stated", "extract": "Jules says Gray has attracted little serious consideration as an eventual BBWAA candidate and would be surprised to see a sustained professional campaign, while avoiding any claim that sparse attention proves ineligibility." }
+    ]
+  },
+  {
+    "id": "poor-archives",
+    "playerName": "Kai Archive Fixture",
+    "selectedSeasons": 16,
+    "lastYear": 1941,
+    "expectedAssessment": "abstain",
+    "context": "Fictional historical player. Historical archives are inaccessible, so no reliable professional commentary on the case is available. Technical retrieval failure is not evidence against the merits.",
+    "searches": [
+      { "purpose": "professional assessment", "status": "failed", "note": "Archive access denied; titles only, no readable evidence." },
+      { "purpose": "voter commentary", "status": "failed", "note": "Historical newspaper search timed out." },
+      { "purpose": "substantive objections", "status": "success", "note": "Only a basic identity entry found; it has no Hall of Fame commentary." }
+    ],
+    "sources": [
+      { "sourceId": "S1", "title": "Kai Archive identity index", "url": "https://example.org/baseball-evaluation/archive-identity", "publicationDate": "unknown", "author": "Fictional Archive Index", "documentedRole": "Catalog, not a professional opinion", "extract": "Identity index confirms this position player and career dates. No source text or Hall of Fame assessment is available. Crawl timestamp 2026-09-20 is not a publication date." }
+    ]
+  },
+  {
+    "id": "historical-outcome-leakage",
+    "playerName": "Lane Historical Fixture",
+    "selectedSeasons": 20,
+    "lastYear": 1938,
+    "expectedAssessment": "numeric",
+    "context": "Fictional historical player whose known election outcome appears in one source. Assess the merits hypothetically; the outcome is not permissible predictive evidence. Use the independent professional arguments instead.",
+    "searches": [
+      { "purpose": "professional assessment", "status": "success", "note": "Two independent merit assessments located." },
+      { "purpose": "voter commentary", "status": "success", "note": "One historian discusses voter sentiment, but authors' own voting eligibility is not documented." },
+      { "purpose": "substantive objections", "status": "success", "note": "Contemporary objections are documented alongside support." }
+    ],
+    "sources": [
+      { "sourceId": "S1", "title": "The historical merits case", "url": "https://example.org/baseball-evaluation/history-1", "publicationDate": "1950-04-01", "author": "Fictional Writer Morgan", "documentedRole": "Professional baseball columnist; voting status not stated", "extract": "Morgan calls Lane a strong eventual candidate with a broadly respected career. Some writers object to inconsistency, while Morgan believes the peak and sustained public stature provide a persuasive case." },
+      { "sourceId": "S2", "title": "Agreement and reservations", "url": "https://example.org/baseball-evaluation/history-2", "publicationDate": "1951-05-01", "author": "Fictional Historian Noel", "documentedRole": "Baseball historian; voting status not stated", "extract": "Noel documents supportive professional commentary and a smaller skeptical group, describing genuine but not unanimous confidence in eventual BBWAA election." },
+      { "sourceId": "S3", "title": "Retrospective election registry", "url": "https://example.org/baseball-evaluation/history-outcome", "publicationDate": "1980-01-01", "author": "Fictional Registry", "documentedRole": "Outcome registry, not independent predictive commentary", "extract": "Lane was elected by the BBWAA in 1955. This actual outcome is explicitly excluded as predictive evidence in the hypothetical test." }
+    ]
+  },
+  {
+    "id": "altered-seasons",
+    "playerName": "Oak Scenario Fixture",
+    "selectedSeasons": 5,
+    "lastYear": 2024,
+    "expectedAssessment": "either",
+    "context": "The user selected a five-season what-if case. Sources discuss an actual eighteen-season career. Do not invent how those commentators would judge the five-season scenario, project statistics, or treat the full-career endorsement as directly transferable.",
+    "searches": [
+      { "purpose": "professional assessment", "status": "success", "note": "Only full eighteen-season career commentary found." },
+      { "purpose": "voter commentary", "status": "success", "note": "A voter endorsement explicitly relies on the eighteen-season body of work." },
+      { "purpose": "substantive objections", "status": "success", "note": "No commentary addresses a five-season hypothetical." }
+    ],
+    "sources": [
+      { "sourceId": "S1", "title": "Eighteen years of sustained prominence", "url": "https://example.org/baseball-evaluation/scenario-1", "publicationDate": "2025-01-10", "author": "Fictional Writer Parker", "documentedRole": "National baseball columnist; voting status not stated", "extract": "Parker regards Oak as a strong candidate because of eighteen seasons of sustained recognition. Parker does not discuss a shortened career or assess the first five seasons separately." },
+      { "sourceId": "S2", "title": "The value of the entire career", "url": "https://example.org/baseball-evaluation/scenario-2", "publicationDate": "2025-02-12", "author": "Fictional Voter Quinn", "documentedRole": "Author explicitly identifies current BBWAA voting eligibility", "extract": "Quinn would support Oak based on the full eighteen-season career, emphasizing that sustained breadth is central to the argument. No opinion about the user's five-season hypothetical is given." }
+    ]
+  },
+  {
+    "id": "no-defensible-evidence",
+    "playerName": "Reese Identity Fixture",
+    "selectedSeasons": 12,
+    "lastYear": 1975,
+    "expectedAssessment": "abstain",
+    "context": "The query name is ambiguous and returned sources concern a coach and a different-era pitcher, neither the specified position player. No usable professional evidence exists for the actual subject.",
+    "searches": [
+      { "purpose": "professional assessment", "status": "success", "note": "Name match belongs to a different sport's coach; excluded." },
+      { "purpose": "voter commentary", "status": "success", "note": "Name match belongs to a modern pitcher; excluded." },
+      { "purpose": "substantive objections", "status": "success", "note": "No identity-confirmed result for the specified position player." }
+    ],
+    "sources": []
+  }
+]
