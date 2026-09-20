@@ -1,0 +1,6 @@
+{
+  "$schema": "https://aspire.dev/reference/cli/configuration/schema.json",
+  "appHost": {
+    "path": "BaseballAIWorkbench.AppHost/BaseballAIWorkbench.AppHost.csproj"
+  }
+}
