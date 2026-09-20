@@ -8,15 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
-    <PackageReference Include="Markdig" Version="1.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.9" />
-    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.32.0" />
-    <PackageReference Include="Microsoft.Extensions.ML" Version="4.0.2" />
-    <PackageReference Include="Microsoft.ML" Version="4.0.2" />
-    <PackageReference Include="Microsoft.ML.FastTree" Version="4.0.2" />
-    <PackageReference Include="System.CodeDom" Version="10.0.8" />
-    <PackageReference Include="System.Threading.Channels" Version="10.0.9" />
-    <PackageReference Include="System.Threading.RateLimiting" Version="10.0.9" />
+    <PackageReference Include="Markdig" Version="1.3.2" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.33.1" />
+    <PackageReference Include="Microsoft.Extensions.ML" Version="5.0.0" />
+    <PackageReference Include="Microsoft.ML" Version="5.0.0" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="5.0.0" />
+    <PackageReference Include="System.CodeDom" Version="10.0.12" />
   </ItemGroup>
 
   <ItemGroup>
