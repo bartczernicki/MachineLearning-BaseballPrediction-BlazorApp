@@ -90,18 +90,21 @@ namespace BaseballAIWorkbench.ApiService
             var batter = agenticAnalysisConfig.BaseballBatter;
             Console.WriteLine("Multi-Agentic Analysis - Config Baseball Player: " + batter.FullPlayerName);
 
-            var agentAnalyses = new List<CompletedAgentAnalysis>();
-
             try
             {
-                foreach (var agentTypeInConfig in agenticAnalysisConfig.AgentsToUse)
+                var analysisTasks = agenticAnalysisConfig.AgentsToUse.Select(async agentTypeInConfig =>
                 {
-                    Console.WriteLine("Agentic Analysis - Agent Type: " + agentTypeInConfig);
+                    Console.WriteLine("Agentic Analysis - Agent Started: " + agentTypeInConfig);
 
                     var analysis = await RunAnalysisAgentAsync(agentTypeInConfig, batter);
                     var agentName = Agents.GetAgentName(agentTypeInConfig);
-                    agentAnalyses.Add(new CompletedAgentAnalysis(agentTypeInConfig, agentName, analysis));
-                }
+                    Console.WriteLine("Agentic Analysis - Agent Completed: " + agentTypeInConfig);
+                    return new CompletedAgentAnalysis(agentTypeInConfig, agentName, analysis);
+                }).ToArray();
+
+                // Wait for every selected agent before invoking Agent Q. WhenAll preserves
+                // selection order and prevents a partial analysis if any agent fails.
+                var agentAnalyses = await Task.WhenAll(analysisTasks);
 
                 Console.WriteLine("Agentic Analysis - Agent Type: Final Quantitative Analysis");
 
