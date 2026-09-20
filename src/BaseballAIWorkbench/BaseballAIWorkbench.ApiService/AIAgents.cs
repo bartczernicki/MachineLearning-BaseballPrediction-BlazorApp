@@ -1,4 +1,4 @@
-﻿using Azure.AI.OpenAI;
+﻿using OpenAI;
 using BaseballAIWorkbench.ApiService.Services;
 using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
@@ -19,20 +19,20 @@ namespace BaseballAIWorkbench.ApiService
 
         private readonly BaseballDataService _baseballDataService;
         private readonly PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> _predictionEnginePool;
-        private readonly AzureOpenAIClient _azureOpenAIClient;
+        private readonly OpenAIClient _openAIClient;
         private readonly AzureOpenAIModelOptions _modelOptions;
         private readonly WebIqMcpToolProvider _webIqMcpToolProvider;
         private readonly ILoggerFactory _loggerFactory;
 
         public AIAgents(PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction> predictionEngine,
-            AzureOpenAIClient azureOpenAIClient,
+            OpenAIClient openAIClient,
             AzureOpenAIModelOptions modelOptions,
             WebIqMcpToolProvider webIqMcpToolProvider,
             ILoggerFactory loggerFactory,
             BaseballDataService baseballDataService)
         {
             _predictionEnginePool = predictionEngine;
-            _azureOpenAIClient = azureOpenAIClient;
+            _openAIClient = openAIClient;
             _modelOptions = modelOptions;
             _webIqMcpToolProvider = webIqMcpToolProvider;
             _loggerFactory = loggerFactory;
@@ -187,7 +187,12 @@ namespace BaseballAIWorkbench.ApiService
 
         private ChatClientAgent CreateAgent(Agent agentMeta, IReadOnlyList<AITool>? tools = null)
         {
-            var chatClient = _azureOpenAIClient.GetChatClient(_modelOptions.DeploymentName).AsIChatClient();
+            // The Responses client and its MEAI adapter are marked experimental.
+#pragma warning disable OPENAI001
+            var chatClient = _openAIClient
+                .GetResponsesClient()
+                .AsIChatClient(_modelOptions.DeploymentName);
+#pragma warning restore OPENAI001
 
             return tools is { Count: > 0 }
                 ? chatClient.AsBuilder()

@@ -1,8 +1,8 @@
-using Azure.AI.OpenAI;
 using BaseballAIWorkbench.ApiService;
 using BaseballAIWorkbench.ApiService.Services;
 using BaseballAIWorkbench.Common.MachineLearning;
 using Microsoft.Extensions.ML;
+using OpenAI;
 using System.ClientModel;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,7 +39,11 @@ var aoaiEndPoint = GetRequiredConnectionString(builder.Configuration, "AOAIEndpo
 var aoaiApiKey = GetRequiredConnectionString(builder.Configuration, "AOAIApiKey", "AOAIAPIKey");
 var aoaiDeploymentName = GetRequiredConnectionString(builder.Configuration, "AOAIModelDeploymentName");
 
-builder.Services.AddSingleton(new AzureOpenAIClient(new Uri(aoaiEndPoint), new ApiKeyCredential(aoaiApiKey)));
+// Use Azure's OpenAI-compatible v1 endpoint for the current Responses SDK.
+builder.Services.AddSingleton(new OpenAIClient(new ApiKeyCredential(aoaiApiKey), new OpenAIClientOptions
+{
+    Endpoint = new Uri(new Uri(aoaiEndPoint), "/openai/v1/")
+}));
 builder.Services.AddSingleton(new AzureOpenAIModelOptions(aoaiDeploymentName));
 builder.Services.AddSingleton<WebIqMcpToolProvider>();
 
@@ -55,11 +59,11 @@ if (app.Environment.IsDevelopment())
 
 var baseballDataSampleService = app.Services.GetRequiredService<BaseballDataService>();
 var machineLearningService = app.Services.GetRequiredService<PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>>();
-var azureOpenAIClient = app.Services.GetRequiredService<AzureOpenAIClient>();
+var openAIClient = app.Services.GetRequiredService<OpenAIClient>();
 var modelOptions = app.Services.GetRequiredService<AzureOpenAIModelOptions>();
 var webIqMcpToolProvider = app.Services.GetRequiredService<WebIqMcpToolProvider>();
 var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
-var aiAgents = new AIAgents(machineLearningService, azureOpenAIClient, modelOptions, webIqMcpToolProvider, loggerFactory, baseballDataSampleService);
+var aiAgents = new AIAgents(machineLearningService, openAIClient, modelOptions, webIqMcpToolProvider, loggerFactory, baseballDataSampleService);
 
 // Define the API Endpoints
 
