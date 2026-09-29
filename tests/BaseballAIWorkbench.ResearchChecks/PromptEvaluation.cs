@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using BaseballAIWorkbench.ApiService;
 using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
 using Microsoft.Extensions.AI;
@@ -122,16 +123,16 @@ internal static class PromptEvaluation
         try
         {
             using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+            var options = variant == "revised" ? AgentAnalysisResponse.CreateChatOptions() : new ChatOptions();
+            options.Reasoning = new ReasoningOptions { Effort = ReasoningEffort.Medium };
+            options.MaxOutputTokens = 4000;
             var response = await client.GetResponseAsync(
                 [new ChatMessage(ChatRole.System, systemPrompt), new ChatMessage(ChatRole.User, userPrompt)],
-                new ChatOptions
-                {
-                    Reasoning = new ReasoningOptions { Effort = ReasoningEffort.Medium },
-                    MaxOutputTokens = 4000
-                }, deadline.Token);
-            var answer = response.Text;
+                options, deadline.Token);
+            var typedAnalysis = variant == "revised" ? AgentAnalysisResponse.ParseFinalMessage(response.Messages) : null;
+            var answer = typedAnalysis?.AnalysisMarkdown ?? response.Text;
             outcome = new EvaluationOutcome(evidenceCase.Id, variant, true, stopwatch.Elapsed.TotalSeconds,
-                answer, EvaluateStructure(evidenceCase, answer), null);
+                answer, EvaluateStructure(evidenceCase, answer, typedAnalysis), null, typedAnalysis);
         }
         catch (Exception error)
         {
@@ -143,7 +144,8 @@ internal static class PromptEvaluation
         return outcome;
     }
 
-    private static Dictionary<string, bool> EvaluateStructure(EvidenceCase evidenceCase, string answer)
+    private static Dictionary<string, bool> EvaluateStructure(EvidenceCase evidenceCase, string answer,
+        AgentAnalysisResult? typedAnalysis = null)
     {
         var headings = Regex.Matches(answer, @"(?m)^### (.+?)\s*$").Select(match => match.Groups[1].Value.Trim()).ToArray();
         var rows = Regex.Matches(answer, @"(?mi)^\|\s*(Ballot Appearance|Induction)\s*\|\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|").Cast<Match>().ToArray();
@@ -151,26 +153,41 @@ internal static class PromptEvaluation
         var links = Regex.Matches(answer, @"\]\((https?://[^\s)]+)\)").Select(match => match.Groups[1].Value).ToArray();
         var allowedUrls = evidenceCase.Sources.Select(source => source.Url).ToHashSet(StringComparer.Ordinal);
         var keyEvidence = Regex.Match(answer, @"(?s)### Key Evidence\s*(.*?)### Caveats").Groups[1].Value;
-        var numericValues = probabilities.Any(value => Regex.IsMatch(value, @"^\d{1,3}%$"));
+        double?[]? typedProbabilities = typedAnalysis is null ? null :
+            [typedAnalysis.BallotAppearanceProbability, typedAnalysis.InductionProbability];
+        var numericValues = typedProbabilities?.Any(value => value.HasValue) ??
+            probabilities.Any(value => Regex.IsMatch(value, @"^\d{1,3}%$"));
+        var wholePercentagePoints = typedProbabilities?.All(value =>
+            !value.HasValue || Math.Abs(value.Value * 100 - Math.Round(value.Value * 100)) < 1e-9) ??
+            (probabilities.Length == 2 && probabilities.All(value => value.Equals("N/A", StringComparison.OrdinalIgnoreCase) || Regex.IsMatch(value, @"^\d{1,3}%$")));
+        var expectedAbstention = typedProbabilities is not null
+            ? evidenceCase.ExpectedAssessment switch
+            {
+                "abstain" => typedProbabilities.All(value => !value.HasValue),
+                "numeric" => typedProbabilities.All(value => value.HasValue),
+                _ => true
+            }
+            : evidenceCase.ExpectedAssessment switch
+            {
+                "abstain" => probabilities.Length == 2 && probabilities.All(value => value.Equals("N/A", StringComparison.OrdinalIgnoreCase)),
+                "numeric" => probabilities.Length == 2 && probabilities.All(value => Regex.IsMatch(value, @"^\d{1,3}%$")),
+                _ => probabilities.Length == 2
+            };
         return new Dictionary<string, bool>
         {
             ["four_sections_in_order"] = headings.SequenceEqual(new[] { "Summary", "Probability Assessment", "Key Evidence", "Caveats" }),
             ["unchanged_probability_table_columns"] = Regex.IsMatch(answer, @"\|\s*Criterion\s*\|\s*Probability\s*\|\s*Qualitative Recommendation\s*\|\s*Rationale\s*\|"),
             ["two_parseable_probability_rows"] = rows.Length == 2 && rows.Select(row => row.Groups[1].Value).Distinct(StringComparer.OrdinalIgnoreCase).Count() == 2 &&
-                probabilities.All(value => value.Equals("N/A", StringComparison.OrdinalIgnoreCase) || Regex.IsMatch(value, @"^\d{1,3}(?:\.\d+)?%$")),
-            ["whole_percentage_points_or_abstention"] = probabilities.Length == 2 && probabilities.All(value => value.Equals("N/A", StringComparison.OrdinalIgnoreCase) || Regex.IsMatch(value, @"^\d{1,3}%$")),
-            ["expected_abstention_policy"] = evidenceCase.ExpectedAssessment switch
-            {
-                "abstain" => probabilities.Length == 2 && probabilities.All(value => value.Equals("N/A", StringComparison.OrdinalIgnoreCase)),
-                "numeric" => probabilities.Length == 2 && probabilities.All(value => Regex.IsMatch(value, @"^\d{1,3}%$")),
-                _ => probabilities.Length == 2
-            },
+                probabilities.All(value => value.Equals("N/A", StringComparison.OrdinalIgnoreCase) ||
+                    Regex.IsMatch(value, typedAnalysis is null ? @"^\d{1,3}(?:\.\d+)?%$" : @"^\d{1,3}\.\d{2}%$")),
+            ["whole_percentage_points_or_abstention"] = wholePercentagePoints,
+            ["expected_abstention_policy"] = expectedAbstention,
             ["citation_urls_from_evidence_only"] = links.All(allowedUrls.Contains),
             ["cites_sources_when_assessing_evidence"] = !numericValues || links.Length > 0,
             ["subjective_range_in_key_evidence"] = !numericValues || Regex.IsMatch(keyEvidence, @"(?i)(plausible|subjective).*(range|\d)|range.*(plausible|subjective)"),
             ["confidence_in_key_evidence"] = !numericValues || Regex.IsMatch(keyEvidence, @"(?i)confidence.*(low|medium|high)|(low|medium|high).*confidence"),
             // Flag obvious affirmative claims; the negative statement 'not statistically calibrated' is allowed.
-            ["no_asserted_statistical_calibration"] = !Regex.IsMatch(answer, @"(?i)\b(is|are)\s+(?:a\s+)?statistically calibrated (?:probabilit|confidence)|\b95%\s+(?:statistical\s+)?confidence interval")
+            ["no_asserted_statistical_calibration"] = !Regex.IsMatch(answer, @"(?i)\b(is|are)\s+(?:a\s+)?statistically calibrated (?:probabilit|confidence)|\b95(?:\.0+)?%\s+(?:statistical\s+)?confidence interval")
         };
     }
 
@@ -246,5 +263,5 @@ internal static class PromptEvaluation
     private sealed record SourceFixture(string SourceId, string Title, string Url, string PublicationDate, string Author,
         string DocumentedRole, string Extract);
     private sealed record EvaluationOutcome(string CaseId, string Variant, bool Success, double ElapsedSeconds,
-        string Response, Dictionary<string, bool> Checks, string? ErrorType);
+        string Response, Dictionary<string, bool> Checks, string? ErrorType, AgentAnalysisResult? TypedAnalysis = null);
 }

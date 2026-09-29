@@ -14,8 +14,11 @@ The checks cover:
 - Three concurrent searches, exact Web IQ arguments, local result/content limits, structured results and text-JSON compatibility, canonical URL deduplication and query provenance.
 - Invalid/private URLs and arbitrary source IDs, two page-read attempts including failures, concurrent read caching, explicit partial failures, all-failed and malformed responses, successful empty results, and cancellation.
 - Untrusted page instructions remaining evidence data, not an additional instruction channel. This tests data handling, not a guarantee that a model can never follow prompt injection.
-- The real `AIAgents` pipeline: Encyclopedia medium reasoning, only `read_commentary_source`, two tool rounds followed by tool-free synthesis, and complete Responses continuation history.
-- Two-/three-agent overlap and selection ordering, wait-all failure behavior and MCP cleanup, N/A omissions, and Agent Q's unchanged required calculation tool and high reasoning effort.
+- The real `AIAgents` pipeline: strict typed research responses, Encyclopedia medium reasoning, only `read_commentary_source`, two tool rounds followed by tool-free synthesis, and complete Responses continuation history, including intermediate assistant commentary before the final JSON.
+- Exact typed probabilities independent of Markdown headings, table layout, subjective ranges, rounded percentages, or inequality displays; full numeric precision and probability boundaries; ML inputs taken directly from model averages even when its generated prose disagrees.
+- Display-ready input percentages with exactly two decimal places, including trailing zeros and inequality bounds, while the calculation retains the original numeric precision.
+- Server-calculated Luce point estimates, bounds, and sensitivity values supplied to exactly one tool-free Agent Q request with high reasoning effort.
+- Two-/three-agent overlap and selection ordering, wait-all failure behavior and MCP cleanup, explicit pair-level abstentions, rejection of malformed/missing/string/out-of-range probability fields without Markdown fallback, and unchanged single-/multiple-agent Markdown string responses.
 
 Run only the model packaging checks without starting the loopback MCP fixture:
 
