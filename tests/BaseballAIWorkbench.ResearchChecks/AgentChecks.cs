@@ -25,16 +25,10 @@ internal static class AgentChecks
 
     public static async Task RunAsync()
     {
-        var api = FindApiDirectory();
-        var batter = File.ReadLines(Path.Combine(api, "Data/MLBBaseballBattersPositionPlayers.csv"))
+        var batter = File.ReadLines(Path.Combine(AppContext.BaseDirectory, "Data/MLBBaseballBattersPositionPlayers.csv"))
             .Skip(1).Select(MLBBaseballBatter.FromCsv).Single(b => b.FullPlayerName == "Mike Trout");
         var services = new ServiceCollection().AddLogging();
-        var pools = services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>();
-        foreach (var (suffix, file) in new[] { ("GeneralizedAdditiveModel", "GeneralizedAdditiveModels"), ("FastTreeModel", "FastTree"), ("LightGbmModel", "LightGBM") })
-        {
-            pools.FromFile("InductedToHallOfFame" + suffix, Path.Combine(api, "Models", $"InductedToHoF-{file}.mlnet"));
-            pools.FromFile("OnHallOfFameBallot" + suffix, Path.Combine(api, "Models", $"OnHoFBallot-{file}.mlnet"));
-        }
+        services.AddBaseballPredictionModels();
         using var serviceProvider = services.BuildServiceProvider();
         var pool = serviceProvider.GetRequiredService<PredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>>();
         await using var mcp = await McpFixture.StartAsync();
@@ -240,16 +234,6 @@ internal static class AgentChecks
 
     private static IEnumerable<string> ToolNames(JsonElement request) => request.TryGetProperty("tools", out var tools)
         ? tools.EnumerateArray().Select(t => t.GetProperty("name").GetString()!) : [];
-
-    private static string FindApiDirectory()
-    {
-        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
-        {
-            var path = Path.Combine(directory.FullName, "src/BaseballAIWorkbench/BaseballAIWorkbench.ApiService");
-            if (Directory.Exists(path)) return path;
-        }
-        throw new InvalidOperationException("Run these checks from the repository checkout.");
-    }
 }
 
 internal sealed class ScriptedResponses(Func<string, JsonElement, CancellationToken, Task<HttpResponseMessage>> respond) : HttpMessageHandler

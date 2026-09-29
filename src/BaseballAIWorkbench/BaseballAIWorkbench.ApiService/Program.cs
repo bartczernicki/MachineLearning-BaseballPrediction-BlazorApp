@@ -20,20 +20,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSingleton<BaseballDataService>();
 
 // Add the ML.NET models and a prediction object pool to the service
-string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-GeneralizedAdditiveModels.mlnet");
-string modelPathOnHallOfFameBallotGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "OnHoFBallot-GeneralizedAdditiveModels.mlnet");
-string modelPathInductedToHallOfFameFastTreeModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-FastTree.mlnet");
-string modelPathOnHallOfFameBallotFastTreeModel = Path.Combine(Environment.CurrentDirectory, "Models", "OnHoFBallot-FastTree.mlnet");
-string modelPathInductedToHallOfFameLightGBMModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-LightGBM.mlnet");
-string modelPathOnHallOfFameBallotLightGBMModel = Path.Combine(Environment.CurrentDirectory, "Models", "OnHoFBallot-LightGBM.mlnet");
-
-builder.Services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
-    .FromFile("InductedToHallOfFameGeneralizedAdditiveModel", modelPathInductedToHallOfFameGeneralizedAdditiveModel)
-    .FromFile("OnHallOfFameBallotGeneralizedAdditiveModel", modelPathOnHallOfFameBallotGeneralizedAdditiveModel)
-    .FromFile("InductedToHallOfFameFastTreeModel", modelPathInductedToHallOfFameFastTreeModel)
-    .FromFile("OnHallOfFameBallotFastTreeModel", modelPathOnHallOfFameBallotFastTreeModel)
-    .FromFile("InductedToHallOfFameLightGbmModel", modelPathInductedToHallOfFameLightGBMModel)
-    .FromFile("OnHallOfFameBallotLightGbmModel", modelPathOnHallOfFameBallotLightGBMModel);
+builder.Services.AddBaseballPredictionModels();
 
 var aoaiEndPoint = GetRequiredConnectionString(builder.Configuration, "AOAIEndpoint");
 var aoaiApiKey = GetRequiredConnectionString(builder.Configuration, "AOAIApiKey", "AOAIAPIKey");

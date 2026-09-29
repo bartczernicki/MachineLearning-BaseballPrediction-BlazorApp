@@ -2,8 +2,6 @@ using BaseballAIWorkbench.Web;
 using BaseballAIWorkbench.Web.Components;
 using BaseballAIWorkbench.Common.MachineLearning;
 using BaseballAIWorkbench.Web.Services;
-using Microsoft.Extensions.ML;
-using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,12 +34,9 @@ builder.Services.AddHttpClient<BaseballApiClient>(client =>
 builder.Services.AddSingleton<BaseballDataService>();
 
 // Add the ML.NET models and a prediction object pool to the service
-string modelPathInductedToHallOfFameGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "InductedToHoF-GeneralizedAdditiveModels.mlnet");
-string modelPathOnHallOfFameBallotGeneralizedAdditiveModel = Path.Combine(Environment.CurrentDirectory, "Models", "OnHoFBallot-GeneralizedAdditiveModels.mlnet");
-
-builder.Services.AddPredictionEnginePool<MLBBaseballBatter, MLBHOFPrediction>()
-    .FromFile("InductedToHallOfFameGeneralizedAdditiveModel", modelPathInductedToHallOfFameGeneralizedAdditiveModel)
-    .FromFile("OnHallOfFameBallotGeneralizedAdditiveModel", modelPathOnHallOfFameBallotGeneralizedAdditiveModel);
+builder.Services.AddBaseballPredictionModels(
+    MLModelPredictionType.InductedToHallOfFameGeneralizedAdditiveModel,
+    MLModelPredictionType.OnHallOfFameBallotGeneralizedAdditiveModel);
 
 // TODO: Add App Insights Telemetry
 

@@ -10,11 +10,29 @@ This standalone executable adds no NuGet dependencies or test framework. A faile
 
 The checks cover:
 
+- Exact casing and presence of all six packaged model files, real predictions through the shared production registration from an empty working directory, and the Web application's two-model GAM selection.
 - Three concurrent searches, exact Web IQ arguments, local result/content limits, structured results and text-JSON compatibility, canonical URL deduplication and query provenance.
 - Invalid/private URLs and arbitrary source IDs, two page-read attempts including failures, concurrent read caching, explicit partial failures, all-failed and malformed responses, successful empty results, and cancellation.
 - Untrusted page instructions remaining evidence data, not an additional instruction channel. This tests data handling, not a guarantee that a model can never follow prompt injection.
 - The real `AIAgents` pipeline: Encyclopedia medium reasoning, only `read_commentary_source`, two tool rounds followed by tool-free synthesis, and complete Responses continuation history.
 - Two-/three-agent overlap and selection ordering, wait-all failure behavior and MCP cleanup, N/A omissions, and Agent Q's unchanged required calculation tool and high reasoning effort.
+
+Run only the model packaging checks without starting the loopback MCP fixture:
+
+```sh
+dotnet run --project tests/BaseballAIWorkbench.ResearchChecks/BaseballAIWorkbench.ResearchChecks.csproj -- --models-only
+```
+
+To check a fresh publish output independently of the checkout, publish this executable to a new directory, then run its DLL from an unrelated working directory:
+
+```sh
+model_check_publish="$(mktemp -d)"
+dotnet publish tests/BaseballAIWorkbench.ResearchChecks/BaseballAIWorkbench.ResearchChecks.csproj -c Release -o "$model_check_publish"
+cd /tmp
+dotnet "$model_check_publish/BaseballAIWorkbench.ResearchChecks.dll" --models-only
+```
+
+Model checks use `Models` beside the executable, including files copied from the API project reference. They require no source tree, application configuration, or credentials.
 
 ## Optional fixed-evidence prompt comparison
 
