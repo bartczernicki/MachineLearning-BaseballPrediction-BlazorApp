@@ -17,7 +17,7 @@ builder.Services.AddOutputCache();
 
 builder.Services.AddHttpClient<BaseballApiClient>(client =>
 {
-    // The shared Polly pipeline enforces the 150-second budget, including retries.
+    // The shared resilience pipeline owns the 210-second budget; avoid a competing HttpClient timeout.
     client.Timeout = Timeout.InfiniteTimeSpan;
 
     // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.

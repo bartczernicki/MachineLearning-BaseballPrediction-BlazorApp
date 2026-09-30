@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ServiceDiscovery;
 using OpenTelemetry;
@@ -28,15 +29,18 @@ public static class Extensions
         {
             // Turn on resilience by default
             http.AddStandardResilienceHandler(options =>
-                        {
-                            // Allow up to 2.5 minutes for long-running analysis requests, including retries.
-                            options.Retry.MaxRetryAttempts = 5;
-                            options.Retry.Delay = TimeSpan.FromSeconds(2);
-                            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(150);
-                            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(150);
-                            // Sampling must cover at least twice the per-attempt timeout.
-                            options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(300);
-                        });
+            {
+                // Retrying unsafe requests can repeat paid analysis without request deduplication.
+                options.Retry.DisableForUnsafeHttpMethods();
+                options.Retry.MaxRetryAttempts = 5;
+                options.Retry.Delay = TimeSpan.FromSeconds(2);
+
+                // Allow 30 seconds of headroom beyond the API's longest deadline of 180 seconds.
+                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(210);
+                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(210);
+                // Sampling must cover at least twice the per-attempt timeout.
+                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(420);
+            });
 
             // Turn on service discovery by default
             http.AddServiceDiscovery();

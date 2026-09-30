@@ -12,6 +12,8 @@ builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
+// Register the services required to enforce each endpoint's request timeout.
+builder.Services.AddRequestTimeouts();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -38,6 +40,9 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
+// Timeout middleware needs routed endpoint metadata to apply the endpoint's deadline.
+app.UseRouting();
+app.UseRequestTimeouts();
 
 if (app.Environment.IsDevelopment())
 {

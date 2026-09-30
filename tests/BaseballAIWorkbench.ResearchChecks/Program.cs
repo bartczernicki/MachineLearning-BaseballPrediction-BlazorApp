@@ -7,7 +7,8 @@ ModelPackagingChecks.Run();
 if (args.Contains("--models-only"))
     return 0;
 
+await HttpResilienceChecks.RunAsync();
 await RetrievalChecks.RunAsync();
 await AgentChecks.RunAsync();
-Console.WriteLine("PASS: all offline research and agent orchestration checks.");
+Console.WriteLine("PASS: all offline HTTP resilience, research and agent orchestration checks.");
 return 0;

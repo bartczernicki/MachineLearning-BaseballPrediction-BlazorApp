@@ -11,6 +11,8 @@ This standalone executable adds no NuGet dependencies or test framework. A faile
 The checks cover:
 
 - Exact casing and presence of all six packaged model files, real predictions through the shared production registration from an empty working directory, and the Web application's two-model GAM selection.
+- Production HTTP resilience configuration: unsafe methods never retry transient responses or transport failures, GET retains retries, and client timeouts and circuit-breaker sampling allow the API's full processing budget.
+- Both analysis handlers propagate request cancellation; short loopback endpoint timeouts return HTTP 504, cancel downstream model work, dispose MCP scopes, and skip Agent Q. Run without a debugger attached so ASP.NET Core request timeouts are active.
 - Three concurrent searches, exact Web IQ arguments, local result/content limits, structured results and text-JSON compatibility, canonical URL deduplication and query provenance.
 - Invalid/private URLs and arbitrary source IDs, two page-read attempts including failures, concurrent read caching, explicit partial failures, all-failed and malformed responses, successful empty results, and cancellation.
 - Untrusted page instructions remaining evidence data, not an additional instruction channel. This tests data handling, not a guarantee that a model can never follow prompt injection.

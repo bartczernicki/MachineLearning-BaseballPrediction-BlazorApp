@@ -74,6 +74,11 @@ namespace BaseballAIWorkbench.ApiService
                 var analysis = await RunAnalysisAgentAsync(agentType, batter, cancellationToken);
                 return TypedResults.Ok(analysis.AnalysisMarkdown);
             }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Preserve downstream cancellation so request timeout middleware can return HTTP 504.
+                throw;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
@@ -145,6 +150,11 @@ namespace BaseballAIWorkbench.ApiService
                         Reasoning = new ReasoningOptions { Effort = ReasoningEffort.High }
                     }),
                     cancellationToken));
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Preserve downstream cancellation so request timeout middleware can return HTTP 504.
+                throw;
             }
             catch (Exception ex)
             {

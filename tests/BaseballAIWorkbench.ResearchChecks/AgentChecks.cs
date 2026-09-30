@@ -232,6 +232,7 @@ internal static class AgentChecks
             Check.That(await operation.WaitAsync(TimeSpan.FromSeconds(20)) is ProblemHttpResult && qCalls == 0, "Research failure skips Agent Q");
             Check.That(mcp.Disposals == before + 1, "MCP cleanup occurs on model failure");
         }
+        await CancellationChecks.RunAsync(Agents, batter, mcp);
         Console.WriteLine("PASS agents: strict typed responses, exact server aggregation, one tool-free Q request, bounded research/history, parallel order/cleanup, abstention and failure semantics.");
     }
 
