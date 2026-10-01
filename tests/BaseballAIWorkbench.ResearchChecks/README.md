@@ -11,6 +11,7 @@ This standalone executable adds no NuGet dependencies or test framework. A faile
 The checks cover:
 
 - Exact casing and presence of all six packaged model files, real predictions through the shared production registration from an empty working directory, and the Web application's two-model GAM selection.
+- Actual ServiceDefaults OpenTelemetry collection: exact per-call input/output token histogram sums and counts, agent/chat span nesting, concurrent agents plus Agent Q, no duplicate agent-level token metrics, completed error/cancellation spans, and no invented usage when a response omits it. Sensitive message capture remains disabled even when the SDK's environment opt-in is enabled.
 - Production HTTP resilience configuration: unsafe methods never retry transient responses or transport failures, GET retains retries, and client timeouts and circuit-breaker sampling allow the API's full processing budget.
 - Both analysis handlers propagate request cancellation; short loopback endpoint timeouts return HTTP 504, cancel downstream model work, dispose MCP scopes, and skip Agent Q. Run without a debugger attached so ASP.NET Core request timeouts are active.
 - Three concurrent searches, exact Web IQ arguments, local result/content limits, structured results and text-JSON compatibility, canonical URL deduplication and query provenance.
@@ -38,6 +39,28 @@ dotnet "$model_check_publish/BaseballAIWorkbench.ResearchChecks.dll" --models-on
 ```
 
 Model checks use `Models` beside the executable, including files copied from the API project reference. They require no source tree, application configuration, or credentials.
+
+## Offline telemetry and optional dashboard export
+
+Run only the telemetry checks:
+
+```sh
+dotnet run --project tests/BaseballAIWorkbench.ResearchChecks/BaseballAIWorkbench.ResearchChecks.csproj -- --telemetry-only
+```
+
+The checks use the production `AddServiceDefaults` configuration and attach in-memory SDK exporters. They explicitly disable the configured OTLP endpoint by default, including when the shell inherits Aspire settings. No cloud service or dashboard is contacted. Each successful scripted model response reports 10 input and 10 output tokens. The fixtures verify single-call totals of 10/10, a three-call research total of 30/30, and concurrent research plus Agent Q totals of 60/60. Failed, canceled, and missing-usage calls contribute no token observations; duration metrics still count these calls. Both structured and unstructured runners are tested on failure and cancellation. The token assertions run after the invocation's clients and telemetry wrappers have been disposed; a meter listener and completed spans verify resource cleanup, and a second invocation confirms the shared OpenAI client remains usable. Privacy assertions cover agent, chat, and tool spans.
+
+To send these same synthetic fixtures to a running **local** Aspire dashboard, explicitly opt in and supply that dashboard's OTLP endpoint and protocol. For example, using an unauthenticated loopback gRPC receiver:
+
+```sh
+OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:19889 \
+OTEL_EXPORTER_OTLP_PROTOCOL=grpc \
+dotnet run --project tests/BaseballAIWorkbench.ResearchChecks/BaseballAIWorkbench.ResearchChecks.csproj -- --telemetry-export
+```
+
+Use the receiver port from your dashboard; its browser/UI port is different. If the receiver requires authentication, configure its OTLP headers in your environment. The export mode rejects non-loopback endpoints, including per-signal endpoint overrides, and still uses only fixture model responses and the local MCP server. It runs the telemetry suite alone and flushes telemetry before exiting.
+
+In Aspire, select **BaseballAIWorkbench.TelemetryChecks**. Traces are grouped under `telemetry-fixture.*`, with `invoke_agent` spans from `BaseballAIWorkbench.Agents` and child `chat fake-deployment` spans from `BaseballAIWorkbench.AI`. Under Metrics, select `gen_ai.client.token.usage` from the chat meter and filter `gen_ai.token.type` to `input` or `output`. Aspire 13.6's graph shows P50/P90/P99 and a **Show count** option, rather than a total-token selector. In exported metrics, histogram **sum** is the token total; histogram **count** is the number of usage-bearing calls. The GenAI trace details also show tokens for each call or agent invocation. One fixture run produces 100 input and 100 output tokens across 10 usage-bearing calls. Duration metrics and traces can also cover calls that do not return usage. The agent meter is intentionally excluded so its aggregate usage cannot double-count the model calls.
 
 ## Optional fixed-evidence prompt comparison
 

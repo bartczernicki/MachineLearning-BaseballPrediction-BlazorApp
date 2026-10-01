@@ -68,11 +68,14 @@ public static class Extensions
             {
                 metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
+                    .AddRuntimeInstrumentation()
+                    // Agent totals include the same usage; count only individual model calls.
+                    .AddMeter(AiTelemetry.ChatSourceName);
             })
             .WithTracing(tracing =>
             {
                 tracing.AddSource(builder.Environment.ApplicationName)
+                    .AddSource(AiTelemetry.ChatSourceName, AiTelemetry.AgentSourceName)
                     .AddAspNetCoreInstrumentation()
                     .AddSource("Custom.Telemetry")
                     // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)

@@ -28,10 +28,17 @@ is a web application that showcases performing quantitative decision analysis (d
 **Project Structure (Verified):**
 * Visual Studio 2022, .NET 9, Server-Side Blazor, ML.NET v4.02, Semantic Kernel, Azure AI Foundy, Azure OpenAI Azure SignalR (optional for massively scaling message communication for Azure deployments)
 
+**AI telemetry in Aspire:**
+
+After running an analysis with `aspire run`, open **Metrics → apiservice → BaseballAIWorkbench.AI** in the dashboard. `gen_ai.client.token.usage` records provider-reported input/output tokens; filter by `gen_ai.token.type`. Aspire 13.6's graph shows percentiles and an optional observation count. In the exported histogram, **sum** measures tokens consumed, while **count** measures observations. `gen_ai.client.operation.duration` measures model-call time.
+
+Under **Traces**, each named agent span contains its model-call spans. Agent traces use `BaseballAIWorkbench.Agents`; only the model-call meter is collected, so aggregate agent usage is not counted again. AI telemetry excludes prompt/response bodies and tool arguments/results.
+
+See the [offline telemetry checks and dashboard export instructions](tests/BaseballAIWorkbench.ResearchChecks/README.md) to verify this without paid model calls. Production uses the same instrumentation when an OTLP endpoint is configured.
+
 **More Information:**
 * ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet
 * Blazor: https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor
 * Historical Baseball Statistics Database (used as the model training and inference data set): http://www.seanlahman.com/baseball-archive/statistics/
 * How to Measure Anything (Amazon book link): https://www.amazon.com/How-Measure-Anything-Intangibles-Business-ebook/dp/B00INUYS2U/ref=sr_1_1?dchild=1&keywords=how+to+measure+anything&qid=1588713606&sr=8-1
 * Decision Management Systems (Amazon book link): https://www.amazon.com/Decision-Management-Systems-Practical-Predictive/dp/0132884380
-
