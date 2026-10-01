@@ -1,8 +1,25 @@
 using Microsoft.Extensions.Hosting;
 using Aspire.Hosting.Azure;
 using Azure.Identity;
+using Microsoft.Extensions.Configuration;
 
 var builder = DistributedApplication.CreateBuilder(args);
+
+if (builder.ExecutionContext.IsPublishMode && !builder.Environment.IsDevelopment())
+{
+    // Publish/deploy defaults to Production, which does not automatically load user secrets.
+    // Fill missing values so deployment settings, environment variables, and CLI arguments win.
+    using var userSecrets = new ConfigurationManager();
+    userSecrets.AddUserSecrets<Program>(optional: true);
+    var defaults = userSecrets.AsEnumerable()
+        .Where(setting => builder.Configuration[setting.Key] is null)
+        .ToArray();
+
+    // Append instead of inserting: insertion reloads Aspire's already-consumed deployment-state stream.
+    builder.Configuration.AddInMemoryCollection(defaults);
+}
+
+builder.AddAzureContainerAppEnvironment("baseball-env");
 
 // Add Key Vault Configuration
 // var keyVaultConnString = builder.AddConnectionString("AOAIEastUS2KeyVault");
