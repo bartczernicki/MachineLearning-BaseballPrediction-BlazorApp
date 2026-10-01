@@ -47,6 +47,23 @@ var webFrontend = builder.AddProject<Projects.BaseballAIWorkbench_Web>("webfront
     .WithReference(apiService)
     .WaitFor(apiService);
 
+// Zero minimum replicas allows idle apps to stop. The 3,600-second (one-hour) cooldown
+// applies before the final replica scales to zero; actual timing depends on the scaler.
+// A new HTTP request can start a fresh replica, with cold-start latency.
+apiService.PublishAsAzureContainerApp((_, app) =>
+{
+    app.Template.Scale.MinReplicas = 0;
+    app.Template.Scale.CooldownPeriod = 3600;
+});
+
+// Scaling the frontend to zero discards in-memory Blazor circuits and disconnects users.
+// Azure SignalR does not preserve that session state; returning users may need to reload.
+webFrontend.PublishAsAzureContainerApp((_, app) =>
+{
+    app.Template.Scale.MinReplicas = 0;
+    app.Template.Scale.CooldownPeriod = 3600;
+});
+
 // Use the managed SignalR service only in Azure deployments; local Blazor connections stay local.
 if (builder.ExecutionContext.IsPublishMode)
 {
