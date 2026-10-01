@@ -40,12 +40,20 @@ var apiService =
     .WithReference(webIQMcpApiKey);
 
 // Web Frontend
-builder.AddProject<Projects.BaseballAIWorkbench_Web>("webfrontend")
+var webFrontend = builder.AddProject<Projects.BaseballAIWorkbench_Web>("webfrontend")
     .WithHttpsEndpoint(port: 7295, name: "https")
     .WithHttpEndpoint(port: 5044, name: "http")
     .WithExternalHttpEndpoints()
     .WithReference(apiService)
     .WaitFor(apiService);
+
+// Use the managed SignalR service only in Azure deployments; local Blazor connections stay local.
+if (builder.ExecutionContext.IsPublishMode)
+{
+    var signalR = builder.AddAzureSignalR("signalr");
+    webFrontend.WithReference(signalR)
+        .WithEnvironment("AzureSignalR__Enabled", "true");
+}
 
 // Build
 builder.Build().Run();

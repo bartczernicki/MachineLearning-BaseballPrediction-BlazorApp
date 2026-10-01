@@ -23,6 +23,7 @@
     <PackageReference Include="Aspire.Hosting.AppHost" Version="13.6.0" />
     <PackageReference Include="Aspire.Hosting.Azure.AppContainers" Version="13.6.0" />
     <PackageReference Include="Aspire.Hosting.Azure.KeyVault" Version="13.6.0" />
+    <PackageReference Include="Aspire.Hosting.Azure.SignalR" Version="13.6.0" />
   </ItemGroup>
 
 </Project>

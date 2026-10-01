@@ -2,6 +2,7 @@ using BaseballAIWorkbench.Web;
 using BaseballAIWorkbench.Web.Components;
 using BaseballAIWorkbench.Common.MachineLearning;
 using BaseballAIWorkbench.Web.Services;
+using Microsoft.Azure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +28,22 @@ builder.Services.AddHttpClient<BaseballApiClient>(client =>
 
 // -- Custom
 
-// TODO:
-// Add SignalR service (for real-time updates to the application)
+// Aspire enables the managed service only for the deployed web frontend.
+if (builder.Configuration.GetValue<bool>("AzureSignalR:Enabled"))
+{
+    var connectionString = builder.Configuration.GetConnectionString("signalr");
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException(
+            "Azure SignalR is enabled, but ConnectionStrings:signalr is missing. Configure the Aspire SignalR resource reference.");
+    }
+
+    builder.Services.AddSignalR().AddAzureSignalR(options =>
+    {
+        options.ConnectionString = connectionString;
+        options.ServerStickyMode = ServerStickyMode.Required;
+    });
+}
 
 // Add Data service (provides historical Baseball data to the application)
 builder.Services.AddSingleton<BaseballDataService>();
