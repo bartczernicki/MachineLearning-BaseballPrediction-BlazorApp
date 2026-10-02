@@ -34,12 +34,12 @@ is a distributed web application that showcases performing quantitative decision
 See the [AppHost configuration and deployment decisions](src/BaseballAIWorkbench/BaseballAIWorkbench.AppHost/README.MD) for AI telemetry, Container Apps sizing and scaling, and Front Door configuration and validation.
 
 **More Information of Key Components:**
-* Decision Intelligence: https://www.decisionintelligencebook.ai/ 
+* Decision Intelligence: https://www.decisionintelligencebook.ai/
 * Historical Baseball Statistics Database (used as the model training and inference data set): http://www.seanlahman.com/baseball-archive/statistics/
 
-* Microsoft Agent Framework: https://github.com/microsoft/agent-framework/ 
-* MEAI: https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai/ 
-* Aspire: https://aspire.dev/  
-* ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet 
-* Blazor: https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor 
-* Web IQ: https://webiq.microsoft.ai/ 
+* Microsoft Agent Framework: https://github.com/microsoft/agent-framework/
+* MEAI: https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai/
+* Aspire: https://aspire.dev/
+* ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet
+* Blazor: https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor
+* Web IQ: https://webiq.microsoft.ai/
