@@ -36,7 +36,6 @@ See the [AppHost configuration and deployment decisions](src/BaseballAIWorkbench
 **More Information of Key Components:**
 * Decision Intelligence: https://www.decisionintelligencebook.ai/
 * Historical Baseball Statistics Database (used as the model training and inference data set): http://www.seanlahman.com/baseball-archive/statistics/
-
 * Microsoft Agent Framework: https://github.com/microsoft/agent-framework/
 * MEAI: https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai/
 * Aspire: https://aspire.dev/
