@@ -39,6 +39,25 @@ The fourth scenario brings together three AI agents with distinct evidence input
 | **Baseball Encyclopedia** | Retrieves attributed professional commentary and voter opinions through Web IQ, examining agreement, disagreement, and evidence limitations. |
 | **Agent Q** | Interprets the completed analyses and the combined probabilities and deterministic sensitivity ranges calculated by application code. |
 
+```mermaid
+flowchart TD
+    S["Baseball Statistician<br/>Batting statistics and awards"]
+    M["Machine Learning Expert<br/>ML model probabilities"]
+    E["Baseball Encyclopedia<br/>Retrieved professional commentary"]
+
+    S --> A["Collect completed analyses"]
+    M --> A
+    E --> A
+
+    A -->|Analyses and evidence| Q["Agent Q<br/>Quantitative synthesis"]
+    A -->|Available probability pairs| C["Application code<br/>Combine probabilities and calculate sensitivity ranges"]
+    C -->|Calculated results| Q
+
+    Q --> R["Final assessment<br/>Ballot appearance and induction"]
+```
+
+All three agents are shown; selecting any pair also invokes Agent Q after all selected analyses complete. A single-agent run bypasses Agent Q. Application code performs the calculations, and Agent Q explains them. Sensitivity ranges are not statistical confidence intervals.
+
 The three analysis agents form their conclusions without seeing one another's answers. Their evidence can overlap, so separate analyses do not establish statistical independence. Agent Q explains the quantitative results and remaining uncertainty; the sensitivity ranges are **not statistical confidence intervals**.
 
 ## Features
