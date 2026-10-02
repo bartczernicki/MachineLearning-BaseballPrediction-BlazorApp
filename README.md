@@ -71,9 +71,40 @@ The three analysis agents form their conclusions without seeing one another's an
 
 ## Architecture
 
-The cloud deployment combines the Blazor frontend, API service, model inference, AI agents, and Azure services.
+The application combines a Blazor frontend, ML.NET predictions, AI agents, and Azure services.
 
-![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
+```mermaid
+flowchart TB
+    Browser["User browser"]
+
+    subgraph Azure["Azure Deployment"]
+        FD["Azure Front Door"]
+        SignalR["Azure SignalR"]
+        AOAI["Azure OpenAI Model (GPT-6-Luna)"]
+
+        subgraph ACA["Azure Container Apps"]
+            Web["Web frontend<br/>Blazor Server + ML.NET"]
+            API["Internal API service<br/>MAF agents + Agent Q<br/>ML.NET"]
+            Dashboard["Aspire dashboard"]
+        end
+
+        Logs["Azure Log Analytics"]
+    end
+
+    WebIQ["Web IQ Intelligence (MCP)"]
+
+    Browser -->|Web requests| FD
+    FD -->|Web traffic| Web
+    Browser <-->|Interactive connection| SignalR
+    Web <-->|Interactive updates| SignalR
+    Web -->|Analysis requests| API
+    API -->|AI model calls| AOAI
+    API -->|Research| WebIQ
+
+    Web -.->|Telemetry| Dashboard
+    API -.->|Telemetry| Dashboard
+    ACA -->|Application and platform logs| Logs
+```
 
 ## Technology Stack
 
