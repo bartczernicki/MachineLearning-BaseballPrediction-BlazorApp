@@ -16,13 +16,14 @@
     <!-- Added for FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <ImportMap />
-    <link rel="icon" type="image/png" href="favicon.ico" />
+    <link rel="icon" type="image/png" href="@Assets["favicon.ico"]" />
     <HeadOutlet />
 </head>
 
 <body>
     <Routes />
-    <script src="_framework/blazor.web.js"></script>
+    @* Fingerprinted URLs let browsers and Front Door cache assets safely across deployments. *@
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
     @* Added for Blazored TypeAhead *@
     <script src="_content/Blazored.Typeahead/blazored-typeahead.js"></script>
 </body>

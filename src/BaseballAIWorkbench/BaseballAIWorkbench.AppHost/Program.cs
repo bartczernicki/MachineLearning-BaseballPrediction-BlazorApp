@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Aspire.Hosting.Azure;
+using Aspire.Hosting.Pipelines;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 
@@ -19,7 +20,7 @@ if (builder.ExecutionContext.IsPublishMode && !builder.Environment.IsDevelopment
     builder.Configuration.AddInMemoryCollection(defaults);
 }
 
-builder.AddAzureContainerAppEnvironment("baseball-env");
+var containerAppEnvironment = builder.AddAzureContainerAppEnvironment("baseball-env");
 
 // Add Key Vault Configuration
 // var keyVaultConnString = builder.AddConnectionString("AOAIEastUS2KeyVault");
@@ -67,9 +68,35 @@ webFrontend.PublishAsAzureContainerApp((_, app) =>
 // Use the managed SignalR service only in Azure deployments; local Blazor connections stay local.
 if (builder.ExecutionContext.IsPublishMode)
 {
+    // Bind the existing environment explicitly so Front Door can resolve the origin's
+    // published hostname even when Aspire inspects steps before preparing deployment targets.
+    webFrontend.WithComputeEnvironment(containerAppEnvironment);
+
     var signalR = builder.AddAzureSignalR("signalr");
     webFrontend.WithReference(signalR)
         .WithEnvironment("AzureSignalR__Enabled", "true");
+
+    // Provision Front Door only when publishing to Azure; local execution needs no edge service.
+    // Only the web frontend is an origin. API traffic stays internal, and negotiated SignalR
+    // connections continue directly through Azure SignalR rather than through the edge cache.
+    var frontDoor = builder.AddAzureFrontDoor("frontdoor")
+        .WithOrigin(webFrontend)
+        .ConfigureInfrastructure(FrontDoorConfiguration.Configure);
+
+    var frontDoorEndpoint = frontDoor.Resource.GetEndpointUrl(webFrontend.Resource.Name);
+    frontDoor.WithUrl($"{frontDoorEndpoint}", "Web frontend (Front Door)");
+
+    // URL annotations alone do not appear in Aspire's deployment summary. Resolve the
+    // existing module output after provisioning and print the generated *.azurefd.net URL.
+#pragma warning disable ASPIREPIPELINES001
+    frontDoor.WithPipelineStepFactory("print-frontdoor-summary", async context =>
+    {
+        var url = await frontDoorEndpoint.GetValueAsync(context.CancellationToken)
+            ?? throw new InvalidOperationException("The Front Door endpoint URL was not returned by deployment.");
+        context.Summary.Add("Web frontend (Front Door)", new MarkdownString($"[{url}]({url})"));
+    }, dependsOn: [$"provision-{frontDoor.Resource.Name}"], requiredBy: [WellKnownPipelineSteps.Deploy],
+        description: "Shows the generated Front Door URL in the deployment summary.");
+#pragma warning restore ASPIREPIPELINES001
 }
 
 // Build
