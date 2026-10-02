@@ -1,15 +1,12 @@
-**Scenario Unlocked**
-unlocks solutions where human judgement and decision-making is involved. Sufficiently important decisions require deeper analysis. If a quantitative approach is available, it is usually the one preferred as it will offer the best combination of an approach and outcome.
+**Scenario Overview**  
+ Solutions where human judgement and decision-making is involved. Sufficiently important decisions require deeper analysis. If a quantitative approach (doing the math) is available, it is usually the one preferred as it will offer the best combination of an approach and outcome.
 
 ![Sports Decision Scenario](https://raw.githubusercontent.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/refs/heads/master/SportsDecisionScenario.png) 
 
-**Baseball AI Workbench**
-is a web application that showcases performing quantitative decision analysis (decision thresholding, what-if analysis, AI Agents with probability & confidence interval analysis) using in-memory Machine Learning models with historical baseball data.
+**Baseball AI Workbench**   
+is a distributed web application that showcases performing quantitative decision analysis (decision thresholding, what-if analysis, AI Agent retrieval with probability & sensitivity interval analysis) using in-memory Machine Learning models with historical baseball data.
 
 ![Baseball ML Workbench](https://raw.githubusercontent.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/refs/heads/master/BaseballAIWorkbench.png)
-
-
-
 
 
 **The application has the following features:**
@@ -26,7 +23,7 @@ is a web application that showcases performing quantitative decision analysis (d
 ![Baseball ML Workbench - Architecture Deployment Diagram](https://github.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/blob/master/BaseballMLWorkbench-Architecture-DeploymentDiagram.png)
 
 **Project Structure (Verified):**
-* Visual Studio 2026, .NET 10.x, Server-Side Blazor, ML.NET v5.x 
+* Visual Studio 2026 or VS Code, .NET 10.x, Server-Side Blazor, ML.NET v5.x 
 * .NET Aspire 13.6 for Distributed Computed Hosting 
 * Microsoft Agent Framework (Agents, Agent Orchestration & Retrieval) 
 * Web IQ for Agentic Real-Time Intelligence Research 
@@ -36,9 +33,13 @@ is a web application that showcases performing quantitative decision analysis (d
 
 See the [AppHost configuration and deployment decisions](src/BaseballAIWorkbench/BaseballAIWorkbench.AppHost/README.MD) for AI telemetry, Container Apps sizing and scaling, and Front Door configuration and validation.
 
-**More Information:**
-* ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet
-* Blazor: https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor
+**More Information of Key Components:**
+* Decision Intelligence: https://www.decisionintelligencebook.ai/ 
 * Historical Baseball Statistics Database (used as the model training and inference data set): http://www.seanlahman.com/baseball-archive/statistics/
-* How to Measure Anything (Amazon book link): https://www.amazon.com/How-Measure-Anything-Intangibles-Business-ebook/dp/B00INUYS2U/ref=sr_1_1?dchild=1&keywords=how+to+measure+anything&qid=1588713606&sr=8-1
-* Decision Management Systems (Amazon book link): https://www.amazon.com/Decision-Management-Systems-Practical-Predictive/dp/0132884380
+
+* Microsoft Agent Framework: https://github.com/microsoft/agent-framework/ 
+* MEAI: https://learn.microsoft.com/en-us/dotnet/ai/microsoft-extensions-ai/ 
+* Aspire: https://aspire.dev/  
+* ML.NET: https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet 
+* Blazor: https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor 
+* Web IQ: https://webiq.microsoft.ai/ 
