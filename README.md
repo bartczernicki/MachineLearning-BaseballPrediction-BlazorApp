@@ -1,6 +1,8 @@
 **Scenario Overview**  
  Solutions where human judgement and decision-making is involved. Sufficiently important decisions require deeper analysis. If a quantitative approach (doing the math) is available, it is usually the one preferred as it will offer the best combination of an approach and outcome.
 
+ Current Live Demo: https://baseballaiworkbench-dybyfmbvg8hdctds.b02.azurefd.net/ 
+
 ![Sports Decision Scenario](https://raw.githubusercontent.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/refs/heads/master/SportsDecisionScenario.png) 
 
 **Baseball AI Workbench**   
