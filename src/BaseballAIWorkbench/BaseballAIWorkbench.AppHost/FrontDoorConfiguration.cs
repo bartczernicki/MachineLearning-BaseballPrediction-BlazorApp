@@ -13,11 +13,16 @@ internal static class FrontDoorConfiguration
     {
         var resources = infrastructure.GetProvisionableResources().ToArray();
         var profile = resources.OfType<CdnProfile>().Single();
+        var endpoint = resources.OfType<FrontDoorEndpoint>().Single();
         var originGroup = resources.OfType<FrontDoorOriginGroup>().Single();
         var origin = resources.OfType<FrontDoorOrigin>().Single();
         var route = resources.OfType<FrontDoorRoute>().Single();
 
         profile.SkuName = CdnSkuName.StandardAzureFrontDoor;
+
+        // Fix the public hostname prefix; Azure still adds its generated hash and zone suffix.
+        // The route and URL output reference this endpoint, so they follow its returned hostname.
+        endpoint.Name = "BaseballAIWorkBench";
 
         // Allow a sleeping origin up to 240 seconds to respond. This accommodates startup
         // latency but does not keep replicas warm or eliminate cold starts.

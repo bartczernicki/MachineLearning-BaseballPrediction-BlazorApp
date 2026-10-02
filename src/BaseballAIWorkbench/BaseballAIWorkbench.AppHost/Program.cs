@@ -53,6 +53,11 @@ var webFrontend = builder.AddProject<Projects.BaseballAIWorkbench_Web>("webfront
 // A new HTTP request can start a fresh replica, with cold-start latency.
 apiService.PublishAsAzureContainerApp((_, app) =>
 {
+    // Allocate resources per running replica. Consumption requires 2 GiB RAM with 1 vCPU.
+    var container = app.Template.Containers.Single().Value!;
+    container.Resources.Cpu = 1.0;
+    container.Resources.Memory = "2Gi";
+
     app.Template.Scale.MinReplicas = 0;
     app.Template.Scale.CooldownPeriod = 3600;
 });
@@ -61,6 +66,11 @@ apiService.PublishAsAzureContainerApp((_, app) =>
 // Azure SignalR does not preserve that session state; returning users may need to reload.
 webFrontend.PublishAsAzureContainerApp((_, app) =>
 {
+    // Allocate resources per running replica. Consumption requires 2 GiB RAM with 1 vCPU.
+    var container = app.Template.Containers.Single().Value!;
+    container.Resources.Cpu = 1.0;
+    container.Resources.Memory = "2Gi";
+
     app.Template.Scale.MinReplicas = 0;
     app.Template.Scale.CooldownPeriod = 3600;
 });
