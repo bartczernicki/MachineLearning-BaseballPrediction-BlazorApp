@@ -2,7 +2,7 @@
 @inject BaseballApiClient BaseballApi
 
 <div class="containerFadeIn">
-    <div class="card bg-c-lightgray order-card">
+    <div class="card bg-c-lightgray order-card mt-2">
         <div class="card-block">
             <div class="row">
                 <div class="col-md-9 col-xl-9">
@@ -45,12 +45,25 @@
     private AgenticAnalysisCard agenticAnalysisCard;
     private bool hasAgenticAnalysisStarted = false;
     private string agenticAnalysis = "Running Agentic Analysis...";
+    private string? currentBatterId;
+    private long analysisVersion;
 
     private List<AgentCard> agentCards = new ();
     private List<string> selectedAgents = new();
 
     [Parameter]
     public MLBBaseballBatter BaseballBatter { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (currentBatterId != BaseballBatter.ID)
+        {
+            currentBatterId = BaseballBatter.ID;
+            analysisVersion++;
+            hasAgenticAnalysisStarted = false;
+            agenticAnalysis = string.Empty;
+        }
+    }
 
     private void HandleChildValueChanged(Agent agent)
     {
@@ -85,25 +98,45 @@
 
     private async Task runAgenticAnalysisClicked()
     {
+        if (selectedAgents.Count == 0)
+        {
+            return;
+        }
+
+        var requestVersion = ++analysisVersion;
         agenticAnalysis = "Running Agentic Analysis with...";
         this.hasAgenticAnalysisStarted = true;
 
         var agenticAnalysisConfig = new AgenticAnalysisConfig
             {
-                AgentsToUse = this.selectedAgents,
+                AgentsToUse = this.selectedAgents.ToList(),
                 BaseballBatter = this.BaseballBatter
             };
 
-        if (agenticAnalysisConfig.AgentsToUse.Count > 1)
+        string completedAnalysis;
+        try
         {
-            agenticAnalysis += "multiple research agents & 'Agent Q' final quantitative analysis";
-            this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysisMultipleModels(agenticAnalysisConfig);
+            if (agenticAnalysisConfig.AgentsToUse.Count > 1)
+            {
+                agenticAnalysis += "multiple research agents & 'Agent Q' final quantitative analysis";
+                completedAnalysis = await BaseballApi.GetBaseballPlayerAnalysisMultipleModels(agenticAnalysisConfig);
+            }
+            else
+            {
+                agenticAnalysis += "a single research agent";
+                completedAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(agenticAnalysisConfig);
+            }
         }
-        else if (agenticAnalysisConfig.AgentsToUse.Count == 1)
+        catch (Exception) when (requestVersion != analysisVersion)
         {
-            agenticAnalysis += "a single research agent";
-            this.agenticAnalysis = await BaseballApi.GetBaseballPlayerAnalysis(agenticAnalysisConfig);
+            // A superseded request must not affect the current player's analysis.
+            return;
         }
-        this.StateHasChanged();
+
+        if (requestVersion == analysisVersion)
+        {
+            this.agenticAnalysis = completedAnalysis;
+            this.StateHasChanged();
+        }
     }
 }

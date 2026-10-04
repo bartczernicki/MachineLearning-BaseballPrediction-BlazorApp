@@ -37,10 +37,10 @@
                         BaseballBatter=selectedBatter 
                         NumberOfSeasonsPlayed=numberOfSeasonsPlayed/>
     <p />
-    <small class="form-text text-muted">
-        <b>Slide Seasons Played</b> to project career totals from yearly averages and update the induction probability (decision threshold)<br />
-        Select agents and click <b>Run Agentic Analysis</b> to research the scenario; run again after slider changes
-    </small>
+    <small class="form-text text-muted">Select agents and click <b>Run Agentic Analysis</b> to research the selected player’s actual career statistics</small>
+    <AgentsCard BaseballBatter=selectedBatter />
+    <p />
+    <small class="form-text text-muted"><b>Slide Seasons Played</b> to project career totals from yearly averages and update the induction probability (decision threshold)</small>
     <BaseballCardParent MultipleModels=true IsAgenticAnalysis=true
                         Title="Dynamic Prediction" SubTitle="Based on player's yearly pro-rated career statistics"
                         Notes="What-If prediction based on above selected player's single season averages multiplied the slider value of seasons played."
