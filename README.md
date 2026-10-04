@@ -3,6 +3,7 @@
 Baseball AI Workbench is a distributed web application for exploring Decision Intelligence through baseball Hall of Fame analysis. It combines historical batting data, in-memory machine learning models, and AI agents to explore rules, probabilities, and what-if scenarios that support human judgment.
 
 **[Try the live demo](https://baseballaiworkbench-dybyfmbvg8hdctds.b02.azurefd.net/)**
+**Note:** The live demo site runs on Azure Container Apps and scales down to zero containers when idle. If it hasn’t been used recently, it may take a few seconds to start.  
 
 ![Baseball ML Workbench](https://raw.githubusercontent.com/bartczernicki/MachineLearning-BaseballPrediction-BlazorApp/refs/heads/master/BaseballAIWorkbench.png)
 
