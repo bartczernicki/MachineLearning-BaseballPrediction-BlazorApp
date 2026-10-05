@@ -23,6 +23,12 @@ internal static class AgentChecks
     private const string Ml = "MachineLearningExpert";
     private const string ReadTool = "read_commentary_source";
     private const string FinalQuantitativeAnswer = "### Summary\nFinal fixture quantitative answer.";
+    private const string SourcesHeading = "### Encyclopedia Sources";
+    private static readonly EncyclopediaCitation[] ExpectedCitations =
+    [
+        new("First commentary", "https://example.com/1"),
+        new("Second commentary", "https://example.com/2")
+    ];
 
     public static async Task RunAsync()
     {
@@ -83,9 +89,22 @@ internal static class AgentChecks
         {
             var before = mcp.Disposals;
             var result = await Agents(transport).PerformBaseballPlayerAnalysisML(Config(Encyclopedia)).WaitAsync(TimeSpan.FromSeconds(20));
-            Check.That(result is Ok<string> { Value: var markdown } && markdown == Markdown(Encyclopedia) && encyclopediaCalls == 3,
-                "Bounded Encyclopedia analysis unwraps only the final structured answer as Markdown");
+            Check.That(result is Ok<string> { Value: var markdown } &&
+                markdown == EncyclopediaCitations.AppendTo(Markdown(Encyclopedia), ExpectedCitations) && encyclopediaCalls == 3,
+                "Bounded Encyclopedia analysis unwraps the final structured answer and appends its retrieved citations");
+            AssertCitations(((Ok<string>)result).Value!, Markdown(Encyclopedia));
             Check.That(mcp.Disposals == before + 1, "Encyclopedia disposes MCP scope after synthesis");
+        }
+
+        const string uncitedAnalysis = "### Summary\nNo source links were cited in this fixture assessment.";
+        using (var transport = new ScriptedResponses((_, _, _) => Task.FromResult(
+            ScriptedResponses.Message(Structured(uncitedAnalysis, 0.2, 0.1)))))
+        {
+            var result = await Agents(transport).PerformBaseballPlayerAnalysisML(Config(Encyclopedia)).WaitAsync(TimeSpan.FromSeconds(20));
+            Check.That(result is Ok<string> { Value: var markdown } &&
+                markdown == EncyclopediaCitations.AppendTo(uncitedAnalysis, []),
+                "Standalone Encyclopedia keeps its Markdown response contract when no source links were cited");
+            AssertEmptyCitations(((Ok<string>)result).Value!);
         }
 
         foreach (var selected in new[] { Statistician, Ml })
@@ -97,7 +116,7 @@ internal static class AgentChecks
         }
 
         // Real orchestration, deliberately completing research in reverse selection order.
-        foreach (var selected in new[] { new[] { Encyclopedia, Statistician }, new[] { Encyclopedia, Statistician, Ml } })
+        foreach (var selected in new[] { new[] { Encyclopedia, Statistician }, new[] { Encyclopedia, Statistician, Ml }, new[] { Statistician, Ml } })
         {
             var started = selected.ToDictionary(a => a, _ => Check.Signal());
             var releases = selected.ToDictionary(a => a, _ => new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously));
@@ -117,8 +136,16 @@ internal static class AgentChecks
             Check.That(!operation.IsCompleted && qRequests.IsEmpty, "Agent Q waits for the final outstanding research result");
             releases[selected[0]].TrySetResult(AgentOutput(selected[0]));
             var result = await operation.WaitAsync(TimeSpan.FromSeconds(20));
-            Check.That(result is Ok<string> { Value: FinalQuantitativeAnswer } && qRequests.Count == 1,
+            var expected = selected.Contains(Encyclopedia)
+                ? EncyclopediaCitations.AppendTo(FinalQuantitativeAnswer, ExpectedCitations)
+                : FinalQuantitativeAnswer;
+            Check.That(result is Ok<string> { Value: var markdown } && markdown == expected && qRequests.Count == 1,
                 "Q explains the server calculation in exactly one request and returns Markdown");
+            if (selected.Contains(Encyclopedia))
+                AssertCitations(((Ok<string>)result).Value!, FinalQuantitativeAnswer);
+            else
+                Check.That(!((Ok<string>)result).Value!.Contains(SourcesHeading),
+                    "Combined analyses without Encyclopedia do not receive an Encyclopedia sources footer");
             var prompt = string.Join('\n', Strings(qRequests.First()));
             var positions = selected.Select(a => prompt.IndexOf($"RESULT_{a}_END", StringComparison.Ordinal)).ToArray();
             Check.That(positions.All(p => p >= 0) && positions.SequenceEqual(positions.Order()), "Q receives complete results in selection order");
@@ -133,7 +160,8 @@ internal static class AgentChecks
                 Check.That(prompt.Contains("| Machine Learning Expert | 92.59% | 66.06% | Yes |"),
                     "The ML input row is formatted for display while its calculation inputs retain full precision");
             }
-            Check.That(mcp.Disposals == before + 1, "Parallel success disposes the MCP scope");
+            Check.That(mcp.Disposals == before + (selected.Contains(Encyclopedia) ? 1 : 0),
+                "Parallel success disposes an MCP scope only when Encyclopedia participates");
         }
 
         foreach (var abstention in new[] { "both", "ballot", "induction", "all" })
@@ -150,7 +178,10 @@ internal static class AgentChecks
                 Check.That(result is ProblemHttpResult && qRequests.IsEmpty, "All typed abstentions return an error without invoking Q");
             else
             {
-                Check.That(result is Ok<string> && qRequests.Count == 1, "Q combines the remaining usable agent when either Encyclopedia outcome abstains");
+                Check.That(result is Ok<string> { Value: var markdown } &&
+                    markdown == EncyclopediaCitations.AppendTo(FinalQuantitativeAnswer, ExpectedCitations) && qRequests.Count == 1,
+                    "Q combines the remaining usable agent and retains citations when either Encyclopedia outcome abstains");
+                AssertCitations(((Ok<string>)result).Value!, FinalQuantitativeAnswer);
                 var prompt = string.Join('\n', Strings(qRequests.First()));
                 Check.That(prompt.Contains("Omitted agents:") && prompt.Contains("Insufficient evidence: no attributable commentary supports an estimate."), "Typed abstention preserves its explicit omission reason");
                 Check.That(prompt.Contains("RESULT_BaseballEncyclopedia_END"), "An abstaining agent's full evidence explanation still reaches Q");
@@ -181,8 +212,13 @@ internal static class AgentChecks
             var displayInputs = prompt.Split("Selected agent probability inputs (display percentages):")[1]
                 .Split("ballotAppearanceProbabilities:")[0];
             if (test.Name == "no table")
+            {
                 Check.That(displayInputs.Contains("| Baseball Encyclopedia | 99.00% | 92.00% | Yes |"),
                     "Whole-percentage inputs retain two decimal places in the evidence table");
+                Check.That(((Ok<string>)result).Value == EncyclopediaCitations.AppendTo(FinalQuantitativeAnswer, []),
+                    "Combined analysis appends an empty sources footer when Encyclopedia cites no links");
+                AssertEmptyCitations(((Ok<string>)result).Value!);
+            }
             if (test.Name == "full numeric precision")
                 Check.That(displayInputs.Contains("| Baseball Encyclopedia | 92.46% | 12.35% | Yes |"),
                     "Display rounding is confined to the supplied evidence table");
@@ -233,7 +269,31 @@ internal static class AgentChecks
             Check.That(mcp.Disposals == before + 1, "MCP cleanup occurs on model failure");
         }
         await CancellationChecks.RunAsync(Agents, batter, mcp);
-        Console.WriteLine("PASS agents: strict typed responses, exact server aggregation, one tool-free Q request, bounded research/history, parallel order/cleanup, abstention and failure semantics.");
+        Console.WriteLine("PASS agents: strict typed responses, exact server aggregation, one tool-free Q request, bounded research/history, retained Encyclopedia citations, parallel order/cleanup, abstention and failure semantics.");
+    }
+
+    private static void AssertCitations(string markdown, string originalAnalysis)
+    {
+        Check.That(markdown.StartsWith(originalAnalysis, StringComparison.Ordinal),
+            "Appending sources preserves the original analysis and its inline links");
+        Check.That(markdown.Split(SourcesHeading).Length == 2,
+            "Encyclopedia contributes exactly one sources footer even when Q omits all source links");
+        var footer = markdown[(markdown.IndexOf(SourcesHeading, StringComparison.Ordinal) + SourcesHeading.Length)..];
+        Check.That(footer.Contains("First commentary") && footer.Contains("Second commentary") &&
+            footer.Contains("https://example.com/1", StringComparison.Ordinal) && footer.Contains("https://example.com/2", StringComparison.Ordinal) &&
+            footer.IndexOf("https://example.com/1", StringComparison.Ordinal) < footer.IndexOf("https://example.com/2", StringComparison.Ordinal),
+            "The footer includes retrieved citation titles and URLs in report order");
+        Check.That(!footer.Contains("https://example.com/3", StringComparison.Ordinal),
+            "Retrieved but uncited sources are excluded from the endpoint footer");
+    }
+
+    private static void AssertEmptyCitations(string markdown)
+    {
+        Check.That(markdown.Split(SourcesHeading).Length == 2 &&
+            markdown.TrimEnd().EndsWith("No retrieved source links were cited", StringComparison.Ordinal),
+            "Empty Encyclopedia citations receive the exact no-source-links message");
+        Check.That(!markdown.Contains("https://example.com/", StringComparison.Ordinal),
+            "Empty citations do not substitute unrelated retrieved sources");
     }
 
     private static HttpResponseMessage QuantitativeResponse(JsonElement request, ConcurrentQueue<JsonElement> requests)
@@ -351,6 +411,7 @@ internal static class AgentChecks
 
         ### Key Evidence
         {(abstain ? "Insufficient evidence: no attributable commentary supports an estimate." : "Attributed commentary supports this subjective estimate; plausible range 60–95%.")}
+        {(agent == Encyclopedia ? "Reviewed [first attributed report](https://example.com/1) and [second attributed report](https://example.com/2)." : "")}
 
         ### Caveats
         Fixture conclusion.

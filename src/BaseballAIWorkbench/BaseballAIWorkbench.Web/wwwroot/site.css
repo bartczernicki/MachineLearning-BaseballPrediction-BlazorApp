@@ -757,6 +757,10 @@ ul {
     line-height: 1.5;
 }
 
+.agentic-analysis-output a {
+    overflow-wrap: anywhere;
+}
+
 .agentic-analysis-output h1,
 .agentic-analysis-output h2,
 .agentic-analysis-output h3,

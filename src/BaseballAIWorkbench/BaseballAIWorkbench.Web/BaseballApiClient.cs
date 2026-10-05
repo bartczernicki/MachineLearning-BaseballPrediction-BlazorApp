@@ -2,6 +2,9 @@
 using BaseballAIWorkbench.Common.Agents;
 using Ganss.Xss;
 using Markdig;
+using Markdig.Renderers.Html;
+using Markdig.Syntax;
+using Markdig.Syntax.Inlines;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
@@ -33,7 +36,7 @@ namespace BaseballAIWorkbench.Web
                 "table", "thead", "tbody", "tfoot", "tr", "th", "td", "caption", "a"
             ]);
             sanitizer.AllowedAttributes.Clear();
-            sanitizer.AllowedAttributes.UnionWith(["href", "title", "colspan", "rowspan", "start"]);
+            sanitizer.AllowedAttributes.UnionWith(["href", "title", "target", "rel", "colspan", "rowspan", "start"]);
             sanitizer.AllowedSchemes.Clear();
             sanitizer.AllowedSchemes.UnionWith(["http", "https"]);
             // Allowed URI attributes must also be screened against the scheme allowlist.
@@ -82,7 +85,18 @@ namespace BaseballAIWorkbench.Web
         private static string ConvertAgentMarkdownToHtml(string jsonString)
         {
             var markdown = NormalizeAgentMarkdown(JsonConvert.DeserializeObject<string>(jsonString) ?? string.Empty);
-            var html = Markdown.ToHtml(markdown, MarkdownPipeline);
+            var document = Markdown.Parse(markdown, MarkdownPipeline);
+            foreach (var inline in document.Descendants<Inline>())
+            {
+                if (inline is LinkInline { IsImage: false } or AutolinkInline)
+                {
+                    // Apply trusted navigation attributes before the final sanitization step.
+                    var attributes = inline.GetAttributes();
+                    attributes.AddProperty("target", "_blank");
+                    attributes.AddProperty("rel", "noopener noreferrer");
+                }
+            }
+            var html = document.ToHtml(MarkdownPipeline);
             // Keep sanitization last: generated HTML is rendered through Blazor's MarkupString.
             return AgentHtmlSanitizer.Sanitize(html);
         }

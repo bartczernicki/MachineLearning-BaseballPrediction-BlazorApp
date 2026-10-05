@@ -72,7 +72,10 @@ namespace BaseballAIWorkbench.ApiService
             try
             {
                 var analysis = await RunAnalysisAgentAsync(agentType, batter, cancellationToken);
-                return TypedResults.Ok(analysis.AnalysisMarkdown);
+                var markdown = analysis.Analysis.AnalysisMarkdown;
+                return TypedResults.Ok(agentType == "BaseballEncyclopedia"
+                    ? EncyclopediaCitations.AppendTo(markdown, analysis.Citations)
+                    : markdown);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -103,9 +106,8 @@ namespace BaseballAIWorkbench.ApiService
                     Console.WriteLine("Agentic Analysis - Agent Started: " + agentTypeInConfig);
 
                     var analysis = await RunAnalysisAgentAsync(agentTypeInConfig, batter, cancellationToken);
-                    var agentName = Agents.GetAgentName(agentTypeInConfig);
                     Console.WriteLine("Agentic Analysis - Agent Completed: " + agentTypeInConfig);
-                    return new CompletedAgentAnalysis(agentTypeInConfig, agentName, analysis);
+                    return analysis;
                 }).ToArray();
 
                 // Wait for every selected agent before invoking Agent Q. WhenAll preserves
@@ -147,11 +149,19 @@ namespace BaseballAIWorkbench.ApiService
                 });
                 var quantitativeAnalysisAgent = CreateAgent(Agents.GetAgent("QuantitativeAnalysis"));
 
-                return TypedResults.Ok(await RunAgentAsync(
+                var markdown = await RunAgentAsync(
                     quantitativeAnalysisAgent,
                     quantitativeAnalysisPrompt,
                     runOptions,
-                    cancellationToken));
+                    cancellationToken);
+
+                // Preserve Encyclopedia's cited evidence even if Agent Q omits its links
+                // or the Encyclopedia abstained from the numeric calculation.
+                var encyclopediaAnalyses = agentAnalyses
+                    .Where(analysis => analysis.AgentType == "BaseballEncyclopedia").ToArray();
+                return TypedResults.Ok(encyclopediaAnalyses.Length > 0
+                    ? EncyclopediaCitations.AppendTo(markdown, encyclopediaAnalyses.SelectMany(analysis => analysis.Citations))
+                    : markdown);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -165,18 +175,26 @@ namespace BaseballAIWorkbench.ApiService
             }
         }
 
-        private async Task<AgentAnalysisResult> RunAnalysisAgentAsync(
+        private async Task<CompletedAgentAnalysis> RunAnalysisAgentAsync(
             string agentType, MLBBaseballBatter batter, CancellationToken cancellationToken)
         {
-            var result = agentType switch
+            AgentAnalysisResult result;
+            IReadOnlyList<EncyclopediaCitation> citations = [];
+            if (agentType == "BaseballEncyclopedia")
             {
-                "MachineLearningExpert" => await RunMachineLearningExpertAsync(batter, cancellationToken),
-                "BaseballStatistician" => await RunBaseballStatisticianAsync(batter, cancellationToken),
-                "BaseballEncyclopedia" => await RunBaseballEncyclopediaAsync(batter, cancellationToken),
-                _ => throw new InvalidOperationException("Agent type not found")
-            };
+                (result, citations) = await RunBaseballEncyclopediaAsync(batter, cancellationToken);
+            }
+            else
+            {
+                result = agentType switch
+                {
+                    "MachineLearningExpert" => await RunMachineLearningExpertAsync(batter, cancellationToken),
+                    "BaseballStatistician" => await RunBaseballStatisticianAsync(batter, cancellationToken),
+                    _ => throw new InvalidOperationException("Agent type not found")
+                };
+            }
             AgentAnalysisResponse.Validate(result);
-            return result;
+            return new CompletedAgentAnalysis(agentType, Agents.GetAgentName(agentType), result, citations);
         }
 
         private async Task<AgentAnalysisResult> RunMachineLearningExpertAsync(MLBBaseballBatter batter, CancellationToken cancellationToken)
@@ -211,7 +229,8 @@ namespace BaseballAIWorkbench.ApiService
             return await RunStructuredAnalysisAgentAsync(agent, decisionPrompt, cancellationToken);
         }
 
-        private async Task<AgentAnalysisResult> RunBaseballEncyclopediaAsync(MLBBaseballBatter batter, CancellationToken cancellationToken)
+        private async Task<(AgentAnalysisResult Analysis, IReadOnlyList<EncyclopediaCitation> Citations)> RunBaseballEncyclopediaAsync(
+            MLBBaseballBatter batter, CancellationToken cancellationToken)
         {
             // One retrieval budget covers MCP setup, the parallel searches, and page reads.
             // Synthesis can still explain the evidence already retrieved after this expires.
@@ -231,7 +250,8 @@ namespace BaseballAIWorkbench.ApiService
             var agent = CreateAgent(
                 Agents.GetAgent("BaseballEncyclopedia"), [research.CreateReadTool()], boundedResearch: true);
 
-            return await RunStructuredAnalysisAgentAsync(agent, decisionPrompt, cancellationToken);
+            var analysis = await RunStructuredAnalysisAgentAsync(agent, decisionPrompt, cancellationToken);
+            return (analysis, research.GetCitations(analysis.AnalysisMarkdown));
         }
 
         private ChatClientAgent CreateAgent(
@@ -498,7 +518,8 @@ namespace BaseballAIWorkbench.ApiService
             ];
         }
 
-        private sealed record CompletedAgentAnalysis(string AgentType, string AgentName, AgentAnalysisResult Analysis);
+        private sealed record CompletedAgentAnalysis(
+            string AgentType, string AgentName, AgentAnalysisResult Analysis, IReadOnlyList<EncyclopediaCitation> Citations);
 
         private sealed record AgentProbabilityAssessment(
             string AgentName,

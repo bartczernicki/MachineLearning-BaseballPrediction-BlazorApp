@@ -44,6 +44,24 @@ internal sealed class EncyclopediaResearch
 
     internal string Dossier { get; private set; } = string.Empty;
 
+    internal IReadOnlyList<EncyclopediaCitation> GetCitations(string markdown)
+    {
+        var sourcesByUrl = _sources.Values.ToDictionary(source => source.Url, StringComparer.Ordinal);
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var citations = new List<EncyclopediaCitation>();
+        foreach (var linkedUrl in EncyclopediaCitations.GetLinkedUrls(markdown))
+        {
+            var canonicalUrl = CanonicalPublicUrl(linkedUrl);
+            if (canonicalUrl is not null && sourcesByUrl.TryGetValue(canonicalUrl, out var source)
+                && seen.Add(canonicalUrl))
+            {
+                citations.Add(new EncyclopediaCitation(source.Title, source.Url));
+            }
+        }
+
+        return citations;
+    }
+
     internal async Task SearchAsync(string playerName, CancellationToken cancellationToken = default)
     {
         if (_searched)
@@ -280,7 +298,7 @@ internal sealed class EncyclopediaResearch
         return GetString(payload, "content");
     }
 
-    private static string? CanonicalPublicUrl(string value)
+    internal static string? CanonicalPublicUrl(string value)
     {
         if (value.Length > 2_048 || !Uri.TryCreate(value, UriKind.Absolute, out var uri) ||
             (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp) ||

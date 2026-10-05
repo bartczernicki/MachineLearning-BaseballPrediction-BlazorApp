@@ -18,6 +18,8 @@ The checks cover:
 - Invalid/private URLs and arbitrary source IDs, two page-read attempts including failures, concurrent read caching, explicit partial failures, all-failed and malformed responses, successful empty results, and cancellation.
 - Untrusted page instructions remaining evidence data, not an additional instruction channel. This tests data handling, not a guarantee that a model can never follow prompt injection.
 - The real `AIAgents` pipeline: strict typed research responses, Encyclopedia medium reasoning, only `read_commentary_source`, two tool rounds followed by tool-free synthesis, and complete Responses continuation history, including intermediate assistant commentary before the final JSON.
+- Encyclopedia source footers preserve original inline links and survive Agent Q omitting citations, including when Encyclopedia abstains; uncited retrieved sources are excluded, empty citations have an explicit message, and analyses without Encyclopedia have no source footer.
+- Citation extraction handles inline/reference/autolinks and links inside tables or definitions, excludes code and image alternative text, matches the retrieval registry, and preserves first-citation order. Footer escaping keeps hostile titles literal and preserves query values and URL delimiters.
 - Exact typed probabilities independent of Markdown headings, table layout, subjective ranges, rounded percentages, or inequality displays; full numeric precision and probability boundaries; ML inputs taken directly from model averages even when its generated prose disagrees.
 - Display-ready input percentages with exactly two decimal places, including trailing zeros and inequality bounds, while the calculation retains the original numeric precision.
 - Server-calculated Luce point estimates, bounds, and sensitivity values supplied to exactly one tool-free Agent Q request with high reasoning effort.
@@ -27,6 +29,12 @@ Run only the model packaging checks without starting the loopback MCP fixture:
 
 ```sh
 dotnet run --project tests/BaseballAIWorkbench.ResearchChecks/BaseballAIWorkbench.ResearchChecks.csproj -- --models-only
+```
+
+Run only the citation extraction and footer checks, using in-memory search results without model loading or loopback servers:
+
+```sh
+dotnet run --project tests/BaseballAIWorkbench.ResearchChecks/BaseballAIWorkbench.ResearchChecks.csproj -- --citations-only
 ```
 
 To check a fresh publish output independently of the checkout, publish this executable to a new directory, then run its DLL from an unrelated working directory:

@@ -26,7 +26,7 @@ internal static class MarkdownRenderingChecks
 
     private static readonly HashSet<string> SafeAttributes = new(StringComparer.OrdinalIgnoreCase)
     {
-        "href", "title", "colspan", "rowspan", "start"
+        "href", "title", "colspan", "rowspan", "start", "target", "rel"
     };
 
     internal static async Task RunAsync()
@@ -210,8 +210,13 @@ internal static class MarkdownRenderingChecks
             [Relative](/reports/player?q=1#evidence)
             [Child](research/player)
             [Fragment](#evidence)
+            [Reference][source-reference]
+
+            [source-reference]: https://example.org/referenced-source
 
             https://example.org/commentary
+
+            <https://example.org/angle-autolink>
             """, root =>
         {
             var expected = new Dictionary<string, string>
@@ -221,13 +226,63 @@ internal static class MarkdownRenderingChecks
                 ["Relative"] = "/reports/player?q=1#evidence",
                 ["Child"] = "research/player",
                 ["Fragment"] = "#evidence",
-                ["https://example.org/commentary"] = "https://example.org/commentary"
+                ["Reference"] = "https://example.org/referenced-source",
+                ["https://example.org/commentary"] = "https://example.org/commentary",
+                ["https://example.org/angle-autolink"] = "https://example.org/angle-autolink"
             };
             foreach (var (text, href) in expected)
                 That(root.QuerySelectorAll("a").Any(a => a.TextContent == text && a.GetAttribute("href") == href),
                     $"Safe link '{text}' remains clickable");
             That(root.QuerySelector("a")!.GetAttribute("title") == "Article title", "Safe citation title survives");
         });
+
+        yield return new("numbered Encyclopedia sources stay below the report", """
+            ### Summary
+
+            A professional commentary assessment with a [source cited in context](https://example.org/context).
+
+            ### Caveats
+
+            This is a judgment based on the retrieved commentary.
+
+            ### Encyclopedia Sources
+
+            1. [A writer's case for induction](<https://example.org/case?season=2025&view=full>)
+            2. [The strongest objections](<https://example.org/archive/case-(part-two)>)
+            """, root => AssertSourceFooter(root,
+                ("A writer's case for induction", "https://example.org/case?season=2025&view=full"),
+                ("The strongest objections", "https://example.org/archive/case-(part-two)")));
+
+        yield return new("escaped Encyclopedia source titles remain safe and readable", """
+            ### Caveats
+
+            Source titles are untrusted text.
+
+            ### Encyclopedia Sources
+
+            1. [A \[bracketed\] \*Hall\* case &amp; &lt;img src=x onerror=alert(1)&gt;](<https://example.org/safe-title>)
+            2. [\[False link\]\(javascript:alert\(1\)\) \# commentary](<https://example.org/escaped-markdown>)
+            """, root =>
+        {
+            AssertSourceFooter(root,
+                ("A [bracketed] *Hall* case & <img src=x onerror=alert(1)>", "https://example.org/safe-title"),
+                ("[False link](javascript:alert(1)) # commentary", "https://example.org/escaped-markdown"));
+            That(root.QuerySelectorAll("a").Length == 2, "Title markup cannot introduce additional links");
+        });
+
+        var longTitle = "A detailed commentary title " + new string('A', 240);
+        var fallbackUrl = "https://example.org/commentary/" + new string('b', 450) + "?season=2025&view=full";
+        yield return new("long source titles and canonical URL fallback survive", $"""
+            ### Caveats
+
+            The next references include a long title and a source without a usable title.
+
+            ### Encyclopedia Sources
+
+            1. [{longTitle}](<https://example.org/long-title>)
+            2. [{fallbackUrl}](<{fallbackUrl}>)
+            """, root => AssertSourceFooter(root,
+                (longTitle, "https://example.org/long-title"), (fallbackUrl, fallbackUrl)));
 
         yield return new("raw executable HTML remains literal text", """
             <script>alert('script-marker')</script>
@@ -281,9 +336,9 @@ internal static class MarkdownRenderingChecks
         });
 
         yield return new("Markdown extensions cannot add attributes or controls", """
-            ### Heading {#hostile .hostile onclick="alert(1)" style="color:red"}
+            ### Heading {#hostile .hostile target="_self" rel="opener" onclick="alert(1)" style="color:red"}
 
-            [Citation](https://example.org/source){target="_blank" onclick="alert(1)" data-secret="value"}
+            [Citation](https://example.org/source){target="_self" rel="opener" onclick="alert(1)" data-secret="value"}
 
             - [ ] Task control
 
@@ -338,6 +393,25 @@ internal static class MarkdownRenderingChecks
         });
     }
 
+    private static void AssertSourceFooter(IElement root, params (string Title, string Url)[] sources)
+    {
+        var footer = root.Children.LastOrDefault();
+        That(footer?.LocalName == "ol", "The numbered source list is the final report block");
+        var heading = footer!.PreviousElementSibling;
+        That(heading?.LocalName == "h3" && heading.TextContent == "Encyclopedia Sources",
+            "The footer has the Encyclopedia Sources heading");
+        That(root.QuerySelectorAll("h3").Count(h => h.TextContent == "Encyclopedia Sources") == 1,
+            "The source heading appears once");
+        var links = footer.QuerySelectorAll("li > a");
+        That(footer.Children.Length == sources.Length && links.Length == sources.Length,
+            "Each numbered source has exactly one clickable title");
+        for (var index = 0; index < sources.Length; index++)
+        {
+            That(links[index].TextContent == sources[index].Title, "Source titles and URL fallbacks retain their readable text");
+            That(links[index].GetAttribute("href") == sources[index].Url, "Canonical source destinations remain clickable and unchanged");
+        }
+    }
+
     private static void AssertTable(IElement root, params string[] cellValues)
     {
         That(root.QuerySelectorAll("table").Length == 1, "Exactly one report table survives");
@@ -352,10 +426,22 @@ internal static class MarkdownRenderingChecks
         {
             That(SafeElements.Contains(element.LocalName), $"Unexpected rendered element: {element.LocalName}");
             foreach (var attribute in element.Attributes)
+            {
                 That(SafeAttributes.Contains(attribute.Name), $"Unexpected rendered attribute: {element.LocalName}[{attribute.Name}]");
+                if (attribute.Name is "target" or "rel")
+                    That(element.LocalName == "a", $"Link navigation attributes cannot appear on {element.LocalName}");
+            }
 
             if (element.GetAttribute("href") is { } href)
             {
+                That(element.LocalName == "a", "Only anchors can carry a rendered hyperlink destination");
+                That(element.GetAttribute("target") == "_blank", "Every rendered hyperlink opens in a new tab");
+                var relationshipTokens = new HashSet<string>(
+                    (element.GetAttribute("rel") ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries),
+                    StringComparer.OrdinalIgnoreCase);
+                That(relationshipTokens.SetEquals(["noopener", "noreferrer"]),
+                    "Every rendered hyperlink isolates the opener and suppresses referrer information");
+
                 // HTML parsing decodes entities; browsers also ignore ASCII controls in URL schemes.
                 var normalized = Regex.Replace(href, "[\\x00-\\x20\\x7f]", string.Empty);
                 That(Uri.TryCreate(new Uri("https://app.example.invalid/"), normalized, out var uri)
