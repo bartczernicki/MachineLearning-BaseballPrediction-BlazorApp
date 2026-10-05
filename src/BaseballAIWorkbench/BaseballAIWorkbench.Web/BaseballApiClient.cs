@@ -1,5 +1,6 @@
 ﻿
 using BaseballAIWorkbench.Common.Agents;
+using Ganss.Xss;
 using Markdig;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
@@ -10,10 +11,39 @@ namespace BaseballAIWorkbench.Web
     public class BaseballApiClient(HttpClient httpClient)
     {
         private static readonly MarkdownPipeline MarkdownPipeline = new MarkdownPipelineBuilder()
-            .UseAdvancedExtensions()
             .UsePipeTables()
             .UseGridTables()
+            .UseAutoLinks()
+            .UseEmphasisExtras()
+            .UseDefinitionLists()
+            .DisableHtml()
             .Build();
+
+        // Configure once and keep immutable: Sanitize supports concurrent calls.
+        private static readonly HtmlSanitizer AgentHtmlSanitizer = CreateAgentHtmlSanitizer();
+
+        private static HtmlSanitizer CreateAgentHtmlSanitizer()
+        {
+            var sanitizer = new HtmlSanitizer();
+            sanitizer.AllowedTags.Clear();
+            sanitizer.AllowedTags.UnionWith([
+                "p", "br", "hr", "h1", "h2", "h3", "h4", "h5", "h6",
+                "strong", "em", "b", "i", "del", "s", "ins", "sub", "sup", "mark",
+                "blockquote", "pre", "code", "ul", "ol", "li", "dl", "dt", "dd",
+                "table", "thead", "tbody", "tfoot", "tr", "th", "td", "caption", "a"
+            ]);
+            sanitizer.AllowedAttributes.Clear();
+            sanitizer.AllowedAttributes.UnionWith(["href", "title", "colspan", "rowspan", "start"]);
+            sanitizer.AllowedSchemes.Clear();
+            sanitizer.AllowedSchemes.UnionWith(["http", "https"]);
+            // Allowed URI attributes must also be screened against the scheme allowlist.
+            sanitizer.UriAttributes.Clear();
+            sanitizer.UriAttributes.Add("href");
+            sanitizer.AllowedCssProperties.Clear();
+            sanitizer.AllowedAtRules.Clear();
+            sanitizer.AllowDataAttributes = false;
+            return sanitizer;
+        }
 
         public async Task<int> GetBaseballPlayerCountAsync(CancellationToken cancellationToken = default)
         {
@@ -52,7 +82,9 @@ namespace BaseballAIWorkbench.Web
         private static string ConvertAgentMarkdownToHtml(string jsonString)
         {
             var markdown = NormalizeAgentMarkdown(JsonConvert.DeserializeObject<string>(jsonString) ?? string.Empty);
-            return Markdown.ToHtml(markdown, MarkdownPipeline);
+            var html = Markdown.ToHtml(markdown, MarkdownPipeline);
+            // Keep sanitization last: generated HTML is rendered through Blazor's MarkupString.
+            return AgentHtmlSanitizer.Sanitize(html);
         }
 
         private static string NormalizeAgentMarkdown(string markdown)

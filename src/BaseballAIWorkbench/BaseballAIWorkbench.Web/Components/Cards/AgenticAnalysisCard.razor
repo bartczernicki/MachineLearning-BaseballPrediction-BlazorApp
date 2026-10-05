@@ -2,6 +2,7 @@
     <div class="card bg-c-lightgray" style="display:@(IsVisible ? "block" : "none")">
         <p />
         <div class="card-block agentic-analysis-output">
+            @* BaseballApiClient sanitizes the completed HTML before it reaches this markup sink. *@
             @((MarkupString) AgenticAnalysis)
         </div>
     </div>

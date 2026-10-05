@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
+    <PackageReference Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageReference Include="Markdig" Version="1.4.0" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.33.1" />
     <PackageReference Include="Microsoft.Extensions.ML" Version="5.0.0" />
