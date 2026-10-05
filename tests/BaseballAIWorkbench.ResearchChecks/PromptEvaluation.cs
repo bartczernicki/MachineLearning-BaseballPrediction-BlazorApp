@@ -45,9 +45,11 @@ internal static class PromptEvaluation
         Check.That(cases.Select(evidenceCase => evidenceCase.Id).Distinct().Count() == cases.Length &&
             cases.All(evidenceCase => evidenceCase.Searches.Length == 3 &&
                 evidenceCase.Sources.All(source => new Uri(source.Url).Host == "example.org")), "Synthetic fixture identities, search counts, and reserved source domain.");
+        RunPromptContractChecks();
+        ValidateEvaluationContracts(cases[0]);
         if (args.Contains("--dry-run"))
         {
-            Console.WriteLine("PASS: seven fixed-evidence cases and exact pinned baseline prompts validated; no secrets read or model calls made.");
+            Console.WriteLine("PASS: seven fixed-evidence cases, pinned baseline prompts, and revised explanation-only narrative contracts validated; no secrets read or model calls made.");
             return 0;
         }
 
@@ -107,6 +109,7 @@ internal static class PromptEvaluation
                 "The Encyclopedia does not independently extrapolate statistics or manufacture scenario-specific opinions.",
                 "Sparse attention is an explicitly qualified inference only with adequate successful coverage.",
                 "Disagreement, archives, scenario mismatch, and subjective uncertainty are accurately explained.",
+                "Revised narrative contains explanations, not repeated typed probabilities or calculated metrics; subjective ranges remain attributed.",
                 "Compare fixed-case baseline and revised responses; these checks do not establish empirical calibration."
             },
             Outcomes = outcomes
@@ -173,13 +176,22 @@ internal static class PromptEvaluation
                 "numeric" => probabilities.Length == 2 && probabilities.All(value => Regex.IsMatch(value, @"^\d{1,3}%$")),
                 _ => probabilities.Length == 2
             };
-        return new Dictionary<string, bool>
+        var checks = typedAnalysis is null
+            ? new Dictionary<string, bool>
+            {
+                ["four_sections_in_order"] = headings.SequenceEqual(new[] { "Summary", "Probability Assessment", "Key Evidence", "Caveats" }),
+                ["unchanged_probability_table_columns"] = Regex.IsMatch(answer, @"\|\s*Criterion\s*\|\s*Probability\s*\|\s*Qualitative Recommendation\s*\|\s*Rationale\s*\|"),
+                ["two_parseable_probability_rows"] = rows.Length == 2 && rows.Select(row => row.Groups[1].Value).Distinct(StringComparer.OrdinalIgnoreCase).Count() == 2 &&
+                    probabilities.All(value => value.Equals("N/A", StringComparison.OrdinalIgnoreCase) || Regex.IsMatch(value, @"^\d{1,3}(?:\.\d+)?%$"))
+            }
+            : new Dictionary<string, bool>
+            {
+                ["three_narrative_sections_in_order"] = headings.SequenceEqual(new[] { "Summary", "Key Evidence", "Caveats" }),
+                ["no_probability_assessment_section"] = !Regex.IsMatch(answer, @"(?mi)^\s*#{1,6}\s+Probability Assessment\b"),
+                ["no_markdown_tables"] = !HasMarkdownTable(answer)
+            };
+        foreach (var check in new Dictionary<string, bool>
         {
-            ["four_sections_in_order"] = headings.SequenceEqual(new[] { "Summary", "Probability Assessment", "Key Evidence", "Caveats" }),
-            ["unchanged_probability_table_columns"] = Regex.IsMatch(answer, @"\|\s*Criterion\s*\|\s*Probability\s*\|\s*Qualitative Recommendation\s*\|\s*Rationale\s*\|"),
-            ["two_parseable_probability_rows"] = rows.Length == 2 && rows.Select(row => row.Groups[1].Value).Distinct(StringComparer.OrdinalIgnoreCase).Count() == 2 &&
-                probabilities.All(value => value.Equals("N/A", StringComparison.OrdinalIgnoreCase) ||
-                    Regex.IsMatch(value, typedAnalysis is null ? @"^\d{1,3}(?:\.\d+)?%$" : @"^\d{1,3}\.\d{2}%$")),
             ["whole_percentage_points_or_abstention"] = wholePercentagePoints,
             ["expected_abstention_policy"] = expectedAbstention,
             ["citation_urls_from_evidence_only"] = links.All(allowedUrls.Contains),
@@ -188,8 +200,83 @@ internal static class PromptEvaluation
             ["confidence_in_key_evidence"] = !numericValues || Regex.IsMatch(keyEvidence, @"(?i)confidence.*(low|medium|high)|(low|medium|high).*confidence"),
             // Flag obvious affirmative claims; the negative statement 'not statistically calibrated' is allowed.
             ["no_asserted_statistical_calibration"] = !Regex.IsMatch(answer, @"(?i)\b(is|are)\s+(?:a\s+)?statistically calibrated (?:probabilit|confidence)|\b95(?:\.0+)?%\s+(?:statistical\s+)?confidence interval")
-        };
+        })
+            checks.Add(check.Key, check.Value);
+        return checks;
     }
+
+    internal static void RunPromptContractChecks()
+    {
+        foreach (var agent in new[] { "BaseballStatistician", "BaseballEncyclopedia", "MachineLearningExpert", "QuantitativeAnalysis" })
+        {
+            var instructions = Agents.GetAgentInstructions(agent);
+            var headings = Regex.Matches(instructions, @"(?m)^### (.+?)\s*$")
+                .Select(match => match.Groups[1].Value.Trim()).ToArray();
+            Check.That(headings.SequenceEqual(new[] { "Summary", "Key Evidence", "Caveats" }) && !HasMarkdownTable(instructions),
+                $"{agent} requests only the three explanation sections and no generated tables");
+            Check.That(instructions.Contains("Do not repeat typed or calculated point estimates", StringComparison.Ordinal),
+                $"{agent} leaves authoritative numeric presentation to the application");
+            if (agent is "BaseballStatistician" or "BaseballEncyclopedia")
+                Check.That(instructions.Contains("AnalysisMarkdown, BallotAppearanceProbability, InductionProbability, and AbstentionReason", StringComparison.Ordinal)
+                    && instructions.Contains("set its probability field to null", StringComparison.Ordinal),
+                    $"{agent} still supplies typed probabilities and explicit abstentions");
+        }
+
+        var mlPrompt = Agents.GetMachineLearningAgentDecisionPrompt([0.2f, 0.5f, 0.8f], 0.5f, [0.1f, 0.2f, 0.3f], 0.2f);
+        Check.That(!HasMarkdownTable(mlPrompt) && mlPrompt.Contains("supplied as context only", StringComparison.Ordinal)
+            && mlPrompt.Contains("50.00%", StringComparison.Ordinal) && mlPrompt.Contains("20.00%", StringComparison.Ordinal),
+            "The ML prompt retains authoritative context without requesting a copied probability table");
+        var qPrompt = Agents.GetQuantitativeAnalysisPrompt();
+        Check.That(!HasMarkdownTable(qPrompt) && qPrompt.Contains("SensitivityLowerBound", StringComparison.Ordinal)
+            && qPrompt.Contains("SensitivityUpperBound", StringComparison.Ordinal)
+            && qPrompt.Contains("only one contributing agent", StringComparison.Ordinal),
+            "Agent Q explains renamed sensitivity metrics and single-agent limitations without tables");
+    }
+
+    private static void ValidateEvaluationContracts(EvidenceCase evidenceCase)
+    {
+        var narrative = $"""
+            ### Summary
+            Professional commentary supports the hypothetical case.
+
+            ### Key Evidence
+            [Attributed commentary]({evidenceCase.Sources[0].Url}) supports the Encyclopedia's subjective plausible range of 60–90%.
+            Evidence confidence is medium because the supplied commentary is limited.
+
+            ### Caveats
+            These judgments are not statistically calibrated probabilities.
+            """;
+        var typed = new AgentAnalysisResult
+        {
+            AnalysisMarkdown = narrative,
+            BallotAppearanceProbability = 0.8,
+            InductionProbability = 0.7,
+            AbstentionReason = null
+        };
+        var numericCase = evidenceCase with { ExpectedAssessment = "numeric" };
+        Check.That(EvaluateStructure(numericCase, narrative, typed).Values.All(value => value),
+            "Revised evaluation accepts explanation-only narrative and typed probabilities with attributed subjective ranges");
+
+        const string probabilitySection = """
+
+            ### Probability Assessment
+
+            | Criterion | Probability | Qualitative Recommendation | Rationale |
+            |---|---:|---|---|
+            | Ballot Appearance | 80% | Very Likely | Fixture evidence |
+            | Induction | 70% | Likely | Fixture evidence |
+
+            """;
+        var historicalAnswer = narrative.Replace("### Key Evidence", probabilitySection + "\n### Key Evidence", StringComparison.Ordinal);
+        Check.That(EvaluateStructure(numericCase, historicalAnswer).Values.All(value => value),
+            "Pinned baseline evaluation retains its historical four-section probability-table contract");
+        var revisedChecks = EvaluateStructure(numericCase, historicalAnswer, typed);
+        Check.That(!revisedChecks["three_narrative_sections_in_order"] && !revisedChecks["no_probability_assessment_section"]
+            && !revisedChecks["no_markdown_tables"], "Revised evaluation rejects the historical probability presentation");
+    }
+
+    private static bool HasMarkdownTable(string markdown) =>
+        Regex.IsMatch(markdown, @"(?m)^\s*\|.*\|\s*$|^\s*:?-{3,}:?\s*\|");
 
     private static string FormatDossier(EvidenceCase evidenceCase) => "\n\n" + JsonSerializer.Serialize(new
     {

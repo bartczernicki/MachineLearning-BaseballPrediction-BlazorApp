@@ -6,17 +6,19 @@ Run from the repository root with .NET 10:
 dotnet run --project tests/BaseballAIWorkbench.WebChecks/BaseballAIWorkbench.WebChecks.csproj
 ```
 
-This standalone executable uses the Web project's production `BaseballApiClient` and `AgenticAnalysisCard`, with no test framework or additional package references. AngleSharp is supplied transitively by the production HTML sanitizer. A failed assertion exits nonzero.
+This standalone executable uses the production `BaseballApiClient` and `AgenticAnalysisCard`, with no test framework or additional package references. AngleSharp is supplied transitively by the production HTML sanitizer. A failed assertion exits nonzero.
 
-All analysis responses come from an in-memory HTTP handler returning the existing JSON-string response shape. The checks require no running application, browser, network calls, credentials, model execution, or paid services. The first build can restore ordinary NuGet dependencies.
+Responses come from an in-memory HTTP handler using the typed analysis response contract. The checks need no running application, browser, credentials, model execution, or paid services. The first build can restore ordinary NuGet dependencies.
 
-Both single-agent and multiple-agent endpoints are checked for:
+The checks cover:
 
-- Preserved headings, emphasis, lists, blockquotes, definition lists, literal code, pipe/grid tables, and HTTP/HTTPS/relative/fragment citation links.
-- Existing fenced, indented, and malformed table normalization and exact report values.
-- Final numbered Encyclopedia source footers with canonical clickable URLs, safely escaped titles, long titles, and URL fallbacks.
-- Every surviving inline, reference, and automatic hyperlink opens a new tab with `target="_blank"` and `rel="noopener noreferrer"`; untrusted attribute-like text cannot override that behavior.
-- Raw HTML displayed as text, with no active scripts, frames, forms, SVG, MathML, images, media, or other embedded resources.
-- Removal of unsafe link destinations, including mixed-case, entity, and control-character obfuscations.
-- Absence of event handlers, inline styles, custom classes/IDs, and data attributes in generated content; navigation attributes appear only on links.
-- Safe DOM structure after the sanitized response passes through the real Blazor component's `MarkupString` boundary.
+- Application-owned probability, agent provenance, formula sensitivity, estimate range and disagreement displays, including omitted agents, single-agent partial/full abstention and one-contributor N/A spread.
+- Recommendation thresholds calculated from original probabilities, with existing percentage rounding and clipping preserved.
+- Deliberately incorrect narrative numbers and tables never supplying the application's numeric tables. Legacy Probability Assessment sections and all Markdown tables are removed, including fenced, indented, malformed and nested tables; later evidence, caveats and source footers survive.
+- Encoded application notices, agent names, abstention reasons and loading/error status; initially collapsed formula details and individually scrollable numeric tables.
+- Missing required numeric fields, explicit null aggregate structures and legacy string responses being rejected instead of becoming invented zero values.
+- Preserved narrative headings, emphasis, lists, blockquotes, definitions, literal code and safe citation links.
+- Final numbered Encyclopedia source footers with escaped titles, long titles and canonical URL fallbacks.
+- Every surviving inline, reference and automatic hyperlink opening a new tab with `target="_blank"` and `rel="noopener noreferrer"`; untrusted attribute-like text cannot override that behavior.
+- No active scripts, frames, forms, SVG, MathML, images, media, event handlers, inline styles, custom classes/IDs or data attributes in narrative content. Disallowed link destinations are removed, including entity and control-character obfuscations.
+- Safe DOM structure after the sanitized narrative passes through the real Blazor component's `MarkupString` boundary, separately from its typed numeric sections.

@@ -54,12 +54,14 @@ flowchart TD
     A -->|Available probability pairs| C["Application code<br/>Combine probabilities and calculate sensitivity ranges"]
     C -->|Calculated results| Q
 
-    Q --> R["Final assessment<br/>Ballot appearance and induction"]
+    A -->|Typed individual estimates| R["Razor assessment<br/>Application-rendered numbers and AI explanation"]
+    C -->|Typed aggregate, sensitivity and disagreement| R
+    Q -->|Explanation only| R
 ```
 
-All three agents are shown; selecting any pair also invokes Agent Q after all selected analyses complete. A single-agent run bypasses Agent Q. Application code performs the calculations, and Agent Q explains them. Sensitivity ranges are not statistical confidence intervals.
+All three agents are shown; selecting any pair also invokes Agent Q after all selected analyses complete. A single-agent run bypasses Agent Q. Application code performs the calculations, and Razor renders the numeric results directly from the API response. Agent Q supplies a separate explanation. If ML Expert or Agent Q prose generation fails after valid estimates are available, the results remain visible with an explanatory notice.
 
-The three analysis agents form their conclusions without seeing one another's answers. Their evidence can overlap, so separate analyses do not establish statistical independence. Agent Q explains the quantitative results and remaining uncertainty; the sensitivity ranges are **not statistical confidence intervals**.
+The three analysis agents form their conclusions without seeing one another's answers. Their evidence can overlap, so separate analyses do not establish statistical independence. Formula sensitivity and agent disagreement are displayed separately: estimates of 10% and 90% yield a 50%–50% formula sensitivity range but an 80-percentage-point agent spread. Neither measure is a statistical confidence interval. With only one contributing agent, disagreement is unavailable.
 
 ## Features
 
@@ -120,6 +122,8 @@ flowchart TB
 ## Documentation
 
 See the [AppHost configuration and deployment decisions](src/BaseballAIWorkbench/BaseballAIWorkbench.AppHost/README.MD) for AI telemetry, Container Apps sizing and scaling, and Front Door configuration and validation.
+
+Both analysis endpoints (`/BaseballPlayerAnalysisML` and `/BaseballPlayerAnalysisMultipleAgents`) return the shared `AgenticAnalysisResponse` object with narrative Markdown, agent estimates, an optional aggregate, and notices. This replaces the former JSON-string response; deploy the API and web application together. Offline [research checks](tests/BaseballAIWorkbench.ResearchChecks/README.md) and [rendering checks](tests/BaseballAIWorkbench.WebChecks/README.md) cover the contract and presentation.
 
 ## Resources
 

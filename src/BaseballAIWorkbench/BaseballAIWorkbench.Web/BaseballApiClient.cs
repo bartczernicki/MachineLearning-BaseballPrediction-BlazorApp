@@ -5,7 +5,6 @@ using Markdig;
 using Markdig.Renderers.Html;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
-using Newtonsoft.Json;
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
 
@@ -54,38 +53,73 @@ namespace BaseballAIWorkbench.Web
             return playerCount;
         }
 
-        public async Task<string> GetBaseballPlayerAnalysis(AgenticAnalysisConfig agenticAnalysisConfig, CancellationToken cancellationToken = default)
+        public Task<AgenticAnalysisViewModel> GetBaseballPlayerAnalysis(AgenticAnalysisConfig agenticAnalysisConfig, CancellationToken cancellationToken = default)
         {
-            var playerAnalysis = await httpClient.PostAsJsonAsync<AgenticAnalysisConfig>("/BaseballPlayerAnalysisML", agenticAnalysisConfig, cancellationToken);
-
-            playerAnalysis.EnsureSuccessStatusCode();
-
-            var playerAnalysisString = await playerAnalysis.Content.ReadAsStringAsync(cancellationToken);
-
-            string bingSourcePattern = @"【[^】]*】";        // match an opening 【, then any chars except 】, then a closing 】
-            string cleanedAnalysis = Regex.Replace(playerAnalysisString, bingSourcePattern, "");
-
-            return ConvertAgentMarkdownToHtml(cleanedAnalysis);
+            return GetAnalysisAsync("/BaseballPlayerAnalysisML", agenticAnalysisConfig, cancellationToken);
         }
 
-        public async Task<string> GetBaseballPlayerAnalysisMultipleModels(AgenticAnalysisConfig agenticAnalysisConfig, CancellationToken cancellationToken = default)
+        public Task<AgenticAnalysisViewModel> GetBaseballPlayerAnalysisMultipleModels(AgenticAnalysisConfig agenticAnalysisConfig, CancellationToken cancellationToken = default)
         {
-            var playerAnalysis = await httpClient.PostAsJsonAsync<AgenticAnalysisConfig>("/BaseballPlayerAnalysisMultipleAgents", agenticAnalysisConfig, cancellationToken);
-
-            playerAnalysis.EnsureSuccessStatusCode();
-
-            var playerAnalysisString = await playerAnalysis.Content.ReadAsStringAsync(cancellationToken);
-
-            string bingSourcePattern = @"【[^】]*】";        // match an opening 【, then any chars except 】, then a closing 】
-            string cleanedAnalysis = Regex.Replace(playerAnalysisString, bingSourcePattern, "");
-
-            return ConvertAgentMarkdownToHtml(cleanedAnalysis);
+            return GetAnalysisAsync("/BaseballPlayerAnalysisMultipleAgents", agenticAnalysisConfig, cancellationToken);
         }
 
-        private static string ConvertAgentMarkdownToHtml(string jsonString)
+        private async Task<AgenticAnalysisViewModel> GetAnalysisAsync(
+            string endpoint, AgenticAnalysisConfig config, CancellationToken cancellationToken)
         {
-            var markdown = NormalizeAgentMarkdown(JsonConvert.DeserializeObject<string>(jsonString) ?? string.Empty);
+            using var message = await httpClient.PostAsJsonAsync(endpoint, config, cancellationToken);
+            message.EnsureSuccessStatusCode();
+            var response = await message.Content.ReadFromJsonAsync<AgenticAnalysisResponse>(cancellationToken);
+            if (response is null || response.AnalysisMarkdown is null || response.AgentEstimates is null
+                || response.AgentEstimates.Length == 0 || response.AgentEstimates.Any(estimate => estimate is null
+                    || string.IsNullOrWhiteSpace(estimate.AgentType) || string.IsNullOrWhiteSpace(estimate.AgentName)
+                    || !IsProbability(estimate.BallotAppearanceProbability) || !IsProbability(estimate.InductionProbability))
+                || response.Notices is null || !IsValidAggregate(response.Aggregate))
+            {
+                throw new InvalidOperationException("The API returned an incomplete analysis.");
+            }
+
+            // Clean only narrative content: authoritative numbers are never inferred from Markdown.
+            var narrative = Regex.Replace(response.AnalysisMarkdown, @"【[^】]*】", "");
+            return new AgenticAnalysisViewModel(response, ConvertAgentMarkdownToHtml(narrative));
+        }
+
+        private static bool IsProbability(double? value)
+            => !value.HasValue || (double.IsFinite(value.Value) && value.Value is >= 0 and <= 1);
+
+        private static bool IsValidAggregate(LuceSensitivityResult? aggregate)
+        {
+            if (aggregate is null)
+                return true;
+
+            return aggregate.ContributingAgentCount > 0 && aggregate.KValues is { Length: > 0 }
+                && aggregate.KValues.All(k => double.IsFinite(k) && k > 0)
+                && IsValidOutcome(aggregate.BallotAppearance) && IsValidOutcome(aggregate.Induction);
+        }
+
+        private static bool IsValidOutcome(LuceOutcomeSensitivityResult? outcome)
+        {
+            // JSON required fields can still explicitly contain null. Reject incomplete numeric
+            // data here, so Razor never invents a zero or fails halfway through rendering a report.
+            return outcome is not null && IsProbability(outcome.PointEstimate)
+                && IsProbability(outcome.SensitivityLowerBound) && IsProbability(outcome.SensitivityUpperBound)
+                && outcome.SensitivityLowerBound <= outcome.SensitivityUpperBound
+                && IsProbability(outcome.AgentEstimateMinimum) && IsProbability(outcome.AgentEstimateMaximum)
+                && outcome.AgentEstimateMinimum <= outcome.AgentEstimateMaximum
+                && (!outcome.AgentSpreadPercentagePoints.HasValue
+                    || (double.IsFinite(outcome.AgentSpreadPercentagePoints.Value)
+                        && outcome.AgentSpreadPercentagePoints.Value is >= 0 and <= 100))
+                && outcome.SensitivityValues is { Length: > 0 }
+                && outcome.SensitivityValues.All(value => value is not null
+                    && double.IsFinite(value.K) && value.K > 0 && IsProbability(value.Probability));
+        }
+
+        private static string ConvertAgentMarkdownToHtml(string narrative)
+        {
+            var markdown = NormalizeAgentMarkdown(narrative);
             var document = Markdown.Parse(markdown, MarkdownPipeline);
+            RemoveNarrativeProbabilityTables(document);
+            foreach (var heading in document.Descendants<HeadingBlock>())
+                heading.Level = Math.Max(3, heading.Level);
             foreach (var inline in document.Descendants<Inline>())
             {
                 if (inline is LinkInline { IsImage: false } or AutolinkInline)
@@ -101,6 +135,60 @@ namespace BaseballAIWorkbench.Web
             return AgentHtmlSanitizer.Sanitize(html);
         }
 
+        private static void RemoveNarrativeProbabilityTables(ContainerBlock container)
+        {
+            for (var index = 0; index < container.Count;)
+            {
+                var block = container[index];
+                if (block is HeadingBlock heading && IsProbabilityAssessmentHeading(heading))
+                {
+                    // Remove the whole legacy section, including its subordinate headings.
+                    // Preserve named report sections and the server-generated citation footer
+                    // even when a model uses inconsistent heading depths.
+                    container.RemoveAt(index);
+                    while (index < container.Count
+                        && !(container[index] is HeadingBlock next
+                            && (next.Level <= heading.Level || IsNarrativeSection(next))))
+                    {
+                        container.RemoveAt(index);
+                    }
+                    continue;
+                }
+
+                if (block is Markdig.Extensions.Tables.Table)
+                {
+                    container.RemoveAt(index);
+                    continue;
+                }
+
+                if (block is ContainerBlock child)
+                    RemoveNarrativeProbabilityTables(child);
+                index++;
+            }
+        }
+
+        private static bool IsProbabilityAssessmentHeading(HeadingBlock heading)
+            => HeadingText(heading).Equals("Probability Assessment", StringComparison.OrdinalIgnoreCase);
+
+        private static bool IsNarrativeSection(HeadingBlock heading)
+            => new[] { "Summary", "Key Evidence", "Caveats", "Encyclopedia Sources" }
+                .Contains(HeadingText(heading), StringComparer.OrdinalIgnoreCase);
+
+        private static string HeadingText(HeadingBlock heading)
+        {
+            if (heading.Inline is null)
+                return string.Empty;
+
+            var text = string.Concat(heading.Inline.Descendants<Inline>().Select(inline => inline switch
+            {
+                LiteralInline literal => literal.Content.ToString(),
+                CodeInline code => code.Content,
+                LineBreakInline => " ",
+                _ => string.Empty
+            }));
+            return Regex.Replace(text, @"\s+", " ").Trim().TrimEnd(':').TrimEnd();
+        }
+
         private static string NormalizeAgentMarkdown(string markdown)
         {
             markdown = markdown.Replace("\r\n", "\n").Replace('\r', '\n').Trim();
@@ -112,18 +200,9 @@ namespace BaseballAIWorkbench.Web
                 RegexOptions.IgnoreCase);
 
             markdown = UnwrapFencedMarkdownTables(markdown);
-            markdown = NormalizeHeadingLevels(markdown);
             markdown = RepairMalformedPipeTables(markdown);
 
             return markdown.Trim();
-        }
-
-        private static string NormalizeHeadingLevels(string markdown)
-        {
-            return Regex.Replace(
-                markdown,
-                @"(?m)^(#{1,2})([ \t]+)(.+)$",
-                "###$2$3");
         }
 
         private static string RepairMalformedPipeTables(string markdown)

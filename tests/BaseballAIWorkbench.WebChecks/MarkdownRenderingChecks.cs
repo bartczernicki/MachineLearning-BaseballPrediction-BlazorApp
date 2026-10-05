@@ -54,11 +54,13 @@ internal static class MarkdownRenderingChecks
 
                 try
                 {
-                    var html = multipleAgents
+                    var analysis = multipleAgents
                         ? await client.GetBaseballPlayerAnalysisMultipleModels(config)
                         : await client.GetBaseballPlayerAnalysis(config);
                     That(handler.RequestCount == 1, "Exactly one fake POST serves the requested endpoint");
-                    var body = parser.ParseDocument(html).Body!;
+                    var body = parser.ParseDocument(analysis.NarrativeHtml).Body!;
+                    That(analysis.Response.AgentEstimates[0].BallotAppearanceProbability == 0.9,
+                        "Typed probabilities are preserved independently of the narrative fixture");
                     AssertSafeElements(body);
                     fixture.Verify(body);
 
@@ -69,14 +71,14 @@ internal static class MarkdownRenderingChecks
                             ParameterView.FromDictionary(new Dictionary<string, object?>
                             {
                                 [nameof(AgenticAnalysisCard.IsVisible)] = true,
-                                [nameof(AgenticAnalysisCard.AgenticAnalysis)] = html
+                                [nameof(AgenticAnalysisCard.Analysis)] = analysis
                             }));
                         return component.ToHtmlString();
                     });
                     var renderedDocument = parser.ParseDocument(rendered);
-                    var output = renderedDocument.QuerySelector(".agentic-analysis-output");
+                    var output = renderedDocument.QuerySelector(".agentic-analysis-narrative");
                     That(output is not null, "The real analysis output wrapper survives the supplied content");
-                    That(renderedDocument.QuerySelectorAll(".agentic-analysis-output").Length == 1,
+                    That(renderedDocument.QuerySelectorAll(".agentic-analysis-narrative").Length == 1,
                         "The supplied content cannot duplicate the analysis output wrapper");
                     AssertSafeElements(output!);
                     fixture.Verify(output!);
@@ -101,7 +103,7 @@ internal static class MarkdownRenderingChecks
         yield return new("headings and inline formatting", """
             # Summary
 
-            ## Probability Assessment
+            ## Background
 
             ### Key Evidence
 
@@ -143,7 +145,7 @@ internal static class MarkdownRenderingChecks
             That(root.QuerySelector("ol")!.GetAttribute("start") == "3", "Ordered-list starting number survives");
         });
 
-        yield return new("pipe table and numeric report", """
+        yield return new("legacy probability section is excluded from narrative", """
             ### Probability Assessment
 
             | Criterion | Probability | Rationale |
@@ -152,18 +154,17 @@ internal static class MarkdownRenderingChecks
             | Induction | < 0.10% | **Limited evidence** |
             """, root =>
         {
-            AssertTable(root, "Ballot Appearance", "92.59%", "Induction", "< 0.10%");
-            That(root.QuerySelector("td strong")?.TextContent == "Limited evidence", "Table formatting survives");
-            That(root.QuerySelector("td a")?.GetAttribute("href") == "https://example.org/report", "Table citation survives");
+            AssertNoNarrativeTable(root, "92.59%", "< 0.10%");
+            That(!root.TextContent.Contains("Probability Assessment"), "The competing model-generated assessment heading is removed");
         });
 
-        yield return new("grid table", """
+        yield return new("grid table is excluded from narrative", """
             +---------+-------+
             | Agent   | Value |
             +=========+=======+
             | Expert  | 80%   |
             +---------+-------+
-            """, root => AssertTable(root, "Expert", "80%"));
+            """, root => AssertNoNarrativeTable(root, "Expert", "80%"));
 
         yield return new("whole Markdown fence normalization", """
             ```markdown
@@ -176,7 +177,7 @@ internal static class MarkdownRenderingChecks
             """, root =>
         {
             That(root.QuerySelector("h3")?.TextContent == "Summary", "The whole-document Markdown fence is removed");
-            AssertTable(root, "Induction", "80.00%");
+            AssertNoNarrativeTable(root, "Induction", "80.00%");
         });
 
         yield return new("embedded table fence normalization", """
@@ -191,7 +192,7 @@ internal static class MarkdownRenderingChecks
             Additional caveats
             """, root =>
         {
-            AssertTable(root, "Expert", "80%");
+            AssertNoNarrativeTable(root, "Expert", "80%");
             That(root.TextContent.Contains("Additional caveats"), "Text after a repaired fenced table survives");
         });
 
@@ -202,7 +203,69 @@ internal static class MarkdownRenderingChecks
                |---|---|| Ballot Appearance | 90% |
 
                | Induction | 80% |
-            """, root => AssertTable(root, "Ballot Appearance", "90%", "Induction", "80%"));
+            """, root => AssertNoNarrativeTable(root, "Ballot Appearance", "90%", "Induction", "80%"));
+
+        yield return new("legacy section hierarchy preserves following evidence and sources", """
+            ## Summary
+
+            A useful opening paragraph.
+
+            ## **Probability Assessment:**
+
+            Incorrect outcome estimate 99.99%.
+
+            ### Model Details
+
+            Subordinate explanation that belongs to the old assessment.
+
+            ## Key Evidence
+
+            Retained evidence paragraph.
+
+            ## Caveats
+
+            Retained caveat.
+
+            ### Encyclopedia Sources
+
+            1. [Source](https://example.org/commentary)
+            """, root =>
+        {
+            That(!root.TextContent.Contains("99.99%") && !root.TextContent.Contains("Subordinate explanation"),
+                "The entire legacy assessment section is removed, including subordinate content");
+            That(root.TextContent.Contains("Retained evidence paragraph") && root.TextContent.Contains("Retained caveat"),
+                "Following peer sections remain readable");
+            AssertSourceFooter(root, ("Source", "https://example.org/commentary"));
+        });
+
+        yield return new("a deeper source footer survives a legacy top-level assessment", """
+            # Probability Assessment
+
+            Incorrect assessment 99.99%.
+
+            ### Encyclopedia Sources
+
+            1. [Original commentary](https://example.org/original)
+            """, root =>
+        {
+            That(!root.TextContent.Contains("99.99%"), "The old assessment is excluded");
+            AssertSourceFooter(root, ("Original commentary", "https://example.org/original"));
+        });
+
+        yield return new("nested narrative tables are removed without discarding prose", """
+            > Attributed context remains.
+            >
+            > | Criterion | Estimate |
+            > |---|---|
+            > | Invented model row | 99.99% |
+
+            Following commentary remains.
+            """, root =>
+        {
+            AssertNoNarrativeTable(root, "99.99%", "Invented model row");
+            That(root.TextContent.Contains("Attributed context remains") && root.TextContent.Contains("Following commentary remains"),
+                "Prose surrounding a nested table survives");
+        });
 
         yield return new("safe citation and navigation links", """
             [HTTPS](https://example.org/source?x=1&y=2 "Article title")
@@ -412,12 +475,11 @@ internal static class MarkdownRenderingChecks
         }
     }
 
-    private static void AssertTable(IElement root, params string[] cellValues)
+    private static void AssertNoNarrativeTable(IElement root, params string[] cellValues)
     {
-        That(root.QuerySelectorAll("table").Length == 1, "Exactly one report table survives");
-        var cells = root.QuerySelectorAll("th,td").Select(cell => cell.TextContent.Trim()).ToArray();
+        That(root.QuerySelector("table") is null, "The narrative cannot supply a competing table");
         foreach (var value in cellValues)
-            That(cells.Contains(value), $"Report cell '{value}' survives");
+            That(!root.TextContent.Contains(value), $"Model-generated table value '{value}' is removed");
     }
 
     private static void AssertSafeElements(IElement root)
@@ -470,7 +532,11 @@ internal static class MarkdownRenderingChecks
             RequestCount++;
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonSerializer.Serialize(markdown), Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonSerializer.Serialize(new AgenticAnalysisResponse
+                {
+                    AnalysisMarkdown = markdown,
+                    AgentEstimates = [new("BaseballStatistician", "Baseball Statistician", 0.9, 0.8, false, null)]
+                }), Encoding.UTF8, "application/json")
             });
         }
     }

@@ -1,17 +1,122 @@
-﻿<div class="col-md-12 col-xl-12">
-    <div class="card bg-c-lightgray" style="display:@(IsVisible ? "block" : "none")">
-        <p />
-        <div class="card-block agentic-analysis-output">
-            @* BaseballApiClient sanitizes the completed HTML before it reaches this markup sink. *@
-            @((MarkupString) AgenticAnalysis)
+@using System.Globalization
+
+@if (IsVisible)
+{
+    <div class="col-md-12 col-xl-12 agentic-analysis-column">
+        <div class="card bg-c-lightgray">
+            <div class="card-block agentic-analysis-output">
+                @if (!string.IsNullOrWhiteSpace(StatusMessage))
+                {
+                    <p class="agentic-analysis-status" role="status">@StatusMessage</p>
+                }
+                @if (Analysis is { } analysis)
+                {
+                    var response = analysis.Response;
+                    var aggregate = response.Aggregate;
+                    var isCombined = aggregate is not null || response.AgentEstimates.Length > 1;
+                    var singleEstimate = !isCombined ? response.AgentEstimates.FirstOrDefault() : null;
+                    var ballotProbability = aggregate?.BallotAppearance.PointEstimate ?? singleEstimate?.BallotAppearanceProbability;
+                    var inductionProbability = aggregate?.Induction.PointEstimate ?? singleEstimate?.InductionProbability;
+
+                    <h3>Probability Assessment</h3>
+                    <div class="agentic-table-scroll" role="region" aria-label="Probability assessment" tabindex="0">
+                        <table class="agentic-probability-table">
+                            <thead><tr><th scope="col">Criterion</th><th scope="col">Probability</th><th scope="col">Qualitative Recommendation</th></tr></thead>
+                            <tbody>
+                                <tr><th scope="row">Ballot Appearance</th><td>@Probability(ballotProbability)</td><td>@Recommendation(ballotProbability)</td></tr>
+                                <tr><th scope="row">Induction</th><td>@Probability(inductionProbability)</td><td>@Recommendation(inductionProbability)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (singleEstimate is not null && !string.IsNullOrWhiteSpace(singleEstimate.AbstentionReason))
+                    {
+                        <p class="agentic-abstention-reason">@singleEstimate.AbstentionReason</p>
+                    }
+                    @if (response.Notices.Length > 0)
+                    {
+                        <ul class="agentic-analysis-notices">
+                            @foreach (var notice in response.Notices)
+                            {
+                                <li>@notice</li>
+                            }
+                        </ul>
+                    }
+
+                    @if (isCombined)
+                    {
+                        <h3>Agent Estimates</h3>
+                        <div class="agentic-table-scroll" role="region" aria-label="Agent estimates and inclusion" tabindex="0">
+                            <table class="agentic-estimates-table">
+                                <thead><tr><th scope="col">Agent</th><th scope="col">Ballot Appearance</th><th scope="col">Induction</th><th scope="col">Included in aggregate</th><th scope="col">Reason</th></tr></thead>
+                                <tbody>
+                                    @foreach (var estimate in response.AgentEstimates)
+                                    {
+                                        <tr>
+                                            <th scope="row">@estimate.AgentName</th>
+                                            <td>@Probability(estimate.BallotAppearanceProbability)</td>
+                                            <td>@Probability(estimate.InductionProbability)</td>
+                                            <td>@(estimate.IncludedInAggregate ? "Yes" : "No")</td>
+                                            <td>@(string.IsNullOrWhiteSpace(estimate.AbstentionReason) ? "—" : estimate.AbstentionReason)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                    @if (aggregate is not null)
+                    {
+                        <h3>Sensitivity and Disagreement</h3>
+                        <p class="agentic-contributor-count">Contributing agents: <b>@aggregate.ContributingAgentCount</b></p>
+                        <p>Formula sensitivity shows the range across the selected k values. Agent estimate range and spread describe the included agents. Neither the formula range nor the spread is a statistical confidence interval</p>
+                        <div class="agentic-table-scroll" role="region" aria-label="Sensitivity and agent disagreement" tabindex="0">
+                            <table class="agentic-comparison-table">
+                                <thead><tr><th scope="col">Criterion</th><th scope="col">Formula sensitivity range</th><th scope="col">Agent estimate range</th><th scope="col">Spread (percentage points)</th></tr></thead>
+                                <tbody>
+                                    <tr><th scope="row">Ballot Appearance</th><td>@Range(aggregate.BallotAppearance.SensitivityLowerBound, aggregate.BallotAppearance.SensitivityUpperBound)</td><td>@Range(aggregate.BallotAppearance.AgentEstimateMinimum, aggregate.BallotAppearance.AgentEstimateMaximum)</td><td>@Spread(aggregate.BallotAppearance.AgentSpreadPercentagePoints)</td></tr>
+                                    <tr><th scope="row">Induction</th><td>@Range(aggregate.Induction.SensitivityLowerBound, aggregate.Induction.SensitivityUpperBound)</td><td>@Range(aggregate.Induction.AgentEstimateMinimum, aggregate.Induction.AgentEstimateMaximum)</td><td>@Spread(aggregate.Induction.AgentSpreadPercentagePoints)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <details class="agentic-formula-settings">
+                            <summary>Formula settings</summary>
+                            <p><code>F(k) = Σ pᵢᵏ / (Σ pᵢᵏ + Σ (1 − pᵢ)ᵏ)</code></p>
+                            <p>The point estimate uses k = 1, the equally weighted arithmetic mean of the included agents. The sensitivity sweep uses k = @string.Join(", ", aggregate.KValues.Select(Setting))</p>
+                            <div class="agentic-table-scroll" role="region" aria-label="Values at each formula setting" tabindex="0">
+                                <table class="agentic-settings-table">
+                                    <thead><tr><th scope="col">k</th><th scope="col">Ballot Appearance</th><th scope="col">Induction</th></tr></thead>
+                                    <tbody>
+                                        @foreach (var k in aggregate.KValues)
+                                        {
+                                            <tr><th scope="row">@Setting(k)</th><td>@Probability(ValueAt(aggregate.BallotAppearance, k))</td><td>@Probability(ValueAt(aggregate.Induction, k))</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    }
+
+                    <h3>AI Explanation</h3>
+                    <div class="agentic-analysis-narrative">
+                        @* Only the separately sanitized narrative reaches this markup sink. *@
+                        @((MarkupString)analysis.NarrativeHtml)
+                    </div>
+                }
+            </div>
         </div>
     </div>
-</div>
+}
 
 @code {
-    [Parameter]
-    public bool IsVisible { get; set; } = false;
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public AgenticAnalysisViewModel? Analysis { get; set; }
+    [Parameter] public string StatusMessage { get; set; } = string.Empty;
 
-    [Parameter]
-    public string AgenticAnalysis { get; set; } = string.Empty;
+    private static string Probability(double? value) => value.HasValue ? Agents.FormatProbabilityForDisplay(value.Value) : "N/A";
+    private static string Recommendation(double? value) => value.HasValue ? Agents.GetQualitativeRecommendation(value.Value) : "Insufficient evidence";
+    private static string Range(double minimum, double maximum) => $"{Probability(minimum)} – {Probability(maximum)}";
+    private static string Spread(double? value) => value.HasValue ? value.Value.ToString("0.00", CultureInfo.InvariantCulture) : "N/A — Not enough agents to compare";
+    private static string Setting(double value) => value.ToString("0.###", CultureInfo.InvariantCulture);
+    private static double? ValueAt(LuceOutcomeSensitivityResult outcome, double k) => outcome.SensitivityValues.FirstOrDefault(value => value.K == k)?.Probability;
 }

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using BaseballAIWorkbench.ApiService;
 using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
@@ -61,7 +62,55 @@ internal static class CancellationChecks
             Check.That(Volatile.Read(ref qCalls) == 0, $"{scenario} never starts Agent Q");
         }
 
-        Console.WriteLine("PASS cancellation: both real analysis handlers propagate cancellation, cancel every pending model call, dispose MCP, skip Q, and return HTTP 504 for request timeouts.");
+        foreach (var proseAgent in new[] { "MachineLearningExpert", "Q" })
+        foreach (var serverTimeout in new[] { false, true })
+        {
+            var started = Check.Signal();
+            var canceled = Check.Signal();
+            using var transport = new ScriptedResponses(async (agent, _, token) =>
+            {
+                if (agent != proseAgent)
+                    return ScriptedResponses.Message(agent == "BaseballStatistician"
+                        ? JsonSerializer.Serialize(new AgentAnalysisResult
+                        {
+                            AnalysisMarkdown = "### Summary\nCompleted research.",
+                            BallotAppearanceProbability = 0.8,
+                            InductionProbability = 0.6,
+                            AbstentionReason = null
+                        })
+                        : "### Summary\nCompleted model explanation.");
+
+                started.TrySetResult();
+                try
+                {
+                    await Task.Delay(Timeout.InfiniteTimeSpan, token);
+                    throw new InvalidOperationException("The blocked prose call unexpectedly completed.");
+                }
+                catch (OperationCanceledException) when (token.IsCancellationRequested)
+                {
+                    canceled.TrySetResult();
+                    throw;
+                }
+            });
+            var agents = createAgents(transport);
+            Func<AgenticAnalysisConfig, CancellationToken, Task<IResult>> handler = proseAgent == "Q"
+                ? agents.PerformBaseballPlayerAnalysisMupltipleAgents
+                : agents.PerformBaseballPlayerAnalysisML;
+            var config = new AgenticAnalysisConfig
+            {
+                BaseballBatter = batter,
+                AgentsToUse = proseAgent == "Q" ? ["BaseballStatistician", "MachineLearningExpert"] : ["MachineLearningExpert"]
+            };
+            var scenario = $"{proseAgent} prose {(serverTimeout ? "server timeout" : "request cancellation")}";
+            if (serverTimeout)
+                await AssertServerTimeoutAsync(handler, config, started.Task, scenario);
+            else
+                await AssertRequestCancellationAsync(handler, config, started.Task, scenario);
+
+            await canceled.Task.WaitAsync(GuardTimeout);
+        }
+
+        Console.WriteLine("PASS cancellation: research and prose phases propagate cancellation, dispose pending work, skip Q when appropriate, and preserve HTTP 504 timeouts without fallback.");
     }
 
     private static async Task AssertRequestCancellationAsync(

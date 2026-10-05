@@ -191,13 +191,13 @@ internal static class TelemetryChecks
             });
             var reusedAgents = Agents(reusedTransport);
             await VerifyAsync("single", 1, 1, ["MachineLearningExpert"], async () =>
-                Check.That(await reusedAgents.PerformBaseballPlayerAnalysisML(Config("MachineLearningExpert")) is Ok<string>,
+                Check.That(await reusedAgents.PerformBaseballPlayerAnalysisML(Config("MachineLearningExpert")) is Ok<AgenticAnalysisResponse>,
                     "Single telemetry fixture completes successfully"));
 
             var researchCalls = 0;
             using (var transport = new ScriptedResponses((_, _, _) => Task.FromResult(ResearchResponse(Interlocked.Increment(ref researchCalls)))))
                 await VerifyAsync("research", 3, 3, ["BaseballEncyclopedia"], async () =>
-                    Check.That(await Agents(transport).PerformBaseballPlayerAnalysisML(Config("BaseballEncyclopedia")) is Ok<string> && researchCalls == 3,
+                    Check.That(await Agents(transport).PerformBaseballPlayerAnalysisML(Config("BaseballEncyclopedia")) is Ok<AgenticAnalysisResponse> && researchCalls == 3,
                         "Research telemetry fixture preserves two tool rounds plus synthesis"));
 
             string[] selected = ["MachineLearningExpert", "BaseballStatistician", "BaseballEncyclopedia"];
@@ -213,7 +213,7 @@ internal static class TelemetryChecks
                     : ScriptedResponses.Message(agent == "BaseballStatistician" ? StructuredAnswer() : SensitiveMarker);
             }))
                 await VerifyAsync("parallel", 6, 6, [.. selected, "QuantitativeAnalysis"], async () =>
-                    Check.That(await Agents(transport).PerformBaseballPlayerAnalysisMupltipleAgents(Config(selected)) is Ok<string>,
+                    Check.That(await Agents(transport).PerformBaseballPlayerAnalysisMupltipleAgents(Config(selected)) is Ok<AgenticAnalysisResponse>,
                         "Parallel telemetry fixture completes all three agents and Q"));
 
             foreach (var selectedAgent in new[] { "MachineLearningExpert", "BaseballStatistician" })
@@ -221,8 +221,13 @@ internal static class TelemetryChecks
                 var prefix = selectedAgent == "BaseballStatistician" ? "structured-" : string.Empty;
                 using (var transport = new ScriptedResponses((_, _, _) => Task.FromResult(ScriptedResponses.Error())))
                     await VerifyAsync(prefix + "failure", 0, 1, [selectedAgent], async () =>
-                        Check.That(await Agents(transport).PerformBaseballPlayerAnalysisML(Config(selectedAgent)) is ProblemHttpResult,
-                            "Failed model call preserves the handler's error contract"), expectError: true);
+                    {
+                        var result = await Agents(transport).PerformBaseballPlayerAnalysisML(Config(selectedAgent));
+                        Check.That(selectedAgent == "MachineLearningExpert"
+                            ? result is Ok<AgenticAnalysisResponse> { Value: { Aggregate: null, Notices.Length: 1 } }
+                            : result is ProblemHttpResult,
+                            "Failed ML prose retains calculated estimates; failed structured research remains an error");
+                    }, expectError: true);
 
                 using (var cancellation = new CancellationTokenSource())
                 {
@@ -253,7 +258,7 @@ internal static class TelemetryChecks
             }
 
             await VerifyAsync("missing-usage", 0, 1, ["MachineLearningExpert"], async () =>
-                Check.That(await reusedAgents.PerformBaseballPlayerAnalysisML(Config("MachineLearningExpert")) is Ok<string>
+                Check.That(await reusedAgents.PerformBaseballPlayerAnalysisML(Config("MachineLearningExpert")) is Ok<AgenticAnalysisResponse>
                     && reusedClientCalls == 2,
                     "The shared OpenAIClient survives invocation cleanup; its next successful response without usage invents no counts"));
 

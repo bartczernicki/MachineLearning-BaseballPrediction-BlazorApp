@@ -1,4 +1,5 @@
 using BaseballAIWorkbench.WebChecks;
 
 await MarkdownRenderingChecks.RunAsync();
-Console.WriteLine("PASS: all offline single-agent and multiple-agent Markdown rendering checks.");
+await TypedAnalysisChecks.RunAsync();
+Console.WriteLine("PASS: all offline typed analysis and sanitized narrative rendering checks.");

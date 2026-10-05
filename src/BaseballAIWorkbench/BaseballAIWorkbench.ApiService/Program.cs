@@ -1,5 +1,6 @@
 using BaseballAIWorkbench.ApiService;
 using BaseballAIWorkbench.ApiService.Services;
+using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
 using Microsoft.Extensions.ML;
 using OpenAI;
@@ -64,9 +65,11 @@ var aiAgents = new AIAgents(machineLearningService, openAIClient, modelOptions, 
 //    .WithRequestTimeout(TimeSpan.FromSeconds(120));
 app.MapPost("/BaseballPlayerAnalysisML", aiAgents.PerformBaseballPlayerAnalysisML)
     .WithName("BaseballPlayerAnalysisML")
+    .Produces<AgenticAnalysisResponse>()
     .WithRequestTimeout(TimeSpan.FromSeconds(120));
 app.MapPost("/BaseballPlayerAnalysisMultipleAgents", aiAgents.PerformBaseballPlayerAnalysisMupltipleAgents)
     .WithName("BaseballPlayerAnalysisMultipleAgents")
+    .Produces<AgenticAnalysisResponse>()
     .WithRequestTimeout(TimeSpan.FromSeconds(180));
 
 // Map the default API routes

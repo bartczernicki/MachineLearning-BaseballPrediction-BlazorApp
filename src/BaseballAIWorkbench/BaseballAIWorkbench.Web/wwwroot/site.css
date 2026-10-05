@@ -749,12 +749,44 @@ ul {
     min-height: 275px;
     max-width: 100%;
     box-sizing: border-box;
-    overflow-x: auto;
+    min-width: 0;
     white-space: normal;
     word-wrap: break-word;
     overflow-wrap: break-word;
     font-size: 0.92rem;
     line-height: 1.5;
+}
+
+.agentic-analysis-column {
+    min-width: 0;
+}
+
+.agentic-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0.9rem 0 1.1rem;
+    border-radius: 6px;
+}
+
+.agentic-formula-settings {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    border: 1px solid #cfd7e3;
+    border-radius: 6px;
+    background: #f7f9fc;
+}
+
+.agentic-formula-settings summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.agentic-formula-settings p {
+    margin-top: 0.75rem;
+}
+
+.agentic-analysis-status {
+    margin: 0;
 }
 
 .agentic-analysis-output a {
@@ -792,7 +824,7 @@ ul {
 .agentic-analysis-output table {
     width: 100%;
     min-width: 520px;
-    margin: 0.9rem 0 1.1rem;
+    margin: 0;
     border: 1px solid #cfd7e3;
     border-collapse: separate;
     border-spacing: 0;
@@ -811,7 +843,7 @@ ul {
     font-variant-numeric: tabular-nums;
 }
 
-.agentic-analysis-output th {
+.agentic-analysis-output thead th {
     background: linear-gradient(180deg, #2f3d4f 0%, #263445 100%);
     color: #f8fafc;
     font-weight: 700;

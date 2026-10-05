@@ -22,7 +22,8 @@ internal static class AgentChecks
     private const string Statistician = "BaseballStatistician";
     private const string Ml = "MachineLearningExpert";
     private const string ReadTool = "read_commentary_source";
-    private const string FinalQuantitativeAnswer = "### Summary\nFinal fixture quantitative answer.";
+    // Intentionally false prose must never override the separately returned server result.
+    private const string FinalQuantitativeAnswer = "### Summary\nFinal fixture quantitative answer claims 99.99% with a 0.00–100.00% range.";
     private const string SourcesHeading = "### Encyclopedia Sources";
     private static readonly EncyclopediaCitation[] ExpectedCitations =
     [
@@ -89,10 +90,11 @@ internal static class AgentChecks
         {
             var before = mcp.Disposals;
             var result = await Agents(transport).PerformBaseballPlayerAnalysisML(Config(Encyclopedia)).WaitAsync(TimeSpan.FromSeconds(20));
-            Check.That(result is Ok<string> { Value: var markdown } &&
+            Check.That(result is Ok<AgenticAnalysisResponse> { Value: { AnalysisMarkdown: var markdown } } &&
                 markdown == EncyclopediaCitations.AppendTo(Markdown(Encyclopedia), ExpectedCitations) && encyclopediaCalls == 3,
                 "Bounded Encyclopedia analysis unwraps the final structured answer and appends its retrieved citations");
-            AssertCitations(((Ok<string>)result).Value!, Markdown(Encyclopedia));
+            AssertCitations(Response(result).AnalysisMarkdown, Markdown(Encyclopedia));
+            AssertSingle(Response(result), Encyclopedia, 0.2, 0.1);
             Check.That(mcp.Disposals == before + 1, "Encyclopedia disposes MCP scope after synthesis");
         }
 
@@ -101,18 +103,21 @@ internal static class AgentChecks
             ScriptedResponses.Message(Structured(uncitedAnalysis, 0.2, 0.1)))))
         {
             var result = await Agents(transport).PerformBaseballPlayerAnalysisML(Config(Encyclopedia)).WaitAsync(TimeSpan.FromSeconds(20));
-            Check.That(result is Ok<string> { Value: var markdown } &&
+            Check.That(result is Ok<AgenticAnalysisResponse> { Value: { AnalysisMarkdown: var markdown } } &&
                 markdown == EncyclopediaCitations.AppendTo(uncitedAnalysis, []),
-                "Standalone Encyclopedia keeps its Markdown response contract when no source links were cited");
-            AssertEmptyCitations(((Ok<string>)result).Value!);
+                "Standalone Encyclopedia retains narrative and explicit empty citations alongside typed estimates");
+            AssertEmptyCitations(Response(result).AnalysisMarkdown);
+            AssertSingle(Response(result), Encyclopedia, 0.2, 0.1);
         }
 
         foreach (var selected in new[] { Statistician, Ml })
         {
             using var transport = new ScriptedResponses((agent, _, _) => Task.FromResult(ScriptedResponses.Message(AgentOutput(agent))));
             var result = await Agents(transport).PerformBaseballPlayerAnalysisML(Config(selected)).WaitAsync(TimeSpan.FromSeconds(20));
-            Check.That(result is Ok<string> { Value: var markdown } && markdown == Markdown(selected),
-                $"Single {selected} endpoint preserves its JSON string/Markdown contract");
+            Check.That(result is Ok<AgenticAnalysisResponse> { Value: { AnalysisMarkdown: var markdown } } && markdown == Markdown(selected),
+                $"Single {selected} endpoint returns narrative alongside its typed estimate");
+            AssertSingle(Response(result), selected, selected == Ml ? (double)mlBallot : 0.9,
+                selected == Ml ? (double)mlInduction : 0.8);
         }
 
         // Real orchestration, deliberately completing research in reverse selection order.
@@ -139,12 +144,12 @@ internal static class AgentChecks
             var expected = selected.Contains(Encyclopedia)
                 ? EncyclopediaCitations.AppendTo(FinalQuantitativeAnswer, ExpectedCitations)
                 : FinalQuantitativeAnswer;
-            Check.That(result is Ok<string> { Value: var markdown } && markdown == expected && qRequests.Count == 1,
+            Check.That(result is Ok<AgenticAnalysisResponse> { Value: { AnalysisMarkdown: var markdown } } && markdown == expected && qRequests.Count == 1,
                 "Q explains the server calculation in exactly one request and returns Markdown");
             if (selected.Contains(Encyclopedia))
-                AssertCitations(((Ok<string>)result).Value!, FinalQuantitativeAnswer);
+                AssertCitations(Response(result).AnalysisMarkdown, FinalQuantitativeAnswer);
             else
-                Check.That(!((Ok<string>)result).Value!.Contains(SourcesHeading),
+                Check.That(!Response(result).AnalysisMarkdown.Contains(SourcesHeading),
                     "Combined analyses without Encyclopedia do not receive an Encyclopedia sources footer");
             var prompt = string.Join('\n', Strings(qRequests.First()));
             var positions = selected.Select(a => prompt.IndexOf($"RESULT_{a}_END", StringComparison.Ordinal)).ToArray();
@@ -153,12 +158,20 @@ internal static class AgentChecks
             AssertCalculation(qRequests.Single(),
                 selected.Select(agent => agent == Ml ? (double)mlBallot : agent == Encyclopedia ? 0.2 : 0.9).ToArray(),
                 selected.Select(agent => agent == Ml ? (double)mlInduction : agent == Encyclopedia ? 0.1 : 0.8).ToArray());
+            var response = Response(result);
+            Check.That(response.AgentEstimates.Select(estimate => estimate.AgentType).SequenceEqual(selected)
+                && response.AgentEstimates.All(estimate => estimate.IncludedInAggregate) && response.Notices.Length == 0,
+                "The API returns every agent's estimates in selection order with its actual aggregate participation");
+            AssertAggregate(response,
+                selected.Select(agent => agent == Ml ? (double)mlBallot : agent == Encyclopedia ? 0.2 : 0.9).ToArray(),
+                selected.Select(agent => agent == Ml ? (double)mlInduction : agent == Encyclopedia ? 0.1 : 0.8).ToArray());
             if (selected.Contains(Ml))
             {
                 Check.That(prompt.Contains("| Ballot Appearance | 1%") && mlBallot != 0.01f,
                     "Conflicting ML prose reaches Q while the exact model average supplies the calculation");
-                Check.That(prompt.Contains("| Machine Learning Expert | 92.59% | 66.06% | Yes |"),
-                    "The ML input row is formatted for display while its calculation inputs retain full precision");
+                var mlEstimate = response.AgentEstimates.Single(estimate => estimate.AgentType == Ml);
+                Check.That(mlEstimate.BallotAppearanceProbability == mlBallot && mlEstimate.InductionProbability == mlInduction,
+                    "ML prose disagreement cannot change the exact numeric averages returned to Razor");
             }
             Check.That(mcp.Disposals == before + (selected.Contains(Encyclopedia) ? 1 : 0),
                 "Parallel success disposes an MCP scope only when Encyclopedia participates");
@@ -178,14 +191,22 @@ internal static class AgentChecks
                 Check.That(result is ProblemHttpResult && qRequests.IsEmpty, "All typed abstentions return an error without invoking Q");
             else
             {
-                Check.That(result is Ok<string> { Value: var markdown } &&
+                Check.That(result is Ok<AgenticAnalysisResponse> { Value: { AnalysisMarkdown: var markdown } } &&
                     markdown == EncyclopediaCitations.AppendTo(FinalQuantitativeAnswer, ExpectedCitations) && qRequests.Count == 1,
                     "Q combines the remaining usable agent and retains citations when either Encyclopedia outcome abstains");
-                AssertCitations(((Ok<string>)result).Value!, FinalQuantitativeAnswer);
+                AssertCitations(Response(result).AnalysisMarkdown, FinalQuantitativeAnswer);
                 var prompt = string.Join('\n', Strings(qRequests.First()));
                 Check.That(prompt.Contains("Omitted agents:") && prompt.Contains("Insufficient evidence: no attributable commentary supports an estimate."), "Typed abstention preserves its explicit omission reason");
                 Check.That(prompt.Contains("RESULT_BaseballEncyclopedia_END"), "An abstaining agent's full evidence explanation still reaches Q");
                 AssertCalculation(qRequests.Single(), [0.9], [0.8]);
+                var response = Response(result);
+                AssertAggregate(response, [0.9], [0.8]);
+                var excluded = response.AgentEstimates.Single(estimate => estimate.AgentType == Encyclopedia);
+                Check.That(response.AgentEstimates.Length == 2 && !excluded.IncludedInAggregate
+                    && excluded.BallotAppearanceProbability == (abstention == "induction" ? 0.2 : null)
+                    && excluded.InductionProbability == (abstention == "ballot" ? 0.1 : null)
+                    && !string.IsNullOrWhiteSpace(excluded.AbstentionReason),
+                    "Partial abstention retains the available numeric estimate and explanation while excluding the pair");
             }
         }
 
@@ -206,28 +227,26 @@ internal static class AgentChecks
                 ? QuantitativeResponse(request, qRequests)
                 : ScriptedResponses.Message(agent == Encyclopedia ? Structured(test.Markdown, test.Ballot, test.Induction) : AgentOutput(agent))));
             var result = await Agents(transport).PerformBaseballPlayerAnalysisMupltipleAgents(Config(Statistician, Encyclopedia)).WaitAsync(TimeSpan.FromSeconds(20));
-            Check.That(result is Ok<string> && qRequests.Count == 1, $"Typed case '{test.Name}' reaches one explanatory Q request");
+            Check.That(result is Ok<AgenticAnalysisResponse> && qRequests.Count == 1, $"Typed case '{test.Name}' reaches one explanatory Q request");
             AssertCalculation(qRequests.Single(), [0.9, test.Ballot], [0.8, test.Induction]);
+            AssertAggregate(Response(result), [0.9, test.Ballot], [0.8, test.Induction]);
             var prompt = string.Join('\n', Strings(qRequests.First()));
-            var displayInputs = prompt.Split("Selected agent probability inputs (display percentages):")[1]
-                .Split("ballotAppearanceProbabilities:")[0];
             if (test.Name == "no table")
             {
-                Check.That(displayInputs.Contains("| Baseball Encyclopedia | 99.00% | 92.00% | Yes |"),
-                    "Whole-percentage inputs retain two decimal places in the evidence table");
-                Check.That(((Ok<string>)result).Value == EncyclopediaCitations.AppendTo(FinalQuantitativeAnswer, []),
+                Check.That(Response(result).AnalysisMarkdown == EncyclopediaCitations.AppendTo(FinalQuantitativeAnswer, []),
                     "Combined analysis appends an empty sources footer when Encyclopedia cites no links");
-                AssertEmptyCitations(((Ok<string>)result).Value!);
+                AssertEmptyCitations(Response(result).AnalysisMarkdown);
             }
-            if (test.Name == "full numeric precision")
-                Check.That(displayInputs.Contains("| Baseball Encyclopedia | 92.46% | 12.35% | Yes |"),
-                    "Display rounding is confined to the supplied evidence table");
-            if (test.Name == "display inequalities")
-                Check.That(displayInputs.Contains("| Baseball Encyclopedia | > 99.90% | < 0.10% | Yes |"),
-                    "The evidence table preserves inequality formatting without changing typed calculation inputs");
+            var returnedEstimate = Response(result).AgentEstimates.Single(estimate => estimate.AgentType == Encyclopedia);
+            Check.That(returnedEstimate.BallotAppearanceProbability == test.Ballot
+                && returnedEstimate.InductionProbability == test.Induction,
+                $"Typed case '{test.Name}' retains full precision independently of narrative tables and display inequalities");
             var omissionLine = prompt.Split('\n').Single(line => line.StartsWith("Omitted agents:", StringComparison.Ordinal));
             Check.That(omissionLine.Contains("None"), $"Typed case '{test.Name}' never omits an agent due to Markdown formatting");
         }
+
+        await VerifyNumericalSeparationAsync(Agents, Config(Statistician, Encyclopedia));
+        await VerifyNarrativeFallbackAsync(Agents, batter, mlBallot, mlInduction);
 
         foreach (var invalid in InvalidResponses())
         {
@@ -269,7 +288,139 @@ internal static class AgentChecks
             Check.That(mcp.Disposals == before + 1, "MCP cleanup occurs on model failure");
         }
         await CancellationChecks.RunAsync(Agents, batter, mcp);
-        Console.WriteLine("PASS agents: strict typed responses, exact server aggregation, one tool-free Q request, bounded research/history, retained Encyclopedia citations, parallel order/cleanup, abstention and failure semantics.");
+        Console.WriteLine("PASS agents: typed API responses, exact estimates, separate sensitivity/disagreement, narrative fallback, retained Encyclopedia citations, parallel order/cleanup, abstention and failure semantics.");
+    }
+
+    private static AgenticAnalysisResponse Response(IResult result) => result is Ok<AgenticAnalysisResponse> { Value: { } response }
+        ? response : throw new InvalidOperationException("Expected a successful typed analysis response.");
+
+    private static void AssertSingle(AgenticAnalysisResponse response, string agentType, double ballot, double induction,
+        bool hasNotice = false)
+    {
+        Check.That(response.Aggregate is null && response.AgentEstimates.Length == 1,
+            "A single-agent response includes its estimate without manufacturing a combined result");
+        var estimate = response.AgentEstimates.Single();
+        Check.That(estimate.AgentType == agentType && !string.IsNullOrWhiteSpace(estimate.AgentName)
+            && estimate.BallotAppearanceProbability == ballot && estimate.InductionProbability == induction
+            && !estimate.IncludedInAggregate && estimate.AbstentionReason is null,
+            "Single-agent numeric values are exact and cannot claim participation in an absent aggregate");
+        Check.That(hasNotice ? response.Notices.Length == 1 : response.Notices.Length == 0,
+            "Narrative availability is represented explicitly in the response notices");
+    }
+
+    private static void AssertAggregate(AgenticAnalysisResponse response, double[] ballot, double[] induction)
+    {
+        var aggregate = response.Aggregate ?? throw new InvalidOperationException("The combined response is missing its aggregate.");
+        Check.That(aggregate.ContributingAgentCount == ballot.Length && aggregate.KValues.SequenceEqual([0.5, 1.0, 2.0]),
+            "The API exposes the actual cohort size and fixed sensitivity sweep");
+        var included = response.AgentEstimates.Where(estimate => estimate.IncludedInAggregate).ToArray();
+        Check.That(included.Select(estimate => estimate.BallotAppearanceProbability).SequenceEqual(ballot.Select(value => (double?)value))
+            && included.Select(estimate => estimate.InductionProbability).SequenceEqual(induction.Select(value => (double?)value)),
+            "Returned full-precision agent inputs match the exact combined cohort in selection order");
+        AssertOutcome(JsonSerializer.SerializeToElement(aggregate.BallotAppearance), ballot);
+        AssertOutcome(JsonSerializer.SerializeToElement(aggregate.Induction), induction);
+    }
+
+    private static async Task VerifyNumericalSeparationAsync(Func<ScriptedResponses, AIAgents> createAgents,
+        AgenticAnalysisConfig config)
+    {
+        foreach (var probabilities in new[] { new[] { 0.1, 0.9 }, [0.8, 0.8], [0.0, 1.0], [0.0, 0.0], [1.0, 1.0] })
+        {
+            using var transport = new ScriptedResponses((agent, _, _) => Task.FromResult(ScriptedResponses.Message(agent == "Q"
+                ? FinalQuantitativeAnswer
+                : Structured(Markdown(agent), probabilities[agent == Statistician ? 0 : 1], probabilities[agent == Statistician ? 0 : 1]))));
+            var response = Response(await createAgents(transport).PerformBaseballPlayerAnalysisMupltipleAgents(config));
+            AssertAggregate(response, probabilities, probabilities);
+            var outcome = response.Aggregate!.BallotAppearance;
+            if (probabilities.SequenceEqual([0.1, 0.9]))
+                Check.That(Math.Abs(outcome.SensitivityUpperBound - outcome.SensitivityLowerBound) < 1e-14
+                    && Math.Abs(outcome.AgentSpreadPercentagePoints!.Value - 80.0) < 1e-12,
+                    "10%/90% inputs have zero formula sensitivity but 80 percentage points of agent disagreement");
+            if (probabilities.SequenceEqual([0.8, 0.8]))
+                Check.That(outcome.AgentSpreadPercentagePoints == 0.0
+                    && outcome.SensitivityUpperBound > outcome.SensitivityLowerBound,
+                    "80%/80% inputs have zero agent disagreement despite a nonzero formula sensitivity range");
+
+            // Exercise the public HTTP JSON shape, independently of prompt serialization.
+            var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+            var roundTrip = JsonSerializer.Deserialize<AgenticAnalysisResponse>(JsonSerializer.Serialize(response, options), options)!;
+            AssertAggregate(roundTrip, probabilities, probabilities);
+        }
+    }
+
+    private static async Task VerifyNarrativeFallbackAsync(Func<ScriptedResponses, AIAgents> createAgents,
+        MLBBaseballBatter batter, double mlBallot, double mlInduction)
+    {
+        const string qNotice = "Agent Q narrative is unavailable; calculated estimates are retained";
+        const string mlNotice = "Machine Learning Expert narrative is unavailable; calculated estimates are retained";
+        AgenticAnalysisConfig Config(params string[] agents) => new() { BaseballBatter = batter, AgentsToUse = agents.ToList() };
+        HttpResponseMessage Failure(string mode) => mode switch
+        {
+            "error" => ScriptedResponses.Error(),
+            "missing" => ScriptedResponses.NoOutput(),
+            "empty" => ScriptedResponses.Message(string.Empty),
+            _ => ScriptedResponses.Message(" \n\t ")
+        };
+
+        foreach (var mode in new[] { "error", "missing", "empty", "whitespace" })
+        {
+            var qCalls = 0;
+            using (var transport = new ScriptedResponses((agent, _, _) =>
+            {
+                if (agent != "Q") return Task.FromResult(ScriptedResponses.Message(AgentOutput(agent)));
+                Interlocked.Increment(ref qCalls);
+                return Task.FromResult(Failure(mode));
+            }))
+            {
+                var response = Response(await createAgents(transport).PerformBaseballPlayerAnalysisMupltipleAgents(Config(Statistician, Encyclopedia)));
+                AssertAggregate(response, [0.9, 0.2], [0.8, 0.1]);
+                Check.That(qCalls == 1 && response.Notices.SequenceEqual([qNotice]),
+                    $"Q {mode} retains completed numeric results with one clear notice and no retry");
+                AssertCitations(response.AnalysisMarkdown, string.Empty);
+            }
+
+            using (var transport = new ScriptedResponses((_, _, _) => Task.FromResult(Failure(mode))))
+            {
+                var response = Response(await createAgents(transport).PerformBaseballPlayerAnalysisML(Config(Ml)));
+                AssertSingle(response, Ml, mlBallot, mlInduction, hasNotice: true);
+                Check.That(response.Notices.SequenceEqual([mlNotice]) && !response.AnalysisMarkdown.Contains("simulated research failure"),
+                    $"ML {mode} preserves calculated averages without exposing upstream error details");
+            }
+        }
+
+        foreach (var qFails in new[] { false, true })
+        {
+            var qRequests = new ConcurrentQueue<JsonElement>();
+            using var transport = new ScriptedResponses((agent, request, _) =>
+            {
+                if (agent == Ml) return Task.FromResult(ScriptedResponses.Error());
+                if (agent != "Q") return Task.FromResult(ScriptedResponses.Message(AgentOutput(agent)));
+                qRequests.Enqueue(request.Clone());
+                return Task.FromResult(qFails ? ScriptedResponses.Error() : ScriptedResponses.Message(FinalQuantitativeAnswer));
+            });
+            var response = Response(await createAgents(transport).PerformBaseballPlayerAnalysisMupltipleAgents(Config(Ml, Encyclopedia)));
+            AssertAggregate(response, [mlBallot, 0.2], [mlInduction, 0.1]);
+            Check.That(response.Notices.SequenceEqual(qFails ? new[] { mlNotice, qNotice } : [mlNotice])
+                && qRequests.Count == 1 && string.Join('\n', Strings(qRequests.Single())).Contains(mlNotice),
+                "ML prose failure retains its aggregate participation and is disclosed to Q and the response, including when Q also fails");
+            AssertCitations(response.AnalysisMarkdown, qFails ? string.Empty : FinalQuantitativeAnswer);
+        }
+
+        foreach (var phase in new[] { Ml, "Q" })
+        foreach (var timeout in new[] { HttpStatusCode.RequestTimeout, HttpStatusCode.GatewayTimeout })
+        {
+            using var transport = new ScriptedResponses((agent, _, _) =>
+            {
+                var message = agent == phase ? ScriptedResponses.Error() : ScriptedResponses.Message(AgentOutput(agent));
+                if (agent == phase) message.StatusCode = timeout;
+                return Task.FromResult(message);
+            });
+            var agents = createAgents(transport);
+            var result = phase == Ml
+                ? await agents.PerformBaseballPlayerAnalysisML(Config(Ml))
+                : await agents.PerformBaseballPlayerAnalysisMupltipleAgents(Config(Statistician, Encyclopedia));
+            Check.That(result is ProblemHttpResult, $"{phase} HTTP {(int)timeout} remains an error instead of salvaged success");
+        }
     }
 
     private static void AssertCitations(string markdown, string originalAnalysis)
@@ -357,6 +508,8 @@ internal static class AgentChecks
         using var result = JsonDocument.Parse(resultText);
         Check.That(result.RootElement.GetProperty("KValues").EnumerateArray().Select(value => value.GetDouble()).SequenceEqual([0.5, 1.0, 2.0]),
             "The server uses the fixed sensitivity sweep");
+        Check.That(result.RootElement.GetProperty("ContributingAgentCount").GetInt32() == ballot.Length,
+            "Q receives the actual contributing-agent count");
         AssertOutcome(result.RootElement.GetProperty("BallotAppearance"), ballot);
         AssertOutcome(result.RootElement.GetProperty("Induction"), induction);
     }
@@ -370,13 +523,20 @@ internal static class AgentChecks
         var squaredNegative = inputs.Sum(value => (1 - value) * (1 - value));
         double[] expected = [squareRootPositive / (squareRootPositive + squareRootNegative), inputs.Average(), squaredPositive / (squaredPositive + squaredNegative)];
         Check.That(Math.Abs(actual.GetProperty("PointEstimate").GetDouble() - inputs.Average()) < 1e-14, "The server-calculated point estimate uses the supplied typed inputs");
-        Check.That(Math.Abs(actual.GetProperty("LowerBound").GetDouble() - expected.Min()) < 1e-14 &&
-            Math.Abs(actual.GetProperty("UpperBound").GetDouble() - expected.Max()) < 1e-14, "The server supplies the correct sensitivity bounds");
+        Check.That(Math.Abs(actual.GetProperty("SensitivityLowerBound").GetDouble() - expected.Min()) < 1e-14 &&
+            Math.Abs(actual.GetProperty("SensitivityUpperBound").GetDouble() - expected.Max()) < 1e-14, "The server supplies the correct sensitivity bounds");
         var sensitivity = actual.GetProperty("SensitivityValues").EnumerateArray().ToArray();
         Check.That(sensitivity.Length == 3 && sensitivity.Select(value => value.GetProperty("K").GetDouble()).SequenceEqual([0.5, 1.0, 2.0]),
             "The result retains every sensitivity value in order");
         Check.That(sensitivity.Select((value, index) => Math.Abs(value.GetProperty("Probability").GetDouble() - expected[index]) < 1e-14).All(value => value),
             "The server supplies each independently verified sensitivity value");
+        Check.That(actual.GetProperty("AgentEstimateMinimum").GetDouble() == inputs.Min()
+            && actual.GetProperty("AgentEstimateMaximum").GetDouble() == inputs.Max(),
+            "Agent disagreement extrema come from the actual contributing estimates");
+        var spread = actual.GetProperty("AgentSpreadPercentagePoints");
+        Check.That(inputs.Length < 2 ? spread.ValueKind == JsonValueKind.Null
+            : Math.Abs(spread.GetDouble() - (inputs.Max() - inputs.Min()) * 100) < 1e-12,
+            "Spread is measured in percentage points and is unavailable with fewer than two contributors");
     }
 
     internal static void AssertStructuredResponseSchema(JsonElement request)
@@ -472,6 +632,8 @@ internal sealed class ScriptedResponses(Func<string, JsonElement, CancellationTo
         id = "msg_fixture", type = "message", status = "completed", role = "assistant",
         content = new[] { new { type = "output_text", text, annotations = Array.Empty<object>() } }
     });
+
+    public static HttpResponseMessage NoOutput() => Response();
 
     public static HttpResponseMessage Function(string name, object arguments, string id) => Response(new
     {

@@ -1,6 +1,6 @@
 namespace BaseballAIWorkbench.Common.Agents;
 
-// Internal analysis data; HTTP endpoints continue to return the Markdown string.
+// Strict model-response contract; the public HTTP response is AgenticAnalysisResponse.
 public sealed record AgentAnalysisResult
 {
     public required string AnalysisMarkdown { get; init; }
