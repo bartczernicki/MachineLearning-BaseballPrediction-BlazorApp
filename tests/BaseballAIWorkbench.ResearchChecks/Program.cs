@@ -19,10 +19,11 @@ ModelPackagingChecks.Run();
 if (args.Contains("--models-only"))
     return 0;
 
+await AzureOpenAIClientChecks.RunAsync();
 await TelemetryChecks.RunAsync();
 await HttpResilienceChecks.RunAsync();
 await RetrievalChecks.RunAsync();
 await CitationChecks.RunAsync();
 await AgentChecks.RunAsync();
-Console.WriteLine("PASS: all offline telemetry, HTTP resilience, research and agent orchestration checks.");
+Console.WriteLine("PASS: all offline Azure OpenAI client, telemetry, HTTP resilience, research and agent orchestration checks.");
 return 0;

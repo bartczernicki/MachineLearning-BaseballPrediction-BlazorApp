@@ -4,7 +4,6 @@ using BaseballAIWorkbench.Common.Agents;
 using BaseballAIWorkbench.Common.MachineLearning;
 using Microsoft.Extensions.ML;
 using OpenAI;
-using System.ClientModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,11 +28,7 @@ var aoaiEndPoint = GetRequiredConnectionString(builder.Configuration, "AOAIEndpo
 var aoaiApiKey = GetRequiredConnectionString(builder.Configuration, "AOAIApiKey", "AOAIAPIKey");
 var aoaiDeploymentName = GetRequiredConnectionString(builder.Configuration, "AOAIModelDeploymentName");
 
-// Use Azure's OpenAI-compatible v1 endpoint for the current Responses SDK.
-builder.Services.AddSingleton(new OpenAIClient(new ApiKeyCredential(aoaiApiKey), new OpenAIClientOptions
-{
-    Endpoint = new Uri(new Uri(aoaiEndPoint), "/openai/v1/")
-}));
+builder.Services.AddSingleton(AzureOpenAIClientFactory.Create(aoaiEndPoint, aoaiApiKey));
 builder.Services.AddSingleton(new AzureOpenAIModelOptions(aoaiDeploymentName));
 builder.Services.AddSingleton<WebIqMcpToolProvider>();
 

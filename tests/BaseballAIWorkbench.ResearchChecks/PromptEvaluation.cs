@@ -9,7 +9,6 @@ using BaseballAIWorkbench.Common.MachineLearning;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using OpenAI;
-using System.ClientModel;
 using System.ClientModel.Primitives;
 
 namespace BaseballAIWorkbench.ResearchChecks;
@@ -60,9 +59,8 @@ internal static class PromptEvaluation
         var endpoint = RequiredConfiguration(configuration, "ConnectionStrings:AOAIEndpoint");
         var apiKey = RequiredConfiguration(configuration, "ConnectionStrings:AOAIAPIKey");
         var deployment = RequiredConfiguration(configuration, "ConnectionStrings:AOAIModelDeploymentName");
-        var client = new OpenAIClient(new ApiKeyCredential(apiKey), new OpenAIClientOptions
+        var client = AzureOpenAIClientFactory.Create(endpoint, apiKey, new OpenAIClientOptions
         {
-            Endpoint = new Uri(new Uri(endpoint), "/openai/v1/"),
             // Keep the opt-in suite at at most 14 requests rather than retrying a billed completion.
             RetryPolicy = new ClientRetryPolicy(0)
         });
