@@ -112,8 +112,29 @@ internal static class AgentChecks
 
         foreach (var selected in new[] { Statistician, Ml })
         {
-            using var transport = new ScriptedResponses((agent, _, _) => Task.FromResult(ScriptedResponses.Message(AgentOutput(agent))));
+            var calls = 0;
+            using var transport = new ScriptedResponses((agent, request, _) =>
+            {
+                calls++;
+                if (selected == Statistician)
+                {
+                    Check.That(agent == Statistician, "Statistician analysis stays on its selected agent");
+                    Check.That(request.GetProperty("reasoning").GetProperty("effort").GetString() == "medium",
+                        "Statistician explicitly uses medium reasoning");
+                    Check.That(!ToolNames(request).Any(), "Statistician receives no tools");
+                    var prompt = string.Join('\n', Strings(request));
+                    Check.That(prompt.Contains(batter.ToStringWithoutFullPlayerName(), StringComparison.Ordinal),
+                        "Statistician receives the supplied batting statistics without alterations");
+                    Check.That(!prompt.Contains(batter.FullPlayerName, StringComparison.Ordinal)
+                        && !prompt.Contains(batter.ID, StringComparison.Ordinal)
+                        && !prompt.Contains(nameof(MLBBaseballBatter.InductedToHallOfFame), StringComparison.Ordinal)
+                        && !prompt.Contains(nameof(MLBBaseballBatter.OnHallOfFameBallot), StringComparison.Ordinal),
+                        "Statistician receives anonymous statistics without player identity or known election labels");
+                }
+                return Task.FromResult(ScriptedResponses.Message(AgentOutput(agent)));
+            });
             var result = await Agents(transport).PerformBaseballPlayerAnalysisML(Config(selected)).WaitAsync(TimeSpan.FromSeconds(20));
+            Check.That(calls == 1, $"Single {selected} analysis makes one model request");
             Check.That(result is Ok<AgenticAnalysisResponse> { Value: { AnalysisMarkdown: var markdown } } && markdown == Markdown(selected),
                 $"Single {selected} endpoint returns narrative alongside its typed estimate");
             AssertSingle(Response(result), selected, selected == Ml ? (double)mlBallot : 0.9,

@@ -16,7 +16,7 @@ The API and web frontend each use **1 vCPU and 2 GiB RAM per running replica** o
 
 ## Azure Front Door deployments
 
-The AppHost adds Azure Front Door Standard in publish mode using `Aspire.Hosting.Azure.FrontDoor` **13.6.0-preview.1.26479.8**. One origin serves `webfrontend` through its public Azure Container Apps endpoint; the Web app continues calling the API directly. Local `aspire run` does not provision Front Door. After the next `aspire deploy`, use the generated HTTPS `*.azurefd.net` URL labeled **Web frontend (Front Door)** in the deployment summary. A custom domain, WAF policy, or Private Link requires separate configuration.
+The AppHost adds Azure Front Door Standard in publish mode using `Aspire.Hosting.Azure.FrontDoor` **13.6.5-preview.1.26559.7**. One origin serves `webfrontend` through its public Azure Container Apps endpoint; the Web app continues calling the API directly. Local `aspire run` does not provision Front Door. After the next `aspire deploy`, use the generated HTTPS `*.azurefd.net` URL labeled **Web frontend (Front Door)** in the deployment summary. A custom domain, WAF policy, or Private Link requires separate configuration.
 
 The endpoint resource name is fixed to **`BaseballAIWorkBench`**, giving a URL shaped like `https://BaseballAIWorkBench-<hash>.<zone>.azurefd.net`. Azure assigns the hash and zone suffix; the deployment summary reads the actual returned hostname rather than constructing it. See [Front Door endpoint naming](https://learn.microsoft.com/en-us/azure/frontdoor/how-to-configure-endpoints).
 

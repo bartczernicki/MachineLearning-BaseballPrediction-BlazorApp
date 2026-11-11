@@ -251,7 +251,8 @@ namespace BaseballAIWorkbench.ApiService
             var decisionPrompt = Agents.GetStatisticsAgentDecisionPrompt(battingStatistics);
             var agent = CreateAgent(Agents.GetAgent("BaseballStatistician"));
 
-            return await RunStructuredAnalysisAgentAsync(agent, decisionPrompt, cancellationToken);
+            // Make Luna's effective default explicit rather than depending on provider defaults.
+            return await RunStructuredAnalysisAgentAsync(agent, decisionPrompt, cancellationToken, ReasoningEffort.Medium);
         }
 
         private async Task<(AgentAnalysisResult Analysis, IReadOnlyList<EncyclopediaCitation> Citations)> RunBaseballEncyclopediaAsync(
@@ -361,15 +362,20 @@ namespace BaseballAIWorkbench.ApiService
         }
 
         private static async Task<AgentAnalysisResult> RunStructuredAnalysisAgentAsync(
-            ChatClientAgent agent, string prompt, CancellationToken cancellationToken)
+            ChatClientAgent agent, string prompt, CancellationToken cancellationToken, ReasoningEffort? reasoningEffort = null)
         {
+            var chatOptions = AgentAnalysisResponse.CreateChatOptions();
+            if (reasoningEffort is { } effort)
+            {
+                chatOptions.Reasoning = new ReasoningOptions { Effort = effort };
+            }
             using var ownedChatClient = agent.GetService<IChatClient>();
             using var tracedAgent = new OpenTelemetryAgent(agent, AiTelemetry.AgentSourceName)
             {
                 EnableSensitiveData = false
             };
             var response = await tracedAgent.RunAsync(prompt,
-                options: new ChatClientAgentRunOptions(AgentAnalysisResponse.CreateChatOptions()),
+                options: new ChatClientAgentRunOptions(chatOptions),
                 cancellationToken: cancellationToken);
             return AgentAnalysisResponse.ParseFinalMessage(response.Messages);
         }

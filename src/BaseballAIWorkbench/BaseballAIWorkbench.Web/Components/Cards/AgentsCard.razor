@@ -73,7 +73,6 @@
             selectedAgents.Remove(agent.AgentType);
         }
 
-        this.StateHasChanged();
     }
 
     private string GetSelectedAgentNames()
@@ -140,7 +139,6 @@
         {
             analysis = completedAnalysis;
             statusMessage = string.Empty;
-            this.StateHasChanged();
         }
     }
 }

@@ -1,6 +1,6 @@
 # Research regression checks
 
-Run from the repository root with .NET 10:
+Run from the repository root with the .NET 11 SDK (11.0.100 or a compatible servicing update):
 
 ```sh
 dotnet run --project tests/BaseballAIWorkbench.ResearchChecks/BaseballAIWorkbench.ResearchChecks.csproj
@@ -17,7 +17,7 @@ The checks cover:
 - Three concurrent searches, exact Web IQ arguments, local result/content limits, structured results and text-JSON compatibility, canonical URL deduplication and query provenance.
 - Invalid/private URLs and arbitrary source IDs, two page-read attempts including failures, concurrent read caching, explicit partial failures, all-failed and malformed responses, successful empty results, and cancellation.
 - Untrusted page instructions remaining evidence data, not an additional instruction channel. This tests data handling, not a guarantee that a model can never follow prompt injection.
-- The real `AIAgents` pipeline: strict typed research responses, Encyclopedia medium reasoning, only `read_commentary_source`, two tool rounds followed by tool-free synthesis, and complete Responses continuation history, including intermediate assistant commentary before the final JSON.
+- The real `AIAgents` pipeline: strict typed research responses; Statistician medium reasoning with one tool-free request containing anonymous batting statistics and no player identity or known election labels; Encyclopedia medium reasoning, only `read_commentary_source`, two tool rounds followed by tool-free synthesis, and complete Responses continuation history, including intermediate assistant commentary before the final JSON.
 - Encyclopedia source footers preserve original inline links and survive Agent Q omitting citations, including when Encyclopedia abstains; uncited retrieved sources are excluded, empty citations have an explicit message, and analyses without Encyclopedia have no source footer.
 - Citation extraction handles inline/reference/autolinks and links inside tables or definitions, excludes code and image alternative text, matches the retrieval registry, and preserves first-citation order. Footer escaping keeps hostile titles literal and preserves query values and URL delimiters.
 - Exact typed probabilities independent of Markdown headings, table layout, subjective ranges, rounded percentages, or inequality displays; full numeric precision and probability boundaries; ML inputs taken directly from model averages even when its generated prose disagrees.

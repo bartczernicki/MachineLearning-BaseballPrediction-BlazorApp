@@ -1,6 +1,6 @@
 # Analysis rendering regression checks
 
-Run from the repository root with .NET 10:
+Run from the repository root with the .NET 11 SDK (11.0.100 or a compatible servicing update):
 
 ```sh
 dotnet run --project tests/BaseballAIWorkbench.WebChecks/BaseballAIWorkbench.WebChecks.csproj

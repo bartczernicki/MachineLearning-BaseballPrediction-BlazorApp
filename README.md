@@ -111,13 +111,13 @@ flowchart TB
 
 ## Technology Stack
 
-- **Development:** Visual Studio 2026 or VS Code, .NET 10.x.
-- **User interface:** Server-side Blazor and SignalR.
-- **Machine learning:** ML.NET v5.x.
-- **Application orchestration:** Aspire 13.6.
+- **Development:** Visual Studio 2026 or VS Code, .NET 11 SDK 11.0.100 or a compatible servicing update.
+- **User Interface:** Server-side Blazor and SignalR.
+- **Machine Learning:** ML.NET v6.x.
+- **Application Orchestration:** Aspire 13.6.5.
 - **AI agents and retrieval:** Microsoft Agent Framework, Microsoft.Extensions.AI (MEAI), and Web IQ.
-- **Model hosting:** Microsoft AI Foundry and Azure OpenAI.
-- **Azure delivery:** Azure Container Apps, Azure SignalR, and Azure Front Door.
+- **Model Hosting:** Microsoft AI Foundry and Azure OpenAI.
+- **Azure Delivery:** Azure Container Apps, Azure SignalR, and Azure Front Door.
 
 ## Documentation
 
